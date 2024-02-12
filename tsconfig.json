@@ -20,6 +20,7 @@
         "paths": {
             "@public/*": ["./public/*"],
             "@components/*": ["./src/components/*"],
+            "@assets/*": ["./src/assets/*"],
             "@constants/*": ["./src/constants/*"],
             "@hooks/*": ["./src/hooks/*"],
             "@pages/*": ["./src/pages/*"],
