@@ -19,7 +19,7 @@ export const MainPage: React.FC = () => {
 
 
     return (
-        <>
+        <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
             <Layout style={{ position: "relative" }}>
                 <Navbar />
                 <Layout className={s.layout} style={{
@@ -38,6 +38,6 @@ export const MainPage: React.FC = () => {
                     <MainFooter />
                 </Layout>
             </Layout >
-        </>
+        </div>
     );
 };

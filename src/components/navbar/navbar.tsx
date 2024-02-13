@@ -8,9 +8,10 @@ import {
   TrophyFilled,
 
 } from '@ant-design/icons';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import LogoFullSVG from "@assets/icons/logo-full.svg"
 import LogoCollapsedSVG from "@assets/icons/logo-collapsed.svg"
+import CalenderSVG from "@assets/icons/icon-calendar.svg"
 import IconExit from "@assets/icons/icon-exit.svg"
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, setCollapsed } from '@redux/configure-store';
@@ -27,7 +28,7 @@ export const Navbar = () => {
 
   const navItems = [
     {
-      icon: CalendarOutlined,
+      icon: CalenderSVG,
       name: 'Календарь',
       href: '',
     },
@@ -51,7 +52,10 @@ export const Navbar = () => {
   const items = navItems.map(
     (item, index) => ({
       key: String(index + 1),
-      icon: React.createElement(item.icon),
+      icon: (item?.icon !== CalenderSVG) ? React.createElement(item.icon) : React.createElement(Image, {
+        src: item.icon,
+        alt: 'Calendar',
+      }),
       label: item.name,
     }),
   );
@@ -74,7 +78,7 @@ export const Navbar = () => {
           backgroundColor: "white",
           overflow: "visible",
           height: '100dvh',
-          position: 'fixed',
+          position: "fixed",
           left: 0,
           top: 0,
           bottom: 0,
@@ -109,14 +113,32 @@ export const Navbar = () => {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "16px"
+            gap: "16px",
           }}
-          theme="light" mode="inline" defaultSelectedKeys={['0']} items={items} >
+          theme="light" mode="inline" defaultSelectedKeys={['0']}>
 
+          {items.map((item, index) => (
+            <Menu.Item
+              style={{
+                height: "42px",
+                margin: 0,
+                padding: 0,
+                paddingLeft: "0px",
+                justifyContent: "center",
+              }}
+              key={index} className={index === items.length - 1 ? 'last-menu-item' : ''}>
+              <span style={{
+                color: "#061178",
+                paddingRight: "10px",
+                paddingLeft: !collapsed ? "16px" : "24px",
+              }}>{item.icon}</span>
+              {!collapsed && item.label}
+            </Menu.Item>
+          ))}
         </Menu>
         <Button
           style={{
-            paddingLeft: "24px",
+            paddingLeft: "16px",
             display: "flex",
             alignItems: "center",
             position: "absolute",
