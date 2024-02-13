@@ -1,34 +1,43 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Grid, Layout } from 'antd';
 
-import reactLogo from '/react.svg';
-import viteLogo from '/vite.svg';
-import tsLogo from '/ts.svg';
-import './main-page.css';
+import Main_page_light from "../../assets/imgs/Main_page_light.png"
+
+import s from './main-page.module.scss';
+import { Navbar } from '@components/navbar';
+import { MainHeader } from './header/main-header';
+import { MainContent } from './content/main-content';
+import { MainFooter } from './footer/main-footer';
+import { useSelector } from 'react-redux';
 
 export const MainPage: React.FC = () => {
-    const [count, setCount] = useState(0);
+    const collapsed = useSelector((state: any) => state.app.collapsed);
+    const { useBreakpoint } = Grid;
+    const screens = useBreakpoint();
+
+    const layoutPaddingLeft = (screens?.xs) ? '0' : (collapsed ? '64px' : '208px');
+
 
     return (
-        <>
-            <div>
-                <a href='https://vitejs.dev' target='_blank'>
-                    <img src={viteLogo} className='logo' alt='Vite logo' />
-                </a>
-                <a href='https://react.dev' target='_blank'>
-                    <img src={reactLogo} className='logo react' alt='React logo' />
-                </a>
-                <a href='https://www.typescriptlang.org/' target='_blank'>
-                    <img src={tsLogo} className='logo' alt='TS logo' />
-                </a>
-            </div>
-            <h1>Vite + React + TS</h1>
-            <div className='card'>
-                <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-                <p>
-                    Edit <code>src/pages/main-page.tsx</code> and save to test HMR
-                </p>
-            </div>
-            <p className='read-the-docs'>Click on the Vite and React logos to learn more</p>
-        </>
+        <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
+            <Layout style={{ position: "relative" }}>
+                <Navbar />
+                <Layout className={s.layout} style={{
+                    position: 'relative',
+                    transition: "padding-left 0.146s linear",
+                    paddingLeft: layoutPaddingLeft,
+                    minHeight: "100dvh",
+                    backgroundPosition: "center",
+                    backgroundImage: `url(${Main_page_light})`,
+                    backgroundSize: "cover",
+                    backgroundRepeat: "no-repeat",
+
+                }}>
+                    <MainHeader />
+                    <MainContent />
+                    <MainFooter />
+                </Layout>
+            </Layout >
+        </div>
     );
 };
