@@ -16,8 +16,10 @@ import IconExit from "@assets/icons/icon-exit.svg"
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, setCollapsed } from '@redux/configure-store';
 import s from './navbar.module.scss';
+import useWindowWidth from '@hooks/use-window-width';
 
 export const Navbar = () => {
+  const width = useWindowWidth()
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
@@ -79,7 +81,7 @@ export const Navbar = () => {
           overflow: "visible",
           height: '100dvh',
           position: "fixed",
-          left: 0,
+          left: (width > 1440) ? (((width - 1440) / 2) +"px") : 0,
           top: 0,
           bottom: 0,
           zIndex: 1000
