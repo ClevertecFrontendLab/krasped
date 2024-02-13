@@ -8,7 +8,6 @@ import { Navbar } from '@components/navbar';
 import { MainHeader } from './header/main-header';
 import { MainContent } from './content/main-content';
 import { MainFooter } from './footer/main-footer';
-import useWindowWidth from '@hooks/use-window-width';
 import { useSelector } from 'react-redux';
 
 export const MainPage: React.FC = () => {
@@ -16,9 +15,6 @@ export const MainPage: React.FC = () => {
     const { useBreakpoint } = Grid;
     const screens = useBreakpoint();
 
-    // const {
-    //     token: { colorBgContainer, borderRadiusLG },
-    // } = theme.useToken();
     const layoutPaddingLeft = (screens?.xs) ? '0' : (collapsed ? '64px' : '208px');
 
 

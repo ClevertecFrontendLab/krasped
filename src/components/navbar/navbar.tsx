@@ -1,13 +1,8 @@
 import { Button, Drawer, Grid, Image, Layout, Menu, Space } from 'antd';
 import {
-
-  CalendarFilled,
   CalendarOutlined,
-  CalendarTwoTone,
   HeartFilled,
-  IdcardFilled,
   IdcardOutlined,
-  IdcardTwoTone,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   TrophyFilled,
@@ -74,12 +69,6 @@ export const Navbar = () => {
         collapsed={collapsed}
         collapsedWidth="64"
         collapsible
-        // onBreakpoint={(broken) => {
-        //   console.log(broken);
-        // }}
-        // onCollapse={(collapsed, type) => {
-        //   console.log(collapsed, type);
-        // }}
         style={{
           display: (!screens?.xs) ? "block" : "none",
           backgroundColor: "white",

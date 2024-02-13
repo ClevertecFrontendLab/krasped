@@ -59,8 +59,6 @@ export const MainHeader: React.FC = () => {
             icon={screens?.lg || screens?.xs ? <SettingOutlined /> : <></>}
             style={{
               color: "#262626",
-              // backgroundColor: screens?.xs ? "white" : "initial",
-              // borderRadius: screens?.xs ? "50%" : "initial"
             }}
             type={screens?.xs ? "default" : "link"}
           >
