@@ -34,7 +34,7 @@ export const MainFooter: React.FC = () => {
             flexDirection: "column",
           }}>
             <Button style={{ textAlign: "start", padding: "0 20px", height: "21px", fontSize: "16" }} type='link'>Скачать на телефон</Button>
-            <Button style={{ textAlign: "start", padding: "0 20px", height: "18px", fontSize: "16" }} type='link' disabled>Доступно в про-тарифу</Button>
+            <Button style={{ textAlign: "start", padding: "0 20px", height: "18px", fontSize: "16" }} type='link' disabled>Доступно в PRO-тарифе</Button>
           </div>
         }
         headStyle={{ height: "71px", padding: "4px", }}
