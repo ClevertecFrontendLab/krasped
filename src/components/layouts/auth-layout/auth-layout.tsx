@@ -1,8 +1,5 @@
 import { Layout } from "antd"
 import Enter_page_light from "@assets/imgs/Enter_page_light.png"
-interface ParentProps {
-  children: JSX.Element;
-}
 
 export const AuthLayout: React.FC<{ children: JSX.Element }> = ({ children }) => {
   return (

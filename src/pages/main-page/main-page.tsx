@@ -9,9 +9,10 @@ import { MainHeader } from './header/main-header';
 import { MainContent } from './content/main-content';
 import { MainFooter } from './footer/main-footer';
 import { useSelector } from 'react-redux';
+import { RootState } from '@redux/configure-store';
 
 export const MainPage: React.FC = () => {
-    const collapsed = useSelector((state: any) => state.app.collapsed);
+    const collapsed = useSelector((state: RootState) => state.app.collapsed);
     const { useBreakpoint } = Grid;
     const screens = useBreakpoint();
 

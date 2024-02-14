@@ -2,14 +2,15 @@ import {
   HeartFilled,
   IdcardOutlined,
   TrophyFilled,
-
 } from '@ant-design/icons';
 import CalenderSVG from "@assets/icons/icon-calendar.svg"
+import { Image } from 'antd';
+import React from 'react';
 
 
 
 
-export const navItems = [
+const items = [
   {
     icon: CalenderSVG,
     name: 'Календарь',
@@ -31,3 +32,14 @@ export const navItems = [
     href: '',
   },
 ]
+
+export const navItems = items.map(
+  (item, index) => ({
+    key: String(index + 1),
+    icon: (item?.icon !== CalenderSVG) ? React.createElement(item.icon) : React.createElement(Image, {
+      src: item.icon,
+      alt: 'Calendar',
+    }),
+    label: item.name,
+  }),
+);
