@@ -21,6 +21,7 @@
             "@public/*": ["./public/*"],
             "@components/*": ["./src/components/*"],
             "@assets/*": ["./src/assets/*"],
+            "@config/*": ["./src/config/*"],
             "@constants/*": ["./src/constants/*"],
             "@hooks/*": ["./src/hooks/*"],
             "@pages/*": ["./src/pages/*"],

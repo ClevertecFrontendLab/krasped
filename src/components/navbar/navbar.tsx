@@ -1,14 +1,9 @@
 import { Button, Drawer, Grid, Image, Layout, Menu, Space } from 'antd';
 import {
-  CalendarOutlined,
-  HeartFilled,
-  IdcardOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  TrophyFilled,
-
 } from '@ant-design/icons';
-import React, { ReactNode } from 'react';
+import React from 'react';
 import LogoFullSVG from "@assets/icons/logo-full.svg"
 import LogoCollapsedSVG from "@assets/icons/logo-collapsed.svg"
 import CalenderSVG from "@assets/icons/icon-calendar.svg"
@@ -17,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState, setCollapsed } from '@redux/configure-store';
 import s from './navbar.module.scss';
 import useWindowWidth from '@hooks/use-window-width';
+import { navItems } from '@config/nav-config.ts';
 
 export const Navbar = () => {
   const width = useWindowWidth()
@@ -26,30 +22,6 @@ export const Navbar = () => {
   const dispatch = useDispatch();
 
   const { Sider } = Layout;
-
-
-  const navItems = [
-    {
-      icon: CalenderSVG,
-      name: 'Календарь',
-      href: '',
-    },
-    {
-      icon: HeartFilled,
-      name: 'Тренировки',
-      href: '',
-    },
-    {
-      icon: TrophyFilled,
-      name: 'Достижения',
-      href: '',
-    },
-    {
-      icon: IdcardOutlined,
-      name: 'Профиль',
-      href: '',
-    },
-  ]
 
   const items = navItems.map(
     (item, index) => ({
@@ -81,7 +53,7 @@ export const Navbar = () => {
           overflow: "visible",
           height: '100dvh',
           position: "fixed",
-          left: (width > 1440) ? (((width - 1440) / 2) +"px") : 0,
+          left: (width > 1440) ? (((width - 1440) / 2) + "px") : 0,
           top: 0,
           bottom: 0,
           zIndex: 1000

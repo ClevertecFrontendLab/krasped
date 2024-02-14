@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, Layout } from 'antd';
 
-import Main_page_light from "../../assets/imgs/Main_page_light.png"
+import Main_page_light from "@assets/imgs/Main_page_light.png"
 
 import s from './main-page.module.scss';
 import { Navbar } from '@components/navbar';
