@@ -9,6 +9,7 @@ import LogoCollapsedSVG from "@assets/icons/logo-collapsed.svg"
 import IconExit from "@assets/icons/icon-exit.svg"
 import { navItems } from "@config/nav-config"
 import s from './desctop.module.scss';
+import { Link } from "react-router-dom"
 
 
 export const DesctopNavbar: React.FC = () => {
@@ -83,12 +84,14 @@ export const DesctopNavbar: React.FC = () => {
                 justifyContent: "center",
               }}
               key={index} className={index === navItems.length - 1 ? 'last-menu-item' : ''}>
-              <span style={{
-                color: "#061178",
-                paddingRight: "10px",
-                paddingLeft: !collapsed ? "16px" : "24px",
-              }}>{item.icon}</span>
-              {!collapsed && item.label}
+              <Link to={item.href}>
+                <span style={{
+                  color: "#061178",
+                  paddingRight: "10px",
+                  paddingLeft: !collapsed ? "16px" : "24px",
+                }}>{item.icon}</span>
+                {!collapsed && item.label}
+              </Link>
             </Menu.Item>
           ))}
         </Menu>

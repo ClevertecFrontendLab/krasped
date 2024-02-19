@@ -1,9 +1,19 @@
 import { Layout } from "antd"
 import Enter_page_light from "@assets/imgs/Enter_page_light.png"
 import { Outlet } from "react-router-dom"
-import { PropsWithChildren } from "react"
+import { PropsWithChildren, useEffect } from "react"
+import { ILocationState, history } from "@redux/configure-store"
 
-export const AuthLayout: React.FC = (props: PropsWithChildren) => {
+export const ResultLayout: React.FC = (props: PropsWithChildren) => {
+  // onClick={() => { history.push("/result", { from: "login" }) }}
+  useEffect(() => {
+    const locationState = history?.location?.state as ILocationState;
+    console.log(history?.location?.state)
+    if (!history?.location.state || !locationState?.from) {
+      history.push('/auth/login');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history.location.pathname]);
   return (
     <>
       <Layout style={{

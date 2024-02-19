@@ -1,13 +1,11 @@
-import { Input, Checkbox, Button, Form } from "antd";
-
+import { Input, Button, Form } from "antd"
 type FieldType = {
   email?: string;
   password?: string;
-  remember?: string;
+  confirm?: string;
 };
 
-export const LoginForm: React.FC = () => {
-
+export const RegisterForm: React.FC = () => {
   const validateMessages = {
     required: '${label} is required!',
     types: {
@@ -34,24 +32,38 @@ export const LoginForm: React.FC = () => {
           <Input size="large" addonBefore={'email:'} />
         </Form.Item>
         <Form.Item<FieldType>
-          // label="Password"
           name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
+          rules={[
+            {
+              required: true,
+              message: 'Please input your password!',
+            },
+          ]}
+          hasFeedback
         >
-          <Input.Password />
+          <Input.Password placeholder="Пароль" />
         </Form.Item>
 
-        <Form.Item>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-
-            <Form.Item name="remember" valuePropName="checked" noStyle>
-              <Checkbox>Запомнить меня</Checkbox>
-            </Form.Item>
-
-            <a className="login-form-forgot" href="">
-              Забыли пароль
-            </a>
-          </div>
+        <Form.Item<FieldType>
+          name="confirm"
+          dependencies={['password']}
+          hasFeedback
+          rules={[
+            {
+              required: true,
+              message: 'Please confirm your password!',
+            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('password') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('The new password that you entered do not match!'));
+              },
+            }),
+          ]}
+        >
+          <Input.Password placeholder="Повторите пароль" />
         </Form.Item>
 
         <Form.Item style={{ display: "flex", flexDirection: "column", width: "100%" }}>

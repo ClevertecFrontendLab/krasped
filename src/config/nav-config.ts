@@ -7,14 +7,11 @@ import CalenderSVG from "@assets/icons/icon-calendar.svg"
 import { Image } from 'antd';
 import React from 'react';
 
-
-
-
 const items = [
   {
     icon: CalenderSVG,
     name: 'Календарь',
-    href: '',
+    href: '/auth',
   },
   {
     icon: HeartFilled,
@@ -41,5 +38,6 @@ export const navItems = items.map(
       alt: 'Calendar',
     }),
     label: item.name,
+    href: item.href,
   }),
 );

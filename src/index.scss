@@ -1,4 +1,5 @@
 @import 'antd/dist/antd.css';
+@primary-color: #000;
 
 @font-face {
   font-family: 'Inter';
@@ -76,6 +77,23 @@ button,
 textarea,
 select {
   font: inherit;
+}
+
+.ant-tabs-nav-list{
+  width: 100%;
+}
+
+.ant-tabs {
+  &-nav {
+    display: flex;
+
+    .ant-tabs-tab {
+      flex-grow: 1;
+      width: 100%;
+      justify-content: center;
+      text-align: center;
+    }
+  }
 }
 
 /* Удаляем все анимации и переходы для людей, которые предпочитай их не использовать */
