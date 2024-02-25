@@ -13,6 +13,7 @@ export default defineConfig({
         alias: {
             '@public': path.resolve(__dirname, 'public'),
             '@components': path.resolve(__dirname, 'src/components'),
+            '@api': path.resolve(__dirname, 'src/api'),
             '@assets': path.resolve(__dirname, 'src/assets'),
             '@config': path.resolve(__dirname, 'src/config'),
             '@constants': path.resolve(__dirname, 'src/constants'),

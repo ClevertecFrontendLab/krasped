@@ -1,15 +1,17 @@
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons"
 import useWindowWidth from "@hooks/use-window-width"
-import { RootState, setCollapsed } from "@redux/configure-store"
+import { RootState, history, setCollapsed } from "@redux/configure-store"
 import { Menu, Button, Space, Image, Grid } from "antd"
 import Sider from "antd/lib/layout/Sider"
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
 import LogoFullSVG from "@assets/icons/logo-full.svg"
 import LogoCollapsedSVG from "@assets/icons/logo-collapsed.svg"
 import IconExit from "@assets/icons/icon-exit.svg"
 import { navItems } from "@config/nav-config"
 import s from './desctop.module.scss';
 import { Link } from "react-router-dom"
+import { logout } from "@redux/userSlice"
+import { useAppDispatch } from "@hooks/typed-react-redux-hooks"
 
 
 export const DesctopNavbar: React.FC = () => {
@@ -17,7 +19,7 @@ export const DesctopNavbar: React.FC = () => {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const setNavCollapsed = (value: boolean) => {
     dispatch(setCollapsed(value));
@@ -96,6 +98,7 @@ export const DesctopNavbar: React.FC = () => {
           ))}
         </Menu>
         <Button
+          onClick={() => { dispatch(logout()); history.push("/auth/login") }}
           style={{
             paddingLeft: "16px",
             display: "flex",

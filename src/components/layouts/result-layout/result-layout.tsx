@@ -9,9 +9,9 @@ export const ResultLayout: React.FC = (props: PropsWithChildren) => {
   useEffect(() => {
     const locationState = history?.location?.state as ILocationState;
     console.log(history?.location?.state)
-    if (!history?.location.state || !locationState?.from) {
-      history.push('/auth/login');
-    }
+    // if (!history?.location.state || !locationState?.from) {
+    //   history.push('/auth/login');
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history.location.pathname]);
   return (

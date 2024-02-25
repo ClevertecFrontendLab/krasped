@@ -1,13 +1,16 @@
+import { useLoginMutation } from "@api/auth/auth";
+import { history } from "@redux/configure-store";
 import { Input, Checkbox, Button, Form } from "antd";
+import { useEffect } from "react";
 
-type FieldType = {
-  email?: string;
-  password?: string;
-  remember?: string;
+export type FieldType = {
+  email: string;
+  password: string;
+  isRememberMe: boolean;
 };
 
-export const LoginForm: React.FC = () => {
-
+export const LoginForm = () => {
+  const [loginUser, { isLoading, isError, error, isSuccess }] = useLoginMutation();
   const validateMessages = {
     required: '${label} is required!',
     types: {
@@ -15,16 +18,30 @@ export const LoginForm: React.FC = () => {
     },
   };
 
-  const onFinish = (values: FieldType) => {
+  function OnFinish(values: FieldType) {
+
+
+    loginUser(values)
+
     console.log('Received values of form: ', values);
-  };
+  }
+
+  useEffect(() => {
+    if (isSuccess) {
+      console.log("isSuccess")
+      history.push("/");
+    }
+    if (isError) { /* empty */ }
+  },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isLoading]);
   return (
     <>
       <Form
         name="normal_login"
         className="login-form"
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
+        initialValues={{ isRememberMe: false }}
+        onFinish={OnFinish}
         validateMessages={validateMessages}
       >
         <Form.Item<FieldType>
@@ -36,7 +53,17 @@ export const LoginForm: React.FC = () => {
         <Form.Item<FieldType>
           // label="Password"
           name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
+          rules={[
+            { required: true, message: 'Пожалуйста, введите пароль!' },
+            {
+              min: 8,
+              message: 'Пароль должен быть не менее 8 символов'
+            },
+            {
+              pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/,
+              message: 'Пароль должен содержать как минимум 1 цифру, 1 латинскую строчную и одну заглавную букву'
+            }
+          ]}
         >
           <Input.Password />
         </Form.Item>
@@ -44,7 +71,7 @@ export const LoginForm: React.FC = () => {
         <Form.Item>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
 
-            <Form.Item name="remember" valuePropName="checked" noStyle>
+            <Form.Item name="isRememberMe" valuePropName="checked" noStyle>
               <Checkbox>Запомнить меня</Checkbox>
             </Form.Item>
 

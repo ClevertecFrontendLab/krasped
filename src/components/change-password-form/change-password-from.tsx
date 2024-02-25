@@ -1,15 +1,13 @@
 import { useRegistrationMutation } from "@api/auth/auth";
-import { history } from "@redux/configure-store";
-import { Input, Button, Form } from "antd"
-import { useEffect } from "react";
+import { Input, Button, Form, Card } from "antd"
 type FieldType = {
   email: string;
   password: string;
   confirm: string;
 };
 
-export const RegisterForm: React.FC = () => {
-  const [regUser, { isLoading, isSuccess, error, isError }] = useRegistrationMutation();
+const ChangePasswordFrom: React.FC = () => {
+  const [regUser, { data, error, isLoading }] = useRegistrationMutation();
   const validateMessages = {
     required: '${label} is required!',
     types: {
@@ -25,40 +23,39 @@ export const RegisterForm: React.FC = () => {
     regUser(payload)
     // console.log('Received values of form: ', values);
   };
-
-  useEffect(() => {
-    if (isSuccess) {
-      history.push('/verifyemail');
-    }
-
-    if (isError) {
-      console.log(error);
-
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading]);
   return (
-    <>
+    <Card
+    >
+      {isLoading && <span>loading</span>}
+      {error && <span>error</span>}
+      {data && <span>data</span>}
+      <span>Восстановление аккаунта</span>
       <Form
+
         name="normal_login"
         className="login-form"
         initialValues={{ remember: true }}
         onFinish={onFinish}
         validateMessages={validateMessages}
       >
-        <Form.Item<FieldType>
-          name="email"
-          rules={[{ required: true }, { type: 'email' }]}
-        >
-          <Input size="large" addonBefore={'email:'} />
-        </Form.Item>
+
         <Form.Item<FieldType>
           name="password"
           rules={[
+            { required: true, message: 'Пожалуйста, введите пароль!' },
             {
-              required: true,
-              message: 'Please input your password!',
+              pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/,
+              min: 8,
+              message: 'Пароль должен содержать как минимум 1 цифру, 1 латинскую строчную и одну заглавную букву'
             },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('password') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('The new password that you entered do not match!'));
+              },
+            }),
           ]}
           hasFeedback
         >
@@ -73,9 +70,6 @@ export const RegisterForm: React.FC = () => {
             { required: true, message: 'Пожалуйста, введите пароль!' },
             {
               min: 8,
-              message: 'Пароль должен быть не менее 8 символов'
-            },
-            {
               pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/,
               message: 'Пароль должен содержать как минимум 1 цифру, 1 латинскую строчную и одну заглавную букву'
             },
@@ -94,15 +88,13 @@ export const RegisterForm: React.FC = () => {
 
         <Form.Item style={{ display: "flex", flexDirection: "column", width: "100%" }}>
           <Button style={{ width: "100%" }} type="primary" htmlType="submit" className="login-form-button">
-            Войти
+            Сохранить
           </Button>
         </Form.Item>
-        <Form.Item style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-          <Button style={{ width: "100%" }} type="primary" htmlType="button" className="login-form-button">
-            Войти через гугл
-          </Button>
-        </Form.Item>
+
       </Form>
-    </>
+    </Card>
   )
 }
+
+export default ChangePasswordFrom

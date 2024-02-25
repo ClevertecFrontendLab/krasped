@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Grid, Layout } from 'antd';
 
 import Main_page_light from "@assets/imgs/Main_page_light.png"
@@ -10,15 +10,19 @@ import { MainContent } from './content/main-content';
 import { MainFooter } from './footer/main-footer';
 import { useSelector } from 'react-redux';
 import { RootState } from '@redux/configure-store';
+import { useGetMeQuery } from '@api/user/user';
 
-export const MainPage: React.FC = () => {
+const MainPage: React.FC = () => {
+    const { data, error, isLoading, refetch } = useGetMeQuery();
     const collapsed = useSelector((state: RootState) => state.app.collapsed);
     const { useBreakpoint } = Grid;
     const screens = useBreakpoint();
 
     const layoutPaddingLeft = (screens?.xs) ? '0' : (collapsed ? '64px' : '208px');
 
-
+    useEffect(() => {
+        console.log(data)
+    }, [data])
     return (
         <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
             <Layout style={{ position: "relative" }}>
@@ -42,3 +46,4 @@ export const MainPage: React.FC = () => {
         </div>
     );
 };
+export default MainPage;

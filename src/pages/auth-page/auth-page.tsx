@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 // import { useNavigate } from "react-router-dom"
 import { history } from "@redux/configure-store"
 
-export const AuthPage: React.FC = () => {
+const AuthPage: React.FC = () => {
   const { useBreakpoint } = Grid;
   const [tab, setTab] = useState("1")
   const screens = useBreakpoint();
@@ -78,3 +78,5 @@ export const AuthPage: React.FC = () => {
 
   )
 }
+
+export default AuthPage

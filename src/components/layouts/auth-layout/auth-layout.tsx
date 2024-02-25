@@ -1,7 +1,9 @@
 import { Layout } from "antd"
 import Enter_page_light from "@assets/imgs/Enter_page_light.png"
 import { Outlet } from "react-router-dom"
-import { PropsWithChildren } from "react"
+import React, { PropsWithChildren } from "react"
+import { LoaderComponent } from "@components/loader/api-loader.jsx"
+
 
 export const AuthLayout: React.FC = (props: PropsWithChildren) => {
   return (
@@ -15,6 +17,7 @@ export const AuthLayout: React.FC = (props: PropsWithChildren) => {
         backgroundColor: "transparent",
         zIndex: 0
       }}>
+        <LoaderComponent />
         <div style={{
           position: "absolute",
           width: "100%",
@@ -32,6 +35,9 @@ export const AuthLayout: React.FC = (props: PropsWithChildren) => {
           position: "absolute",
           width: "100%",
           height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
           left: 0,
           top: 0,
           zIndex: "0",
@@ -39,7 +45,9 @@ export const AuthLayout: React.FC = (props: PropsWithChildren) => {
         }}>
         </div>
         {props.children}
-        {<Outlet />}
+        {<React.Suspense fallback={<LoaderComponent />}>
+          <Outlet />
+        </React.Suspense>}
       </Layout>
     </>
   )

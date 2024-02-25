@@ -1,15 +1,17 @@
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons"
 import { Button, Space, Menu, Image, Grid, Drawer } from "antd"
-import { RootState, setCollapsed } from "@redux/configure-store";
-import { useSelector, useDispatch } from "react-redux";
+import { RootState, history, setCollapsed } from "@redux/configure-store";
+import { useSelector } from "react-redux";
 import { navItems } from "@config/nav-config";
 import LogoFullSVG from "@assets/icons/logo-full.svg"
+import { logout } from "@redux/userSlice";
+import { useAppDispatch } from "@hooks/typed-react-redux-hooks";
 
 export const MobileNavbar: React.FC = () => {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const setNavCollapsed = (value: boolean) => {
     dispatch(setCollapsed(value));
@@ -103,6 +105,7 @@ export const MobileNavbar: React.FC = () => {
               bottom: 0,
               color: "black"
             }}
+            onClick={() => { dispatch(logout()); history.push("/auth/login") }}
             type='link'
           >
             <span style={{
