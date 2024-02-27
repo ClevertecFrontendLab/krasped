@@ -1,9 +1,28 @@
-import { PayloadAction, configureStore, createSlice } from '@reduxjs/toolkit';
-
-
+import { authApi } from '@api/auth/auth';
+import { userApi } from '@api/user/user';
+import { PayloadAction, combineReducers, configureStore, createSlice } from '@reduxjs/toolkit';
+import { createBrowserHistory } from 'history';
+import { createReduxHistoryContext } from 'redux-first-history';
+import userReducer from '@redux/userSlice';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { BaseQueryFn } from '@reduxjs/toolkit/query';
 const initialState = {
     collapsed: false,
 };
+
+export interface ILocationState {
+    from: string;
+    formState: {
+        email: string;
+        password: string;
+        confirm: string;
+        confirmPassword: string;
+    };
+}
+
+const { createReduxHistory, routerMiddleware, routerReducer } = createReduxHistoryContext({
+    history: createBrowserHistory(),
+});
 
 const appSlice = createSlice({
     name: 'app',
@@ -18,10 +37,16 @@ const appSlice = createSlice({
 export const { setCollapsed } = appSlice.actions;
 
 export const store = configureStore({
-    reducer: {
+    reducer: combineReducers({
         app: appSlice.reducer,
-    },
+        router: routerReducer,
+        [authApi.reducerPath]: authApi.reducer,
+        [userApi.reducerPath]: userApi.reducer,
+        userState: userReducer,
+    }),
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(routerMiddleware, authApi.middleware, userApi.middleware),
 });
 
+export const history = createReduxHistory(store);
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

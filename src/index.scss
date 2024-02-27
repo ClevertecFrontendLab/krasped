@@ -5,6 +5,10 @@
   src: url('./assets/fonts/Inter-VariableFont_slnt.ttf') format('truetype');
 }
 
+:root {
+  --antd-wave-shadow-color: #2F54EB;
+}
+
 body {
   font-family: 'Inter', sans-serif;
 }
@@ -77,6 +81,37 @@ textarea,
 select {
   font: inherit;
 }
+
+.ant-tabs-nav-list{
+  width: 100%;
+}
+
+.ant-tabs {
+  &-nav {
+    display: flex;
+
+    .ant-tabs-tab {
+      flex-grow: 1;
+      width: 100%;
+      justify-content: center;
+      text-align: center;
+    }
+  }
+}
+
+.ant-btn-primary {
+  border-color: #2F54EB;
+  background-color: #2F54EB;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color:#2F54EB;
+}
+
+.ant-tabs-ink-bar {
+  background-color:#2F54EB;
+}
+
 
 /* Удаляем все анимации и переходы для людей, которые предпочитай их не использовать */
 @media (prefers-reduced-motion: reduce) {
