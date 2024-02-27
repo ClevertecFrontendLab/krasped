@@ -20,22 +20,8 @@ export interface ILocationState {
     };
 }
 
-// const apiErrorMiddleware: Middleware = (baseQueryApi: BaseQueryFn) => async (args, api, extra) => {
-//     try {
-//         return await baseQueryApi(args, api, extra);
-//     } catch (error: any) {
-//         if (error.status === 401) {
-//             // const { data } = await api.endpoints.refreshAccessToken.mutation();
-//             // api.dispatch(setToken(data.token)); // Обновляем токен в хранилище
-//             return baseQueryApi(args, api, extra); // Повторяем запрос
-//         }
-//         throw error;
-//     }
-// };
-
 const { createReduxHistory, routerMiddleware, routerReducer } = createReduxHistoryContext({
     history: createBrowserHistory(),
-    //other options if needed 
 });
 
 const appSlice = createSlice({
@@ -64,5 +50,3 @@ export const store = configureStore({
 export const history = createReduxHistory(store);
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-// export const useAppDispatch = () => useDispatch<AppDispatch>();
-// export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

@@ -4,22 +4,14 @@ import { userApi } from '@api/user/user';
 import { setToken } from '@redux/userSlice';
 import { FieldType } from '@components/login-form/login-form';
 
-// const BASE_URL = process.env.REACT_APP_SERVER_ENDPOINT as string;
 const BASE_URL = "https://marathon-api.clevertec.ru";
 
 export const authApi = createApi({
   reducerPath: 'auth',
   keepUnusedDataFor: 60,
-  // baseQuery: retry(fetchBaseQuery({ baseUrl: "https://marathon-api.clevertec.ru/auth/" }), { maxRetries: 5 }),
   baseQuery: fetchBaseQuery({
     baseUrl: `${BASE_URL}/auth`,
-    // prepareHeaders: (headers, { getState }) => {
-    //   const cookieValue = 'значение_из_куки'; // Получаем значение из cookie
-    //   if (cookieValue) {
-    //     headers.set('Cookie-Header', cookieValue); // Устанавливаем заголовок с нужным значением из cookie
-    //   }
-    //   return headers;
-    // },
+
   }),
   endpoints: (builder) => ({
 
@@ -79,28 +71,6 @@ export const authApi = createApi({
         credentials: 'include',
       }),
     }),
-
-    // getPosts: builder.query({
-    //   query: (arg) => `posts/${arg}`,
-    //   tagTypes: ['User'],
-    //   providesTags: (result) =>
-    //     result
-    //       ? [
-    //         ...result.map(({ id }) => ({ type: 'Posts', id })),
-    //         { type: 'Posts', id: 'LIST' },
-    //       ]
-    //       : [{ type: 'Posts', id: 'LIST' }],
-    // }),
-
-    // updateUser: builder.mutation({
-    //   query: ({ id, ...body }) => ({
-    //     url: id,
-    //     method: 'PATCH',
-    //     body,
-    //   }),
-    //   invalidatesTags: (result, error, { id }) => [{ type: 'User', id }],
-    // })
-
   })
 })
 

@@ -93,6 +93,4 @@ const ConfirmEmailForm: React.FC = () => {
   )
 };
 
-
-
 export default ConfirmEmailForm;

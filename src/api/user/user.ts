@@ -6,7 +6,6 @@ import { RootState } from '@redux/configure-store';
 export const userApi = createApi({
   reducerPath: 'user',
   keepUnusedDataFor: 60,
-  // baseQuery: retry(fetchBaseQuery({ baseUrl: "https://marathon-api.clevertec.ru/auth/" }), { maxRetries: 5 }),
   baseQuery: fetchBaseQuery({
     baseUrl: "https://marathon-api.clevertec.ru/user/",
     credentials: 'include',

@@ -3,24 +3,12 @@ import { Card, Grid, Image, Tabs } from "antd"
 import LogoFullSVG from "@assets/icons/logo-full.svg"
 import { RegisterForm } from "@components/register-form/register-form"
 import { useEffect, useState } from "react"
-// import { useNavigate } from "react-router-dom"
 import { history } from "@redux/configure-store"
 
 const AuthPage: React.FC = () => {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
   const [tab, setTab] = useState("1")
-  // const navigate = useNavigate()
-
-  const onFinish = (values: any) => {
-    console.log('Received values of form: ', values);
-  };
-
-  //   const goBack = () => navigate(-1)
-  //   const goHome = () => navigate('/home')
-  //   useEffect(() => {
-  //     navigate('/new-page', {replace: true, state: {from: 'old-page'}})
-  // }, [])
 
   const changeTab = (tab: string): void => {
     setTab(tab);

@@ -1,9 +1,7 @@
 
 import React from "react"
-import Enter_page_light from "@assets/imgs/Enter_page_light.png"
 import Lottie from "lottie-react"
 import animationData from './loader.json'
-
 
 export const SuspenceLoaderComponent: React.FC = () => {
   return (
@@ -12,10 +10,6 @@ export const SuspenceLoaderComponent: React.FC = () => {
         width: "100%",
         height: "100dvh",
         zIndex: 998,
-        // backgroundImage: `url(${Enter_page_light})`,
-        // backgroundSize: "cover",
-        // backgroundPosition: "center",
-        // backgroundRepeat: "no-repeat",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",

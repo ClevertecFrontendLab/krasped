@@ -34,7 +34,6 @@ export const RegisterForm: React.FC = () => {
       password: values.password
     }
     regUser(payload)
-    // console.log('Received values of form: ', values);
   };
 
   useEffect(() => {
@@ -44,7 +43,6 @@ export const RegisterForm: React.FC = () => {
 
     if (isError) {
       const customError = error as CustomError;
-      console.log(error)
       if ((customError?.status) === 409) {
         history.push('/result/error-user-exist', { from: "login" });
       } else {

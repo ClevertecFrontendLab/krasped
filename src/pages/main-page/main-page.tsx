@@ -10,19 +10,16 @@ import { MainContent } from './content/main-content';
 import { MainFooter } from './footer/main-footer';
 import { useSelector } from 'react-redux';
 import { RootState } from '@redux/configure-store';
-import { useGetMeQuery } from '@api/user/user';
+// import { useGetMeQuery } from '@api/user/user';
 
 const MainPage: React.FC = () => {
-    const { data, error, isLoading, refetch } = useGetMeQuery();
+    // const { data, error, isLoading, refetch } = useGetMeQuery();
     const collapsed = useSelector((state: RootState) => state.app.collapsed);
     const { useBreakpoint } = Grid;
     const screens = useBreakpoint();
 
     const layoutPaddingLeft = (screens?.xs) ? '0' : (collapsed ? '64px' : '208px');
 
-    useEffect(() => {
-        console.log(data)
-    }, [data])
     return (
         <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
             <Layout style={{ position: "relative" }}>

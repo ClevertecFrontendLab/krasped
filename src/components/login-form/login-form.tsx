@@ -32,14 +32,11 @@ export const LoginForm = () => {
 
   function OnFinish(values: FieldType) {
     loginUser(values)
-
-    console.log('Received values of form: ', values);
   }
 
   function forgotPassword() {
     form.validateFields(['email']).then((res) => {
       postForgotPassword(res)
-      // Действие, которое нужно выполнить при успешной валидации email
     })
       .catch(errorInfo => {
         console.log('Email validation failed:', errorInfo.errorFields);
@@ -110,7 +107,6 @@ export const LoginForm = () => {
         <Input data-test-id='login-email' size="large" addonBefore={'email:'} />
       </Form.Item>
       <Form.Item<FieldType>
-        // label="Password"
         style={{ marginTop: "8px" }}
         name="password"
         rules={[

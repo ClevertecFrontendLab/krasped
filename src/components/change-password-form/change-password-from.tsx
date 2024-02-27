@@ -25,7 +25,6 @@ const ChangePasswordFrom: React.FC = () => {
       confirmPassword: values.confirmPassword,
     }
     changePassword(payload)
-    // console.log('Received values of form: ', values);
   };
   useEffect(() => {
     if (isSuccess) {

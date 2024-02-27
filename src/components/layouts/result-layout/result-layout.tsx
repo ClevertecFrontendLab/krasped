@@ -5,10 +5,8 @@ import { PropsWithChildren, useEffect } from "react"
 import { ILocationState, history } from "@redux/configure-store"
 
 export const ResultLayout: React.FC = (props: PropsWithChildren) => {
-  // onClick={() => { history.push("/result", { from: "login" }) }}
   useEffect(() => {
     const locationState = history?.location?.state as ILocationState;
-    console.log(history?.location?.state)
     if (!history?.location.state || !locationState?.from) {
       history.push('/auth/login');
     }
