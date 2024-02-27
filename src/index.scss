@@ -1,9 +1,12 @@
 @import 'antd/dist/antd.css';
-@primary-color: #000;
 
 @font-face {
   font-family: 'Inter';
   src: url('./assets/fonts/Inter-VariableFont_slnt.ttf') format('truetype');
+}
+
+:root {
+  --antd-wave-shadow-color: #2F54EB;
 }
 
 body {
@@ -95,6 +98,20 @@ select {
     }
   }
 }
+
+.ant-btn-primary {
+  border-color: #2F54EB;
+  background-color: #2F54EB;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color:#2F54EB;
+}
+
+.ant-tabs-ink-bar {
+  background-color:#2F54EB;
+}
+
 
 /* Удаляем все анимации и переходы для людей, которые предпочитай их не использовать */
 @media (prefers-reduced-motion: reduce) {

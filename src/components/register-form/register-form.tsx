@@ -1,7 +1,8 @@
+import { GooglePlusOutlined } from "@ant-design/icons";
 import { useRegistrationMutation } from "@api/auth/auth";
 import { ILocationState, history } from "@redux/configure-store";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { Input, Button, Form } from "antd"
+import { Input, Button, Form, Grid } from "antd"
 import { useEffect, useState } from "react";
 type FieldType = {
   email: string;
@@ -14,6 +15,8 @@ type CustomError = FetchBaseQueryError & {
 };
 
 export const RegisterForm: React.FC = () => {
+  const { useBreakpoint } = Grid;
+  const screens = useBreakpoint();
   const [isValid, setIsValid] = useState(true)
   const [form] = Form.useForm();
   const password = Form.useWatch('password', { form, preserve: true });
@@ -98,7 +101,7 @@ export const RegisterForm: React.FC = () => {
         </Form.Item>
         <Form.Item<FieldType>
           extra={isValid && <span style={{ fontSize: "12px" }}>{'Пароль не менее 8 символов, с заглавной буквой и цифрой'}</span>}
-          style={{ paddingBottom: "46px", marginBottom: 0 }}
+          style={{ paddingBottom: screens?.xs ? 0 : "46px", marginBottom: 0 }}
           name="password"
           rules={[
             {
@@ -115,12 +118,12 @@ export const RegisterForm: React.FC = () => {
 
         <Form.Item<FieldType>
 
-          style={{ marginBottom: "62px" }}
+          style={{ marginBottom: screens?.xs ? "54px" : "62px" }}
           name="confirm"
           dependencies={['password']}
           hasFeedback
           rules={[
-            // { required: true, message: 'Пожалуйста, введите пароль!' },
+            { required: true, message: '' },
 
             ({ getFieldValue }) => ({
               validator(_, value) {
@@ -136,16 +139,17 @@ export const RegisterForm: React.FC = () => {
         </Form.Item>
 
         <Form.Item style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-          <Button data-test-id='registration-submit-button' size="large" style={{ width: "100%" }} type="primary" htmlType="submit" className="login-form-button">
+          <Button onClick={() => setIsValid(false)} data-test-id='registration-submit-button' size="large" style={{ width: "100%" }} type="primary" htmlType="submit" className="login-form-button">
             Войти
           </Button>
         </Form.Item>
         <Form.Item style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-          <Button size="large" style={{ width: "100%" }} type="primary" htmlType="button" className="login-form-button">
-            Войти через гугл
+          <Button size="large" style={{ width: "100%" }} type="default" htmlType="button" className="login-form-button">
+            <GooglePlusOutlined />
+            Регистрация через гугл
           </Button>
         </Form.Item>
-      </Form>
+      </Form >
     </>
   )
 }

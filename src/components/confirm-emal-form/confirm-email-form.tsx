@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Result } from 'antd';
+import { Button, Grid, Result } from 'antd';
 import { ILocationState, history } from '@redux/configure-store';
 import VerificationInput from "react-verification-input";
 import { useConfirmEmailMutation } from '@api/auth/auth';
 import styles from './confirm-email-form.module.scss';
 
 const ConfirmEmailForm: React.FC = () => {
+  const { useBreakpoint } = Grid;
+  const screens = useBreakpoint();
   const [confirmEmail, { isLoading, isSuccess, isError }] = useConfirmEmailMutation();
   const [verificationCode, setVerificationCode] = useState<string>('');
   const [email, setEmail] = useState('')
@@ -38,7 +40,16 @@ const ConfirmEmailForm: React.FC = () => {
   return (
 
     <Result
-      style={{ maxWidth: "539px", width: "100%", margin: "16px", zIndex: 1, backgroundColor: "white" }}
+      style={{
+        maxWidth: "539px",
+        width: "calc(100% - 16px)",
+        margin: "16px",
+        padding: screens.xs ? "32px 16px" : "64px 0",
+        zIndex: 1,
+        backgroundColor: "white"
+      }}
+
+      status={isError ? "error" : "info"}
 
       title={isError ?
         <span>Неверный код. Введите код для восстановления аккаунта</span>

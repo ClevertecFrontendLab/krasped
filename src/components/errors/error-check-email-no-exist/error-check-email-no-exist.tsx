@@ -1,10 +1,18 @@
-import React from 'react';
-import { Button, Result } from 'antd';
+import { Button, Grid, Result } from 'antd';
 import { history } from '@redux/configure-store';
 
-const ErrorCheckEmailNoExist: React.FC = () => (
-  <Result
-    style={{ maxWidth: "539px", width: "100%", margin: "16px", zIndex: 1, backgroundColor: "white" }}
+const ErrorCheckEmailNoExist = () => {
+  const { useBreakpoint } = Grid;
+  const screens = useBreakpoint();
+  (<Result
+    style={{
+      maxWidth: "539px",
+      width: "calc(100% - 16px)",
+      margin: "16px",
+      padding: screens.xs ? "32px 16px" : "64px 0",
+      zIndex: 1,
+      backgroundColor: "white"
+    }}
     status="error"
     title={<span style={{ fontWeight: 500 }}>{"Такой e-mail не зарегистрирован"}</span>}
     subTitle={
@@ -15,11 +23,11 @@ const ErrorCheckEmailNoExist: React.FC = () => (
       </>
     }
     extra={
-      <Button data-test-id='check-retry-button' onClick={() => { history.push('/auth/login') }} style={{ width: "369px" }} type="primary" key="console">
+      <Button size='large' data-test-id='check-retry-button' onClick={() => { history.push('/auth/login') }} style={{ maxWidth: "369px", width: "100%" }} type="primary" key="console">
         Попробовать снова
       </Button>
     }
-  />
-);
+  />)
+}
 
 export default ErrorCheckEmailNoExist;

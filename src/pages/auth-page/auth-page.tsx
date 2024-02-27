@@ -8,8 +8,8 @@ import { history } from "@redux/configure-store"
 
 const AuthPage: React.FC = () => {
   const { useBreakpoint } = Grid;
-  const [tab, setTab] = useState("1")
   const screens = useBreakpoint();
+  const [tab, setTab] = useState("1")
   // const navigate = useNavigate()
 
   const onFinish = (values: any) => {
@@ -50,7 +50,7 @@ const AuthPage: React.FC = () => {
       }}>
       <Image
         style={{
-          marginTop: screens?.xs ? "32px" : "64px",
+          marginBottom: screens?.xs ? "32px" : "48px",
         }}
         width={screens?.xs ? 203 : 309}
         preview={false}
@@ -58,6 +58,7 @@ const AuthPage: React.FC = () => {
         alt="Logo"
       />
       <Tabs
+        style={{ width: "100%" }}
         tabBarGutter={0}
         activeKey={tab}
         onChange={(val) => changeTab(val)}

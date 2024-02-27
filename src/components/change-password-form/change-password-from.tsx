@@ -115,7 +115,7 @@ const ChangePasswordFrom: React.FC = () => {
           dependencies={['password']}
           hasFeedback
           rules={[
-            // { required: true, message: 'Пожалуйста, введите пароль!' },
+            { required: true, message: '' },
 
             ({ getFieldValue }) => ({
               validator(_, value) {
@@ -131,7 +131,7 @@ const ChangePasswordFrom: React.FC = () => {
         </Form.Item>
 
         <Form.Item style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-          <Button data-test-id='change-submit-button' size="large" style={{ width: "100%" }} type="primary" htmlType="submit" className="login-form-button">
+          <Button onClick={() => setIsValid(false)} data-test-id='change-submit-button' size="large" style={{ width: "100%" }} type="primary" htmlType="submit" className="login-form-button">
             Сохранить
           </Button>
         </Form.Item>

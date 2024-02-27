@@ -1,3 +1,4 @@
+import { GooglePlusOutlined } from "@ant-design/icons";
 import { useCheckEmailMutation, useLoginMutation } from "@api/auth/auth";
 import { ILocationState, history } from "@redux/configure-store";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
@@ -23,9 +24,9 @@ export const LoginForm = () => {
   const [loginUser, { isLoading, isError, error, isSuccess }] = useLoginMutation();
   const [postForgotPassword, { isLoading: isLoading1, isError: isError1, error: error1, isSuccess: isSuccess1 }] = useCheckEmailMutation();
   const validateMessages = {
-    required: '${label} is required!',
+    required: '',
     types: {
-      email: '${label} is not a valid email!',
+      email: 'Не валидный емейл',
     },
   };
 
@@ -113,12 +114,12 @@ export const LoginForm = () => {
         style={{ marginTop: "8px" }}
         name="password"
         rules={[
-          { required: true, message: 'Пожалуйста, введите пароль!' },
           {
+            required: true,
             min: 8,
             pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/,
             message: 'Пароль не менее 8 символов, с заглавной буквой и цифрой'
-          }
+          },
         ]}
       >
         <Input.Password data-test-id='login-password' placeholder="Пароль" size="large" />
@@ -143,7 +144,8 @@ export const LoginForm = () => {
         </Button>
       </Form.Item>
       <Form.Item style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-        <Button size="large" style={{ fontSize: "16px", width: "100%" }} type="primary" htmlType="button" className="login-form-button">
+        <Button size="large" style={{ fontSize: "16px", width: "100%" }} type="default" htmlType="button" className="login-form-button">
+          <GooglePlusOutlined />
           Войти через гугл
         </Button>
       </Form.Item>
