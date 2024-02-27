@@ -4,7 +4,7 @@ import { history } from '@redux/configure-store';
 const ErrorCheckEmailNoExist = () => {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
-  (<Result
+  return (<Result
     style={{
       maxWidth: "539px",
       width: "calc(100% - 16px)",
