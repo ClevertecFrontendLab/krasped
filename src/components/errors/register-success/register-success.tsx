@@ -6,7 +6,8 @@ const RegisterSuccess: React.FC = () => (
   <Result
     style={{ maxWidth: "539px", width: "100%", margin: "16px", zIndex: 1, backgroundColor: "white" }}
     status="success"
-    title="Регистрация успешна"
+
+    title={<span style={{ fontWeight: 500 }}>{"Регистрация успешна"}</span>}
     subTitle={
       <>
         <span>Регистрация прошла успешно. Зайдите</span>
@@ -15,7 +16,7 @@ const RegisterSuccess: React.FC = () => (
       </>
     }
     extra={
-      <Button onClick={() => { history.push('/auth/login') }} style={{ width: "369px" }} type="primary" key="console">
+      <Button data-test-id='registration-enter-button' onClick={() => { history.push('/auth/login') }} style={{ width: "369px" }} type="primary" key="console">
         Войти
       </Button>
     }

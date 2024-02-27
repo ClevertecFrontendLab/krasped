@@ -11,7 +11,13 @@ const initialState = {
 };
 
 export interface ILocationState {
-    from: string
+    from: string;
+    formState: {
+        email: string;
+        password: string;
+        confirm: string;
+        confirmPassword: string;
+    };
 }
 
 // const apiErrorMiddleware: Middleware = (baseQueryApi: BaseQueryFn) => async (args, api, extra) => {

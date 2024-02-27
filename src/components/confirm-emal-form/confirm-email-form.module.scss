@@ -1,0 +1,39 @@
+.characterError {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid gray;
+  border-radius: 2px;
+  padding: 5px 12px;
+  width: 40px;
+  height: 40px;
+
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 130%;
+  text-align: center;
+  border: 1px solid red;
+}
+
+.character {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid gray;
+  border-radius: 2px;
+  padding: 5px 12px;
+  width: 40px;
+  height: 40px;
+
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 130%;
+  text-align: center;
+}
+
+.character--inactive {
+  background: none;
+  list-style-type: none;
+}

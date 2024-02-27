@@ -23,6 +23,7 @@ const App: React.FC = () => {
   const ErrorCheckEmailNoExist = React.lazy(() => import('@components/errors/error-check-email-no-exist/error-check-email-no-exist'));
   const ErrorCheckEmail = React.lazy(() => import('@components/errors/error-check-email/error-check-email'));
   const SuccessChangePassword = React.lazy(() => import('@components/errors/success-change-password/success-change-password'));
+  const ErrorChangePassword = React.lazy(() => import('@components/errors/error-change-password/error-change-password'));
 
   const dispatch = useAppDispatch()
   const [token, setTok] = useLocalStorage("token", null);
@@ -74,7 +75,7 @@ const App: React.FC = () => {
         <Route path='/result/error-check-email-no-exist' element={<ErrorCheckEmailNoExist />} />
         {/* status 404 и без message ‘Email не найден’ */}
         <Route path='/result/error-check-email' element={<ErrorCheckEmail />} />
-        <Route path='/result/error-change-password' element={<ErrorCheckEmail />} />
+        <Route path='/result/error-change-password' element={<ErrorChangePassword />} />
         <Route path='/result/success-change-password' element={<SuccessChangePassword />} />
         <Route path="*" element={<Navigate to="/main" replace />} />
       </Route>

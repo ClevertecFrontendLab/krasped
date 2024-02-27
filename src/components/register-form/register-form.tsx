@@ -1,14 +1,22 @@
 import { useRegistrationMutation } from "@api/auth/auth";
-import { history } from "@redux/configure-store";
+import { ILocationState, history } from "@redux/configure-store";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { Input, Button, Form } from "antd"
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 type FieldType = {
   email: string;
   password: string;
   confirm: string;
 };
 
+type CustomError = FetchBaseQueryError & {
+  status: number;
+};
+
 export const RegisterForm: React.FC = () => {
+  const [isValid, setIsValid] = useState(true)
+  const [form] = Form.useForm();
+  const password = Form.useWatch('password', { form, preserve: true });
   const [regUser, { isLoading, isSuccess, error, isError }] = useRegistrationMutation();
   const validateMessages = {
     required: '${label} is required!',
@@ -28,18 +36,53 @@ export const RegisterForm: React.FC = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      history.push('/verifyemail');
+      history.push('/result/success', { from: "login" });
     }
 
     if (isError) {
-      console.log(error);
-
+      const customError = error as CustomError;
+      console.log(error)
+      if ((customError?.status) === 409) {
+        history.push('/result/error-user-exist', { from: "login" });
+      } else {
+        history.push('/result/error', {
+          from: "reFetchGeg",
+          formState: {
+            "email": form.getFieldValue("email"),
+            "password": form.getFieldValue("password"),
+            "confirm": form.getFieldValue("confirm"),
+          }
+        });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
+
+  useEffect(() => {
+    const locationState = history?.location?.state as ILocationState;
+    if (history?.location.state && locationState?.from && locationState?.formState) {
+      form.setFieldsValue(locationState.formState)
+      regUser(locationState?.formState)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history?.location?.pathname]);
+
+  useEffect(() => {
+    if (form.isFieldsTouched(["password"])) {
+      form.validateFields(['password']).then((res) => {
+        setIsValid(true)
+      })
+        .catch(errorInfo => {
+          setIsValid(false)
+        });
+    }
+  }, [password])
+
   return (
     <>
       <Form
+        form={form}
+        style={{ width: "100%", paddingTop: "8px" }}
         name="normal_login"
         className="login-form"
         initialValues={{ remember: true }}
@@ -47,58 +90,58 @@ export const RegisterForm: React.FC = () => {
         validateMessages={validateMessages}
       >
         <Form.Item<FieldType>
+          style={{ marginBottom: "32px" }}
           name="email"
           rules={[{ required: true }, { type: 'email' }]}
         >
-          <Input size="large" addonBefore={'email:'} />
+          <Input data-test-id='registration-email' size="large" addonBefore={'email:'} />
         </Form.Item>
         <Form.Item<FieldType>
+          extra={isValid && <span style={{ fontSize: "12px" }}>{'Пароль не менее 8 символов, с заглавной буквой и цифрой'}</span>}
+          style={{ paddingBottom: "46px", marginBottom: 0 }}
           name="password"
           rules={[
             {
               required: true,
-              message: 'Please input your password!',
+              min: 8,
+              pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/,
+              message: 'Пароль не менее 8 символов, с заглавной буквой и цифрой'
             },
           ]}
           hasFeedback
         >
-          <Input.Password placeholder="Пароль" />
+          <Input.Password data-test-id='registration-password' size="large" placeholder="Пароль" />
         </Form.Item>
 
         <Form.Item<FieldType>
+
+          style={{ marginBottom: "62px" }}
           name="confirm"
           dependencies={['password']}
           hasFeedback
           rules={[
-            { required: true, message: 'Пожалуйста, введите пароль!' },
-            {
-              min: 8,
-              message: 'Пароль должен быть не менее 8 символов'
-            },
-            {
-              pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/,
-              message: 'Пароль должен содержать как минимум 1 цифру, 1 латинскую строчную и одну заглавную букву'
-            },
+            // { required: true, message: 'Пожалуйста, введите пароль!' },
+
             ({ getFieldValue }) => ({
               validator(_, value) {
                 if (!value || getFieldValue('password') === value) {
                   return Promise.resolve();
                 }
-                return Promise.reject(new Error('The new password that you entered do not match!'));
+                return Promise.reject(new Error('Пароли не совпадают'));
               },
             }),
           ]}
         >
-          <Input.Password placeholder="Повторите пароль" />
+          <Input.Password data-test-id='registration-confirm-password' size="large" autoComplete="new-password" placeholder="Повторите пароль" />
         </Form.Item>
 
         <Form.Item style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-          <Button style={{ width: "100%" }} type="primary" htmlType="submit" className="login-form-button">
+          <Button data-test-id='registration-submit-button' size="large" style={{ width: "100%" }} type="primary" htmlType="submit" className="login-form-button">
             Войти
           </Button>
         </Form.Item>
         <Form.Item style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-          <Button style={{ width: "100%" }} type="primary" htmlType="button" className="login-form-button">
+          <Button size="large" style={{ width: "100%" }} type="primary" htmlType="button" className="login-form-button">
             Войти через гугл
           </Button>
         </Form.Item>

@@ -22,7 +22,7 @@ export const SuspenceLoaderComponent: React.FC = () => {
         backgroundColor: "rgba(121, 156, 212, 0.5)",
         backdropFilter: "blur(3px)"
       }}>
-        <Lottie animationData={animationData} style={{ width: "150px" }} loop={true} />
+        <Lottie data-test-id='loader' animationData={animationData} style={{ width: "150px" }} loop={true} />
       </div>
     </>
   )

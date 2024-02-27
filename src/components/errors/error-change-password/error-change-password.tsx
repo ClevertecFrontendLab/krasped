@@ -1,23 +1,34 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button, Result } from 'antd';
-import { history } from '@redux/configure-store';
+import { ILocationState, history } from '@redux/configure-store';
 
-const ErrorChangePasswork: React.FC = () => (
-  <Result
-    style={{ maxWidth: "539px", width: "100%", margin: "16px", zIndex: 1, backgroundColor: "white" }}
-    status="error"
-    title="Данные не сохранились"
-    subTitle={
-      <>
-        <span>Что то пошло не так. Попробуйте ещё раз</span>
-      </>
+const ErrorChangePassword: React.FC = () => {
+  useEffect(() => {
+    const locationState = history?.location?.state as ILocationState;
+    if (history?.location.state && locationState?.from && locationState?.formState) {
+      if (locationState?.from === "reFetchChangePass") { /* empty */ }
+    } else {
+      history.push("/auth/change-password", history?.location?.state)
     }
-    extra={
-      <Button onClick={() => { history.push('/auth/change-password', { state: "rePass" }) }} style={{ width: "369px" }} type="primary" key="console">
-        Повторить
-      </Button>
-    }
-  />
-);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history?.location?.pathname]);
+  return (
+    <Result
+      style={{ maxWidth: "539px", width: "100%", margin: "16px", zIndex: 1, backgroundColor: "white" }}
+      status="error"
+      title="Данные не сохранились"
+      subTitle={
+        <>
+          <span>Что то пошло не так. Попробуйте ещё раз</span>
+        </>
+      }
+      extra={
+        <Button data-test-id='change-retry-button' size='large' onClick={() => { history.push('/auth/change-password', history?.location?.state) }} style={{ width: "369px" }} type="primary" key="console">
+          Повторить
+        </Button>
+      }
+    />
+  );
+}
 
-export default ErrorChangePasswork;
+export default ErrorChangePassword;

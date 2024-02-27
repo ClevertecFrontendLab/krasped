@@ -6,7 +6,7 @@ const ErrorCheckEmailNoExist: React.FC = () => (
   <Result
     style={{ maxWidth: "539px", width: "100%", margin: "16px", zIndex: 1, backgroundColor: "white" }}
     status="error"
-    title="Такой e-mail не зарегистрирован"
+    title={<span style={{ fontWeight: 500 }}>{"Такой e-mail не зарегистрирован"}</span>}
     subTitle={
       <>
         <span>Мы не нашли в базе вашего e-mail. Попробуйте</span>
@@ -15,7 +15,7 @@ const ErrorCheckEmailNoExist: React.FC = () => (
       </>
     }
     extra={
-      <Button onClick={() => { history.push('/auth/login') }} style={{ width: "369px" }} type="primary" key="console">
+      <Button data-test-id='check-retry-button' onClick={() => { history.push('/auth/login') }} style={{ width: "369px" }} type="primary" key="console">
         Попробовать снова
       </Button>
     }

@@ -38,7 +38,7 @@ const AuthPage: React.FC = () => {
   }, [history?.location])
   return (
     <Card
-      bodyStyle={{ padding: 0 }}
+      bodyStyle={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", padding: 0 }}
       style={{
         zIndex: 2,
         display: "flex",
@@ -46,7 +46,7 @@ const AuthPage: React.FC = () => {
         alignItems: "center",
         gap: screens?.xs ? "32px" : "48px",
         width: screens?.xs ? 328 : 539,
-        padding: screens?.xs ? "32px 16px 124px" : "64px 85.5px 174px"
+        padding: screens?.xs ? "32px 16px 124px" : "64px 85.5px 150px"
       }}>
       <Image
         style={{
@@ -63,12 +63,12 @@ const AuthPage: React.FC = () => {
         onChange={(val) => changeTab(val)}
         items={[
           {
-            label: "Login",
+            label: "Вход",
             key: '1',
             children: <LoginForm />,
           },
           {
-            label: "Registration",
+            label: "Регистрация",
             key: '2',
             children: <RegisterForm />,
           },

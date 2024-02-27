@@ -6,7 +6,7 @@ const SuccessChangePassword: React.FC = () => (
   <Result
     style={{ maxWidth: "539px", width: "100%", margin: "16px", zIndex: 1, backgroundColor: "white" }}
     status="success"
-    title="Пароль успешно изменен"
+    title={<span style={{ fontWeight: 500 }}>{"Пароль успешно изменен"}</span>}
     subTitle={
       <>
         <span>Теперь можно войти в аккаунт, исползьуя</span>
@@ -15,7 +15,7 @@ const SuccessChangePassword: React.FC = () => (
       </>
     }
     extra={
-      <Button onClick={() => { history.push('/auth/login', { state: "reReg" }) }} style={{ width: "369px" }} type="primary" key="console">
+      <Button data-test-id='change-entry-button' size='large' onClick={() => { history.push('/auth/login', { state: "reReg" }) }} style={{ width: "369px" }} type="primary" key="console">
         Вход
       </Button>
     }
