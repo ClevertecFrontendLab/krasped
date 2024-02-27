@@ -40,9 +40,9 @@ export const LoginForm = () => {
       postForgotPassword(res)
       // Действие, которое нужно выполнить при успешной валидации email
     })
-    // .catch(errorInfo => {
-    //   console.log('Email validation failed:', errorInfo.errorFields);
-    // });
+      .catch(errorInfo => {
+        console.log('Email validation failed:', errorInfo.errorFields);
+      });
   }
 
   useEffect(() => {

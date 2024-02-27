@@ -56,7 +56,7 @@ const ConfirmEmailForm: React.FC = () => {
         </>
       }
       extra={
-        <div style={{
+        <div data-test-id='verification-input' style={{
           display: "flex",
           flexDirection: "column",
           gap: "24px",

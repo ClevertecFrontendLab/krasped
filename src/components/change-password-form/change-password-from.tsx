@@ -29,7 +29,7 @@ const ChangePasswordFrom: React.FC = () => {
   };
   useEffect(() => {
     if (isSuccess) {
-      history.push('/result/success', { from: "login" });
+      history.push('/result/success-change-password', { from: "login" });
     }
 
     if (isError) {

@@ -31,7 +31,7 @@ const App: React.FC = () => {
   useEffect(() => {
     if (token) {
       dispatch(setToken(token))
-      history.push("/")
+      history.push("/main")
     }
   }, [token])
   return (

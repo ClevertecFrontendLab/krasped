@@ -60,6 +60,7 @@ export const authApi = createApi({
         url: "check-email",
         method: 'POST',
         body: user,
+        credentials: 'include'
       }),
     }),
     confirmEmail: builder.mutation({
@@ -67,6 +68,7 @@ export const authApi = createApi({
         url: "confirm-email",
         method: 'POST',
         body: code,
+        credentials: 'include',
       }),
     }),
     changePassword: builder.mutation({
@@ -74,6 +76,7 @@ export const authApi = createApi({
         url: "change-password",
         method: 'POST',
         body: user,
+        credentials: 'include',
       }),
     }),
 
