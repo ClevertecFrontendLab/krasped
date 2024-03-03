@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthLayout } from "@components/layouts/auth-layout/auth-layout"
@@ -6,10 +6,6 @@ import { ResultLayout } from '@components/layouts/result-layout/result-layout';
 import { SuspenceLoaderComponent } from '@components/loader/suspence-loader';
 import ProtectedRoute from '@components/protected-routes/protected-route';
 import AnonimRoute from '@components/anonim-route/anonim-route';
-import { useLocalStorage } from '@hooks/useLocalStorage';
-import { useAppDispatch } from './hooks';
-import { setToken } from '@redux/userSlice';
-import { history } from '@redux/configure-store';
 
 const App: React.FC = () => {
   const AuthPage = React.lazy(() => import('@pages/auth-page/auth-page'));
@@ -24,29 +20,28 @@ const App: React.FC = () => {
   const ErrorCheckEmail = React.lazy(() => import('@components/errors/error-check-email/error-check-email'));
   const SuccessChangePassword = React.lazy(() => import('@components/errors/success-change-password/success-change-password'));
   const ErrorChangePassword = React.lazy(() => import('@components/errors/error-change-password/error-change-password'));
+  const FeedbackPage = React.lazy(() => import('@pages/feedback-page/feedback-page'));
+  const SomeError = React.lazy(() => import('@components/errors/some-error/some-error'));
 
-  const dispatch = useAppDispatch()
-  const [token, setTok] = useLocalStorage("token", null);
-
-  useEffect(() => {
-    if (token) {
-      dispatch(setToken(token))
-      history.push("/main")
-    }
-  }, [token])
   return (
 
     <Routes>
-      <Route path='/main' element={
+      <Route path='main' element={
         <ProtectedRoute>
           <React.Suspense fallback={<SuspenceLoaderComponent />}>
             <MainPage />
           </React.Suspense>
         </ProtectedRoute>
       } />
+      <Route path='feedbacks' element={
+        <ProtectedRoute>
+          <React.Suspense fallback={<SuspenceLoaderComponent />}>
+            <FeedbackPage />
+          </React.Suspense>
+        </ProtectedRoute>
+      } />
       <Route path='/auth' element={
         <AnonimRoute>
-
           <React.Suspense fallback={<SuspenceLoaderComponent />}>
             <AuthLayout />
           </React.Suspense>
@@ -77,6 +72,7 @@ const App: React.FC = () => {
         <Route path='/result/error-check-email' element={<ErrorCheckEmail />} />
         <Route path='/result/error-change-password' element={<ErrorChangePassword />} />
         <Route path='/result/success-change-password' element={<SuccessChangePassword />} />
+        <Route path='/result/error-feedbacks' element={<SomeError />} />
         <Route path="*" element={<Navigate to="/main" replace />} />
       </Route>
       <Route path="*" element={<Navigate to="/main" replace />} />

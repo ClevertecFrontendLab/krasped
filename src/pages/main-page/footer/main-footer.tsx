@@ -1,6 +1,8 @@
 import { AndroidFilled, AppleFilled } from "@ant-design/icons"
 import { Button, Card, Grid } from "antd"
 import { Footer } from "antd/lib/layout/layout"
+import { Link } from "react-router-dom";
+import { push } from "redux-first-history";
 
 export const MainFooter: React.FC = () => {
   const { useBreakpoint } = Grid;
@@ -16,9 +18,9 @@ export const MainFooter: React.FC = () => {
       justifyContent: screens?.xs ? "center" : "space-between"
     }}>
 
-      <Button type='link'>
+      <Link type='link' to={"/feedbacks"}>
         Смотреть отзывы
-      </Button>
+      </Link>
       <Card
         style={{
           width: screens?.xs ? "100%" : "240px"
