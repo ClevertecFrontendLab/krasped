@@ -21,8 +21,9 @@ import { IFeedbackReq } from '@api/feedback/feedback.types';
 
 const FeedbackPage: React.FC = () => {
   const [form] = Form.useForm();
+  const rating = Form.useWatch('rating', form);
   const [isfeedbacksError, setIsfeedbacksError] = useState(false)
-  const [isfeedbackError, setIsfeedbackError] = useState(false)
+  const [isfeedbackError, setIsfeedbackError] = useState(true)
   const [isfeedbackSuccess, setIsfeedbackSuccess] = useState(false)
   const [isOpenFeedbackFrom, setIsOpenFeedbackFrom] = useState(false)
   const feedbacks = useAppSelector(selectFeedbacks)
@@ -104,9 +105,9 @@ const FeedbackPage: React.FC = () => {
           <Result
             style={{
               maxWidth: "539px",
-              width: "calc(100% - 16px)",
-              margin: "16px",
-              padding: screens.xs ? "32px 16px" : "64px 0",
+              width: "100%",
+              margin: 0,
+              padding: screens.xs ? 0 : "64px 0",
               zIndex: 1,
               backgroundColor: "white"
             }}
@@ -124,10 +125,12 @@ const FeedbackPage: React.FC = () => {
                 display: "flex", gap: "8px"
               }}>
 
-                <Button data-test-id='write-review-not-saved-modal' size='large' onClick={() => { setIsfeedbackError(false); setIsOpenFeedbackFrom(true) }} style={{ maxWidth: "369px", width: "100%" }} type="primary" >
+                <Button data-test-id='write-review-not-saved-modal' size='large' onClick={() => { setIsfeedbackError(false); setIsOpenFeedbackFrom(true) }}
+                  style={{ maxWidth: "369px", width: "100%", fontSize: "14px" }} type="primary" >
                   Написать отзыв
                 </Button>
-                <Button size='large' onClick={() => { setIsfeedbackError(false) }} style={{ maxWidth: "369px", width: "100%" }} type="default" >
+                <Button size='large' onClick={() => { setIsfeedbackError(false) }}
+                  style={{ maxWidth: "369px", width: "100%", fontSize: "14px" }} type="default" >
                   Закрыть
                 </Button>
               </div>
@@ -162,7 +165,9 @@ const FeedbackPage: React.FC = () => {
               display: "flex",
               justifyContent: (screens?.xs) ? "center" : 'end'
             }}>
-              <Button htmlType='submit' data-test-id='new-review-submit-button' size='large' onClick={() => { form.submit(); }}
+              <Button htmlType='submit' data-test-id='new-review-submit-button'
+                disabled={!rating}
+                size='large' onClick={() => { form.submit(); }}
                 style={{ maxWidth: "369px", width: (screens?.xs) ? "100%" : "" }} type="primary" >
                 Опубликовать
               </Button>

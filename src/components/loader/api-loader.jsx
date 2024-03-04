@@ -16,8 +16,8 @@ export const LoaderComponent = () => {
     Object.values(state?.feedback?.queries).some(query => query?.status === 'pending')
   ) })
   const isSomeMutationPending = useSelector(state => { return (
-    Object.values(state?.auth?.mutations).some(mutation => mutation?.status === 'pending') ||
-    Object.values(state?.feedback?.mutations).some(mutation => mutation?.status === 'pending')
+    Object.values(state?.auth?.mutations).some(mutation => mutation?.status === 'pending')
+    // Object.values(state?.feedback?.mutations).some(mutation => mutation?.status === 'pending')
   ) })
   return (
     <>
