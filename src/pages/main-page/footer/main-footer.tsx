@@ -2,7 +2,8 @@ import { AndroidFilled, AppleFilled } from "@ant-design/icons"
 import { Button, Card, Grid } from "antd"
 import { Footer } from "antd/lib/layout/layout"
 
-export const MainFooter: React.FC = () => {
+
+export const MainFooter = (props: { getFeedbacks: any }) => {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
   return (
@@ -16,7 +17,7 @@ export const MainFooter: React.FC = () => {
       justifyContent: screens?.xs ? "center" : "space-between"
     }}>
 
-      <Button type='link'>
+      <Button data-test-id='see-reviews' type='link' onClick={() => props.getFeedbacks(null)} >
         Смотреть отзывы
       </Button>
       <Card

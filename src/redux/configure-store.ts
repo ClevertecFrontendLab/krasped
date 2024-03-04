@@ -1,11 +1,11 @@
 import { authApi } from '@api/auth/auth';
 import { userApi } from '@api/user/user';
+import { feedbackApi } from '@api/feedback/feedback';
 import { PayloadAction, combineReducers, configureStore, createSlice } from '@reduxjs/toolkit';
 import { createBrowserHistory } from 'history';
 import { createReduxHistoryContext } from 'redux-first-history';
 import userReducer from '@redux/userSlice';
-import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import { BaseQueryFn } from '@reduxjs/toolkit/query';
+import feedbackReducer from '@redux/feedbackSlice';
 const initialState = {
     collapsed: false,
 };
@@ -42,9 +42,16 @@ export const store = configureStore({
         router: routerReducer,
         [authApi.reducerPath]: authApi.reducer,
         [userApi.reducerPath]: userApi.reducer,
+        [feedbackApi.reducerPath]: feedbackApi.reducer,
         userState: userReducer,
+        feedbackState: feedbackReducer,
     }),
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(routerMiddleware, authApi.middleware, userApi.middleware),
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(
+        routerMiddleware,
+        authApi.middleware,
+        userApi.middleware,
+        feedbackApi.middleware
+    ),
 });
 
 export const history = createReduxHistory(store);

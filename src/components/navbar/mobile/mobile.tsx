@@ -28,7 +28,7 @@ export const MobileNavbar: React.FC = () => {
           top: 0,
           left: 0,
           height: "100dvh",
-          zIndex: "1002"
+          zIndex: "102"
         }}
       >
         <Button
@@ -36,7 +36,7 @@ export const MobileNavbar: React.FC = () => {
           type="text"
           onClick={() => setNavCollapsed(!collapsed)}
           style={{
-            zIndex: 1001,
+            zIndex: 101,
             position: "absolute",
             left: collapsed ? "0" : "105px",
             top: '24px',

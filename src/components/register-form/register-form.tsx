@@ -36,6 +36,10 @@ export const RegisterForm: React.FC = () => {
     regUser(payload)
   };
 
+  const googleLogin = () => {
+    window.location.href = 'https://marathon-api.clevertec.ru/auth/google';
+  }
+
   useEffect(() => {
     if (isSuccess) {
       history.push('/result/success', { from: "login" });
@@ -142,7 +146,7 @@ export const RegisterForm: React.FC = () => {
           </Button>
         </Form.Item>
         <Form.Item style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-          <Button size="large" style={{ width: "100%" }} type="default" htmlType="button" className="login-form-button">
+          <Button onClick={() => googleLogin()} size="large" style={{ width: "100%" }} type="default" htmlType="button" className="login-form-button">
             <GooglePlusOutlined />
             Регистрация через гугл
           </Button>

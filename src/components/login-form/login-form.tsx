@@ -34,6 +34,10 @@ export const LoginForm = () => {
     loginUser(values)
   }
 
+  const googleLogin = () => {
+    window.location.href = 'https://marathon-api.clevertec.ru/auth/google';
+  }
+
   function forgotPassword() {
     form.validateFields(['email']).then((res) => {
       postForgotPassword(res)
@@ -140,7 +144,7 @@ export const LoginForm = () => {
         </Button>
       </Form.Item>
       <Form.Item style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-        <Button size="large" style={{ fontSize: "16px", width: "100%" }} type="default" htmlType="button" className="login-form-button">
+        <Button onClick={() => googleLogin()} size="large" style={{ fontSize: "16px", width: "100%" }} type="default" htmlType="button" className="login-form-button">
           <GooglePlusOutlined />
           Войти через гугл
         </Button>
