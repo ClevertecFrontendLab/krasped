@@ -111,9 +111,17 @@ select {
   margin-right: 4px;
 }
 
+.ant-modal-mask{
+  backdrop-filter: blur(3px);
+  background-color: rgba(121, 156, 212, 0.5);
+}
 
+.ant-drawer{
+  z-index: 99;
+}
 
 .ant-btn-primary {
+  height: 40px;
   border-color: #2F54EB;
   background-color: #2F54EB;
 }

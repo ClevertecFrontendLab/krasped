@@ -41,7 +41,7 @@ export const DesctopNavbar: React.FC = () => {
           left: (width > 1440) ? (((width - 1440) / 2) + "px") : 0,
           top: 0,
           bottom: 0,
-          zIndex: 1000
+          zIndex: 100
         }}
       >
         <div
@@ -127,7 +127,7 @@ export const DesctopNavbar: React.FC = () => {
           type="text"
           onClick={() => setNavCollapsed(!collapsed)}
           style={{
-            zIndex: 1001,
+            zIndex: 101,
             position: "absolute",
             right: "-20px",
             top: 'calc(50vh - 64px - 24px)',

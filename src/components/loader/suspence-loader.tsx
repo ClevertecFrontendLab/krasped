@@ -9,7 +9,7 @@ export const SuspenceLoaderComponent: React.FC = () => {
       <div style={{
         width: "100%",
         height: "100dvh",
-        zIndex: 998,
+        zIndex: 9998,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",

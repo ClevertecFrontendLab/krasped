@@ -9,9 +9,9 @@ import { useMemo } from "react"
 
 
 
-export const FeedbackContent = ({ data }: { data: IFeedback[] | undefined }) => {
+export const FeedbackContent = ({ data, openFeedback }: { data: IFeedback[] | undefined, openFeedback: React.Dispatch<React.SetStateAction<boolean>> }) => {
   const isShowAllFeedbacks = useAppSelector(selectIsShowAllFeedbacks)
-  const fourFeedbacks = useMemo(() => data?.slice(-4).reverse(), [data])
+  const fourFeedbacks = useMemo(() => data?.slice(0, 4), [data])
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
 
@@ -119,7 +119,7 @@ export const FeedbackContent = ({ data }: { data: IFeedback[] | undefined }) => 
               Вы можете быть первым, кто оставит отзыв об этом фитнесс приложении.<br /> Поделитесь своим мнением и опытом с другими пользователями, <br />и помогите им сделать правильный выбор.
             </div>
           </Card>
-          <Button type="primary" >
+          <Button onClick={() => openFeedback(true)} type="primary" >
             Написать отзыв
           </Button>
         </div>

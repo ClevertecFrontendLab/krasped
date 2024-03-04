@@ -3,8 +3,9 @@ import { useAppDispatch, useAppSelector } from "@hooks/typed-react-redux-hooks";
 import { selectIsShowAllFeedbacks, toggleIsShowAllFeedbacks } from "@redux/feedbackSlice";
 import { Button, Card, Grid } from "antd"
 import { Footer } from "antd/lib/layout/layout"
+import React from "react";
 
-export const FeedbackFooter: React.FC = () => {
+export const FeedbackFooter = (props: { openFeedback: React.Dispatch<React.SetStateAction<boolean>> }) => {
   const dispatch = useAppDispatch()
   const isShowAllFeedbacks = useAppSelector(selectIsShowAllFeedbacks)
   const { useBreakpoint } = Grid;
@@ -20,7 +21,7 @@ export const FeedbackFooter: React.FC = () => {
       justifyContent: screens?.xs ? "center" : ""
     }}>
 
-      <Button type="primary" >
+      <Button onClick={() => props.openFeedback(true)} type="primary" >
         Написать отзыв
       </Button>
       <Button type='link' onClick={() => dispatch(toggleIsShowAllFeedbacks())}>

@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { IFeedback } from './feedback.types'
+import { IFeedback, IFeedbackReq } from './feedback.types'
 import { RootState } from '@redux/configure-store';
 import { setFeedbacks } from '@redux/feedbackSlice';
 
@@ -20,15 +20,17 @@ export const feedbackApi = createApi({
 
   tagTypes: ['Feedbacks'],
   endpoints: (builder) => ({
-    getAllFeedbacks: builder.query<IFeedback[], null>({
+    getAllFeedbacks: builder.mutation<IFeedback[], null>({
       query() {
         return {
           url: "",
+          method: 'get',
           credentials: "include"
         }
       },
-      // transformResponse: (result: { data: IFeedback[] }) =>
-      //   result.data || [],
+      invalidatesTags: ['Feedbacks'],
+      transformResponse: (result: IFeedback[]) =>
+        result?.reverse() || [],
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
@@ -39,17 +41,17 @@ export const feedbackApi = createApi({
     }),
 
     addFeedback: builder.mutation({
-      query: (body: IFeedback) => ({
+      query: (body: IFeedbackReq) => ({
         url: "",
         method: 'post',
         body: body,
-        invalidatesTags: ['Feedbacks'],
       }),
+      invalidatesTags: ['Feedbacks'],
     }),
   })
 })
 
 export const {
-  useGetAllFeedbacksQuery,
+  useGetAllFeedbacksMutation,
   useAddFeedbackMutation,
 } = feedbackApi 

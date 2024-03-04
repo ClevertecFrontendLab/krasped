@@ -6,3 +6,7 @@ export interface IFeedback {
   "rating": number,
   "createdAt": string
 }
+export interface IFeedbackReq {
+  "message": string,
+  "rating": number,
+}

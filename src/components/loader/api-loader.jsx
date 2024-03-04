@@ -26,7 +26,7 @@ export const LoaderComponent = () => {
           position: "absolute",
           width: "100%",
           height: "100%",
-          zIndex: 998,
+          zIndex: 9999,
           display: "flex",
           justifyContent: "center",
           alignItems: "center",

@@ -21,7 +21,6 @@ const App: React.FC = () => {
   const SuccessChangePassword = React.lazy(() => import('@components/errors/success-change-password/success-change-password'));
   const ErrorChangePassword = React.lazy(() => import('@components/errors/error-change-password/error-change-password'));
   const FeedbackPage = React.lazy(() => import('@pages/feedback-page/feedback-page'));
-  const SomeError = React.lazy(() => import('@components/errors/some-error/some-error'));
 
   return (
 
@@ -72,7 +71,6 @@ const App: React.FC = () => {
         <Route path='/result/error-check-email' element={<ErrorCheckEmail />} />
         <Route path='/result/error-change-password' element={<ErrorChangePassword />} />
         <Route path='/result/success-change-password' element={<SuccessChangePassword />} />
-        <Route path='/result/error-feedbacks' element={<SomeError />} />
         <Route path="*" element={<Navigate to="/main" replace />} />
       </Route>
       <Route path="*" element={<Navigate to="/main" replace />} />
