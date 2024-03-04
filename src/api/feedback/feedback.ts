@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi, fetchBaseQuery, retry } from '@reduxjs/toolkit/query/react'
 import { IFeedback, IFeedbackReq } from './feedback.types'
 import { RootState } from '@redux/configure-store';
 import { setFeedbacks } from '@redux/feedbackSlice';
@@ -6,7 +6,7 @@ import { setFeedbacks } from '@redux/feedbackSlice';
 export const feedbackApi = createApi({
   reducerPath: 'feedback',
   keepUnusedDataFor: 60,
-  baseQuery: fetchBaseQuery({
+  baseQuery: retry(fetchBaseQuery({
     baseUrl: "https://marathon-api.clevertec.ru/feedback",
     credentials: 'include',
     prepareHeaders: (headers, { getState }) => {
@@ -16,19 +16,18 @@ export const feedbackApi = createApi({
       }
       return headers;
     },
-  }),
+  }), {maxRetries:2}),
 
   tagTypes: ['Feedbacks'],
   endpoints: (builder) => ({
-    getAllFeedbacks: builder.mutation<IFeedback[], null>({
+    getAllFeedbacks: builder.query<IFeedback[], null>({
       query() {
         return {
           url: "",
-          method: 'get',
           credentials: "include"
         }
       },
-      invalidatesTags: ['Feedbacks'],
+      providesTags: ['Feedbacks'],
       transformResponse: (result: IFeedback[]) =>
         result?.reverse() || [],
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
@@ -52,6 +51,6 @@ export const feedbackApi = createApi({
 })
 
 export const {
-  useGetAllFeedbacksMutation,
+  useGetAllFeedbacksQuery,
   useAddFeedbackMutation,
 } = feedbackApi 

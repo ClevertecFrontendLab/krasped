@@ -11,14 +11,13 @@ import { FeedbackHeader } from './header/feedback-header';
 import { FeedbackContent } from './content/feedback-content';
 import { FeedbackFooter } from './footer/feedback-footer';
 import { useAppDispatch, useAppSelector } from '@hooks/typed-react-redux-hooks';
-import { useAddFeedbackMutation, useGetAllFeedbacksMutation } from '@api/feedback/feedback';
+import { useAddFeedbackMutation, useGetAllFeedbacksQuery } from '@api/feedback/feedback';
 import { LoaderComponent } from '@components/loader/api-loader';
 import { selectFeedbacks } from '@redux/feedbackSlice';
 import { logout } from '@redux/userSlice';
 import TextArea from 'antd/lib/input/TextArea';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
 import { IFeedbackReq } from '@api/feedback/feedback.types';
-// import { useGetMeQuery } from '@api/user/user';
 
 const FeedbackPage: React.FC = () => {
   const [form] = Form.useForm();
@@ -28,7 +27,7 @@ const FeedbackPage: React.FC = () => {
   const [isOpenFeedbackFrom, setIsOpenFeedbackFrom] = useState(false)
   const feedbacks = useAppSelector(selectFeedbacks)
   const dispatch = useAppDispatch()
-  const [getFeedbacks, { isError, isSuccess, isLoading, error }] = useGetAllFeedbacksMutation();
+  const { isError, isLoading, error } = useGetAllFeedbacksQuery(null);
   const [addFeedbacks, { isError: addIsError, isSuccess: addSuccess, isLoading: addLoading, error: addError }] = useAddFeedbackMutation();
   // const { data, error, isLoading, refetch } = useGetMeQuery();
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
@@ -61,7 +60,6 @@ const FeedbackPage: React.FC = () => {
 
   useEffect(() => {
     if (addSuccess) {
-      getFeedbacks(null)
       setIsfeedbackSuccess(true)
       closeFeedbackFrom()
     }
@@ -72,16 +70,11 @@ const FeedbackPage: React.FC = () => {
         history.push("/auth/login")
       }
       setIsfeedbackError(true)
-      closeFeedbackFrom()
+      setIsOpenFeedbackFrom(false)
+      // closeFeedbackFrom()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addLoading]);
-
-  useEffect(() => {
-    if (feedbacks?.length) { /* empty */ } else {
-      getFeedbacks(null)
-    }
-  }, [])
 
   return (
     <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
@@ -131,10 +124,10 @@ const FeedbackPage: React.FC = () => {
                 display: "flex", gap: "8px"
               }}>
 
-                <Button size='large' onClick={() => { setIsfeedbackError(false); setIsOpenFeedbackFrom(true) }} style={{ maxWidth: "369px", width: "100%" }} type="primary" key="console">
+                <Button data-test-id='write-review-not-saved-modal' size='large' onClick={() => { setIsfeedbackError(false); setIsOpenFeedbackFrom(true) }} style={{ maxWidth: "369px", width: "100%" }} type="primary" >
                   Написать отзыв
                 </Button>
-                <Button size='large' onClick={() => { setIsfeedbackError(false) }} style={{ maxWidth: "369px", width: "100%" }} type="default" key="console">
+                <Button size='large' onClick={() => { setIsfeedbackError(false) }} style={{ maxWidth: "369px", width: "100%" }} type="default" >
                   Закрыть
                 </Button>
               </div>
@@ -169,8 +162,7 @@ const FeedbackPage: React.FC = () => {
               display: "flex",
               justifyContent: (screens?.xs) ? "center" : 'end'
             }}>
-
-              <Button size='large' onClick={() => { form.submit(); }}
+              <Button htmlType='submit' data-test-id='new-review-submit-button' size='large' onClick={() => { form.submit(); }}
                 style={{ maxWidth: "369px", width: (screens?.xs) ? "100%" : "" }} type="primary" >
                 Опубликовать
               </Button>

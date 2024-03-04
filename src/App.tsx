@@ -73,7 +73,7 @@ const App: React.FC = () => {
         <Route path='/result/success-change-password' element={<SuccessChangePassword />} />
         <Route path="*" element={<Navigate to="/main" replace />} />
       </Route>
-      <Route path="*" element={<Navigate to="/main" replace />} />
+      <Route path="*" element={<Navigate to="/main" replace state={{ from: window.location.search }} />} />
       {/* <Route path='*' element={<NotFoundPage />} /> */}
     </Routes>
   );

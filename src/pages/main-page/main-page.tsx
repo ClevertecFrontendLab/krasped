@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, Grid, Layout, Modal, Result } from 'antd';
 
 import Main_page_light from "@assets/imgs/Main_page_light.png"
@@ -10,40 +10,20 @@ import { MainContent } from './content/main-content';
 import { MainFooter } from './footer/main-footer';
 import { useSelector } from 'react-redux';
 import { RootState, history } from '@redux/configure-store';
-import { useGetAllFeedbacksMutation } from '@api/feedback/feedback';
-import { useAppDispatch } from '@hooks/typed-react-redux-hooks';
-import { logout } from '@redux/userSlice';
 import { LoaderComponent } from '@components/loader/api-loader';
 // import { useGetMeQuery } from '@api/user/user';
 
 const MainPage: React.FC = () => {
     // const { data, error, isLoading, refetch } = useGetMeQuery();
     const [isfeedbacksError, setIsfeedbacksError] = useState(false)
-    const dispatch = useAppDispatch()
-    const [getFeedbacks, { isError, isSuccess, isLoading, error }] = useGetAllFeedbacksMutation();
     const collapsed = useSelector((state: RootState) => state.app.collapsed);
     const { useBreakpoint } = Grid;
     const screens = useBreakpoint();
 
     const layoutPaddingLeft = (screens?.xs) ? '0' : (collapsed ? '64px' : '208px');
-
-
-    useEffect(() => {
-        if (isSuccess) {
-            history.push("/feedbacks")
-        }
-        if (isError) {
-            const customError = error as { status: number }
-            if (customError.status == 403) {
-                dispatch(logout())
-                history.push("/auth/login")
-            }
-            setIsfeedbacksError(true)
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLoading]);
-
-
+    const getFeedbacks = () =>{
+        history.push("/feedbacks")
+    }
     return (
         <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
             <Layout style={{ position: "relative" }}>

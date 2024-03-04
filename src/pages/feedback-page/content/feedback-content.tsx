@@ -30,28 +30,33 @@ export const FeedbackContent = ({ data, openFeedback }: { data: IFeedback[] | un
 
         return (
           <Card key={item.id} bodyStyle={{ padding: "16px" }}>
-            <div style={{ display: "flex" }}>
+            <div style={{ display: "flex" , flexDirection: screens?.xs ? "column" : "row" }}>
               <div
                 style={{
                   width: "174px",
                   display: "flex",
-                  alignItems: "center",
-                  flexDirection: "column",
+                  alignItems: screens?.xs ? "start" : "center",
+                  flexDirection: screens?.xs ? "row" : "column",
                   gap: "12px",
                   marginRight: "12px"
                 }}>
                 <Avatar size="large" src={item.imageSrc} icon={<UserOutlined />} />
                 <div style={{
-                  wordSpacing: "174px",
+                  wordSpacing: screens?.xs ? "" :"174px",
                   fontSize: "16px",
                   lineHeight: "20.8px",
                   textAlign: "center"
-                }}>{item?.fullName || "Пользователь"}</div>
+                }}>{
+                item?.fullName  ? 
+                item.fullName.split(' ').map((item) => <>{item}<br/></>)
+                :
+                "Пользователь"
+                }</div>
               </div>
 
               <div
                 style={{
-                  width: "calc(100% - 186px)",
+                  // width: "calc(100% - 186px)",
                   display: "flex",
                   flexDirection: "column",
                   gap: "12px"
@@ -59,6 +64,7 @@ export const FeedbackContent = ({ data, openFeedback }: { data: IFeedback[] | un
 
                 <div
                   style={{
+                    width: "100%",
                     display: "flex",
                     gap: "16px"
                   }}
@@ -119,7 +125,7 @@ export const FeedbackContent = ({ data, openFeedback }: { data: IFeedback[] | un
               Вы можете быть первым, кто оставит отзыв об этом фитнесс приложении.<br /> Поделитесь своим мнением и опытом с другими пользователями, <br />и помогите им сделать правильный выбор.
             </div>
           </Card>
-          <Button onClick={() => openFeedback(true)} type="primary" >
+          <Button data-test-id='write-review' onClick={() => openFeedback(true)} type="primary" >
             Написать отзыв
           </Button>
         </div>

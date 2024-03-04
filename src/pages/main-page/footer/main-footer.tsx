@@ -17,7 +17,7 @@ export const MainFooter = (props: { getFeedbacks: any }) => {
       justifyContent: screens?.xs ? "center" : "space-between"
     }}>
 
-      <Button type='link' onClick={() => props.getFeedbacks(null)} >
+      <Button data-test-id='see-reviews' type='link' onClick={() => props.getFeedbacks(null)} >
         Смотреть отзывы
       </Button>
       <Card
