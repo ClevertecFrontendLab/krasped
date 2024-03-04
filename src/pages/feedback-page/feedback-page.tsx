@@ -23,7 +23,7 @@ const FeedbackPage: React.FC = () => {
   const [form] = Form.useForm();
   const rating = Form.useWatch('rating', form);
   const [isfeedbacksError, setIsfeedbacksError] = useState(false)
-  const [isfeedbackError, setIsfeedbackError] = useState(true)
+  const [isfeedbackError, setIsfeedbackError] = useState(false)
   const [isfeedbackSuccess, setIsfeedbackSuccess] = useState(false)
   const [isOpenFeedbackFrom, setIsOpenFeedbackFrom] = useState(false)
   const feedbacks = useAppSelector(selectFeedbacks)
