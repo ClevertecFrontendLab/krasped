@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IFeedback } from '@api/feedback/feedback.types';
+import { IFeedback } from '@redux/api/feedback/feedback.types';
 import { RootState } from './configure-store';
 interface IFeedbacksState {
   feedbacks: IFeedback[] | [];

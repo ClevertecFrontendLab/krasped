@@ -1,9 +1,8 @@
 import { HeartFilled, CalendarTwoTone, IdcardTwoTone } from "@ant-design/icons"
 import { Card, Button } from "antd"
 import { Content } from "antd/lib/layout/layout"
-import React from "react"
 
-export const MainContent: React.FC = () => {
+export const MainContent = (props: { getCalendar: () => void }) => {
   return (
     <Content style={{ overflow: 'initial' }}>
       <div
@@ -69,7 +68,7 @@ export const MainContent: React.FC = () => {
               headStyle={{ wordWrap: "break-word", display: "flex", alignItems: "center", justifyContent: "center", height: "45px" }}
               bodyStyle={{ textAlign: "center", height: "56px", padding: "12px" }}
               bordered={false} >
-              <Button type='link'>
+              <Button type='link' onClick={() => props.getCalendar()}>
                 <CalendarTwoTone />
                 Календарь
               </Button>

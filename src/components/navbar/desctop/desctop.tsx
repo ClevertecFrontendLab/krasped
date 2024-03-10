@@ -12,11 +12,13 @@ import s from './desctop.module.scss';
 import { Link } from "react-router-dom"
 import { logout } from "@redux/userSlice"
 import { useAppDispatch } from "@hooks/typed-react-redux-hooks"
+import { useEffect, useState } from "react"
 
 
-export const DesctopNavbar: React.FC = () => {
+export const DesctopNavbar = (props: { getCalendar?: () => void }) => {
   const width = useWindowWidth()
   const { useBreakpoint } = Grid;
+  const [curKey, setCurKey] = useState<string>('')
   const screens = useBreakpoint();
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
   const dispatch = useAppDispatch();
@@ -24,6 +26,14 @@ export const DesctopNavbar: React.FC = () => {
   const setNavCollapsed = (value: boolean) => {
     dispatch(setCollapsed(value));
   };
+
+  useEffect(() => {
+    const key = navItems.find((item) => history?.location.pathname.includes(item.key)
+    )
+    setCurKey(key?.key || '')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history?.location.pathname])
+
   return (
     <>
       <Sider
@@ -74,8 +84,8 @@ export const DesctopNavbar: React.FC = () => {
             flexDirection: "column",
             gap: "16px",
           }}
+          selectedKeys={[curKey]}
           theme="light" mode="inline" defaultSelectedKeys={['0']}>
-
           {navItems.map((item, index) => (
             <Menu.Item
               style={{
@@ -85,8 +95,14 @@ export const DesctopNavbar: React.FC = () => {
                 paddingLeft: "0px",
                 justifyContent: "center",
               }}
-              key={index} className={index === navItems.length - 1 ? 'last-menu-item' : ''}>
-              <Link to={item.href}>
+              key={item.key} className={index === navItems.length - 1 ? 'last-menu-item' : ''}>
+              <Link
+                to={item.href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log("click")
+                  typeof props?.getCalendar == "function" ? props?.getCalendar() : ''
+                }}>
                 <span style={{
                   color: "#061178",
                   paddingRight: "10px",

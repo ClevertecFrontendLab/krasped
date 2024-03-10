@@ -21,6 +21,7 @@ const App: React.FC = () => {
   const SuccessChangePassword = React.lazy(() => import('@components/errors/success-change-password/success-change-password'));
   const ErrorChangePassword = React.lazy(() => import('@components/errors/error-change-password/error-change-password'));
   const FeedbackPage = React.lazy(() => import('@pages/feedback-page/feedback-page'));
+  const CalendarPage = React.lazy(() => import('@pages/calendar-page/calendar-page'));
 
   return (
 
@@ -36,6 +37,13 @@ const App: React.FC = () => {
         <ProtectedRoute>
           <React.Suspense fallback={<SuspenceLoaderComponent />}>
             <FeedbackPage />
+          </React.Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path='calendar' element={
+        <ProtectedRoute>
+          <React.Suspense fallback={<SuspenceLoaderComponent />}>
+            <CalendarPage />
           </React.Suspense>
         </ProtectedRoute>
       } />

@@ -1,5 +1,5 @@
 import { GooglePlusOutlined } from "@ant-design/icons";
-import { useCheckEmailMutation, useLoginMutation } from "@api/auth/auth";
+import { useCheckEmailMutation, useLoginMutation } from "@redux/api/auth/auth";
 import { ILocationState, history } from "@redux/configure-store";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { Input, Checkbox, Button, Form } from "antd";

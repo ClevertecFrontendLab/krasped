@@ -1,11 +1,11 @@
 import { MobileNavbar } from './mobile/mobile';
 import { DesctopNavbar } from './desctop/desctop';
 
-export const Navbar = () => {
+export const Navbar = (props: { getCalendar?: () => void }) => {
   return (
     <>
-      <MobileNavbar />
-      <DesctopNavbar />
+      <MobileNavbar getCalendar={props.getCalendar} />
+      <DesctopNavbar getCalendar={props.getCalendar} />
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { useChangePasswordMutation, useRegistrationMutation } from "@api/auth/auth";
+import { useChangePasswordMutation, useRegistrationMutation } from "@redux/api/auth/auth";
 import { ILocationState, history } from "@redux/configure-store";
 import { Input, Button, Form, Card } from "antd"
 import { useEffect, useState } from "react";

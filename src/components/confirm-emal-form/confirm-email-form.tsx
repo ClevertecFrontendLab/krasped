@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Grid, Result } from 'antd';
 import { ILocationState, history } from '@redux/configure-store';
 import VerificationInput from "react-verification-input";
-import { useConfirmEmailMutation } from '@api/auth/auth';
+import { useConfirmEmailMutation } from '@redux/api/auth/auth';
 import styles from './confirm-email-form.module.scss';
 
 const ConfirmEmailForm: React.FC = () => {

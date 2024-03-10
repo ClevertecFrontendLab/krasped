@@ -11,13 +11,13 @@ import { FeedbackHeader } from './header/feedback-header';
 import { FeedbackContent } from './content/feedback-content';
 import { FeedbackFooter } from './footer/feedback-footer';
 import { useAppDispatch, useAppSelector } from '@hooks/typed-react-redux-hooks';
-import { useAddFeedbackMutation, useGetAllFeedbacksQuery } from '@api/feedback/feedback';
+import { useAddFeedbackMutation, useGetAllFeedbacksQuery } from '@redux/api/feedback/feedback';
 import { LoaderComponent } from '@components/loader/api-loader';
 import { selectFeedbacks } from '@redux/feedbackSlice';
 import { logout } from '@redux/userSlice';
 import TextArea from 'antd/lib/input/TextArea';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
-import { IFeedbackReq } from '@api/feedback/feedback.types';
+import { IFeedbackReq } from '@redux/api/feedback/feedback.types';
 
 const FeedbackPage: React.FC = () => {
   const [form] = Form.useForm();

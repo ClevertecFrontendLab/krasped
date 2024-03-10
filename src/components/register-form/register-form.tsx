@@ -1,5 +1,5 @@
 import { GooglePlusOutlined } from "@ant-design/icons";
-import { useRegistrationMutation } from "@api/auth/auth";
+import { useRegistrationMutation } from "@redux/api/auth/auth";
 import { ILocationState, history } from "@redux/configure-store";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { Input, Button, Form, Grid } from "antd"

@@ -3,7 +3,7 @@ import { Button, Card, Grid } from "antd"
 import { Footer } from "antd/lib/layout/layout"
 
 
-export const MainFooter = (props: { getFeedbacks: any }) => {
+export const MainFooter = (props: { getFeedbacks: (props: null) => void }) => {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
   return (

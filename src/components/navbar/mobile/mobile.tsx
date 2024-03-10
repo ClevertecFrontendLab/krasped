@@ -6,8 +6,11 @@ import { navItems } from "@config/nav-config";
 import LogoFullSVG from "@assets/icons/logo-full.svg"
 import { logout } from "@redux/userSlice";
 import { useAppDispatch } from "@hooks/typed-react-redux-hooks";
+import { useEffect, useState } from "react";
 
-export const MobileNavbar: React.FC = () => {
+export const MobileNavbar = (props: { getCalendar?: () => void }) => {
+  const [curKey, setCurKey] = useState<string>('')
+
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
@@ -16,6 +19,16 @@ export const MobileNavbar: React.FC = () => {
   const setNavCollapsed = (value: boolean) => {
     dispatch(setCollapsed(value));
   };
+
+  useEffect(() => {
+    const key = navItems.find((item) => history?.location.pathname.includes(item.key)
+    )
+    setCurKey(key?.key || '')
+    console.log(history?.location.pathname)
+    console.log(key?.key)
+    console.log(curKey)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history?.location.pathname])
 
   return (
     <>
@@ -82,7 +95,8 @@ export const MobileNavbar: React.FC = () => {
               gap: "8px",
               border: 0
             }}
-            theme="light" mode="inline" defaultSelectedKeys={['new']} >
+            selectedKeys={[curKey]}
+            theme="light" mode="inline" >
             {navItems.map((item, index) => (
               <Menu.Item
                 style={{
@@ -90,7 +104,8 @@ export const MobileNavbar: React.FC = () => {
                   margin: 0,
                   padding: 0,
                 }}
-                key={index} className={index === navItems.length - 1 ? 'last-menu-item' : ''}>
+                onClick={() => { typeof props?.getCalendar == "function" ? props?.getCalendar() : '' }}
+                key={item.key} className={index === navItems.length - 1 ? 'last-menu-item' : ''}>
                 {item.label}
               </Menu.Item>
             ))}

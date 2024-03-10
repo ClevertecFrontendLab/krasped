@@ -1,5 +1,5 @@
 import { HeartOutlined, StarFilled, StarOutlined, UserOutlined } from "@ant-design/icons"
-import { IFeedback } from "@api/feedback/feedback.types"
+import { IFeedback } from "@redux/api/feedback/feedback.types"
 import { useAppSelector } from "@hooks/typed-react-redux-hooks"
 import { selectIsShowAllFeedbacks } from "@redux/feedbackSlice"
 import { Card, Button, Avatar, Rate, Grid } from "antd"
@@ -30,7 +30,7 @@ export const FeedbackContent = ({ data, openFeedback }: { data: IFeedback[] | un
 
         return (
           <Card key={item.id} bodyStyle={{ padding: "16px" }}>
-            <div style={{ display: "flex" , flexDirection: screens?.xs ? "column" : "row" }}>
+            <div style={{ display: "flex", flexDirection: screens?.xs ? "column" : "row" }}>
               <div
                 style={{
                   width: "174px",
@@ -42,16 +42,16 @@ export const FeedbackContent = ({ data, openFeedback }: { data: IFeedback[] | un
                 }}>
                 <Avatar size="large" src={item.imageSrc} icon={<UserOutlined />} />
                 <div style={{
-                  wordSpacing: screens?.xs ? "" :"174px",
+                  wordSpacing: screens?.xs ? "" : "174px",
                   fontSize: "16px",
                   lineHeight: "20.8px",
                   textAlign: "center"
                 }}>{
-                item?.fullName  ? 
-                item.fullName.split(' ').map((item) => <>{item}<br/></>)
-                :
-                "Пользователь"
-                }</div>
+                    item?.fullName ?
+                      item.fullName.split(' ').map((item) => <>{item}<br /></>)
+                      :
+                      "Пользователь"
+                  }</div>
               </div>
 
               <div
