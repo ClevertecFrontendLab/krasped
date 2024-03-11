@@ -14,6 +14,7 @@ import { LoaderComponent } from '@components/loader/api-loader';
 import { logout } from '@redux/userSlice';
 import { useAddTrainingMutation, useGetAllTriningsQuery } from '@redux/api/training/training';
 import { selectTrainings } from '@redux/trainingSlice';
+import dayjs from 'dayjs';
 
 const CalendarPage: React.FC = () => {
   const [form] = Form.useForm();
@@ -98,7 +99,7 @@ const CalendarPage: React.FC = () => {
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
         }}>
-          <div style={{ height: (screens?.xs) ? "calc(100dvh - 186px)" : "calc(100dvh - 220px)", overflow: "auto", scrollbarWidth: "none" }}>
+          <div style={{ height: "100dvh", overflow: "auto", scrollbarWidth: "none" }}>
             <FeedbackHeader />
             <CalendarContent data={trainings} />
           </div>

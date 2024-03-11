@@ -134,6 +134,18 @@ select {
   background-color:#2F54EB;
 }
 
+.ant-picker-calendar-full.ant-picker-panel.ant-picker-calendar-date{
+  border-top: none;
+}
+
+.ant-picker-body{
+  background-color: rgb(240, 245, 255);
+}
+
+.ant-picker-calendar-full .ant-picker-panel .ant-picker-calendar-date{
+  background-color: white
+}
+
 
 /* Удаляем все анимации и переходы для людей, которые предпочитай их не использовать */
 @media (prefers-reduced-motion: reduce) {
