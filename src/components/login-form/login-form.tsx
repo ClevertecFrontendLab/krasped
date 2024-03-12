@@ -43,7 +43,7 @@ export const LoginForm = () => {
       postForgotPassword(res)
     })
       .catch(errorInfo => {
-        console.log('Email validation failed:', errorInfo.errorFields);
+        console.error('Email validation failed:', errorInfo.errorFields);
       });
   }
 

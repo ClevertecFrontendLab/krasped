@@ -13,16 +13,21 @@ import { useAppDispatch, useAppSelector } from '@hooks/typed-react-redux-hooks';
 import { LoaderComponent } from '@components/loader/api-loader';
 import { logout } from '@redux/userSlice';
 import { useAddTrainingMutation, useGetAllTriningsQuery } from '@redux/api/training/training';
-import { selectTrainings } from '@redux/trainingSlice';
+import { selectTrainings, setIsShowCalendarDate } from '@redux/trainingSlice';
 import dayjs from 'dayjs';
+import { useGetTriningListQuery } from '@redux/api/catalog/catalog';
+import { CloseCircleOutlined } from '@ant-design/icons';
 
 const CalendarPage: React.FC = () => {
-  const [form] = Form.useForm();
-  const [isfeedbacksError, setIsfeedbacksError] = useState(false)
-  const [isfeedbackSuccess, setIsfeedbackSuccess] = useState(false)
+  // const [form] = Form.useForm();
   const trainings = useAppSelector(selectTrainings)
+  const [isTrainingssError, setIsTrainingsError] = useState(false)
+  const [isTrainingListError, setIsTrainingListError] = useState(false)
+  // const [isfeedbackSuccess, setIsfeedbackSuccess] = useState(false)
+
   const dispatch = useAppDispatch()
   const { isError, isLoading, error } = useGetAllTriningsQuery(null, { skip: !!trainings?.length });
+  const { refetch, isSuccess: isSuccessTrainingList, isError: isErrorTrainingList, isLoading: loadingTrainingList, error: errorTrainingList } = useGetTriningListQuery(null);
   // const [addFeedbacks, { isError: addIsError, isSuccess: addSuccess, isLoading: addLoading, error: addError }] = useAddTrainingMutation();
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
   const { useBreakpoint } = Grid;
@@ -37,16 +42,32 @@ const CalendarPage: React.FC = () => {
         dispatch(logout())
         history.push("/auth/login")
       }
-      setIsfeedbacksError(true)
+      setIsTrainingsError(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
+
+  useEffect(() => {
+    if (isErrorTrainingList) {
+      const customError = errorTrainingList as { status: number }
+      if (customError.status == 403) {
+        dispatch(logout())
+        history.push("/auth/login")
+      }
+      setIsTrainingListError(true)
+      dispatch(setIsShowCalendarDate(false))
+    }
+    if (isSuccessTrainingList) {
+      dispatch(setIsShowCalendarDate(true))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadingTrainingList]);
 
   return (
     <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
       <Layout style={{ position: "relative" }}>
         <LoaderComponent />
-        <Modal centered footer={null} style={{ backdropFilter: 'blur(10px)' }} closable={false} open={isfeedbacksError} onCancel={() => setIsfeedbacksError(false)}>
+        <Modal centered footer={null} style={{ backdropFilter: 'blur(10px)' }} closable={false} open={isTrainingssError} onCancel={() => setIsTrainingsError(false)}>
           <Result
             style={{
               maxWidth: "539px",
@@ -67,7 +88,44 @@ const CalendarPage: React.FC = () => {
           />
         </Modal>
 
-        <Modal centered footer={null} style={{ backdropFilter: 'blur(10px)' }} closable={false} open={isfeedbackSuccess} onCancel={() => setIsfeedbackSuccess(false)}>
+        <Modal centered
+          footer={null}
+          bodyStyle={{ padding: "16px 24px" }}
+          style={{ maxWidth: "384px", backdropFilter: 'blur(10px)' }}
+          open={isTrainingListError}
+          onCancel={() => setIsTrainingListError(false)}>
+          <div style={{ alignItems: "flex-start", display: "flex", width: "100%", gap: "16px" }}>
+            <CloseCircleOutlined
+              style={{
+
+                color: "#2F54EB",
+                fontSize: "24px"
+              }} />
+            <div style={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+            }}>
+              <div style={{ fontSize: "16px", lineHeight: "21px" }}>При открытии данных <br /> произошла ошибка </div>
+              <div style={{ color: "#8C8C8C", fontSize: "14px", lineHeight: "18px" }}>Попробуйте ещё раз.</div>
+              <div style={{ display: "flex", width: "100%", justifyContent: "flex-end" }}>
+                <Button
+                  style={{
+                    fontSize: "14px",
+                    height: "28px",
+                    lineHeight: "18px"
+                  }}
+                  onClick={() => { refetch() }} type="primary" key="console">
+                  Обновить
+                </Button>
+              </div>
+            </div>
+          </div>
+
+        </Modal>
+
+        {/* <Modal centered footer={null} style={{ backdropFilter: 'blur(10px)' }} closable={false} open={isfeedbackSuccess} onCancel={() => setIsfeedbackSuccess(false)}>
           <Result
             style={{
               maxWidth: "539px",
@@ -86,7 +144,7 @@ const CalendarPage: React.FC = () => {
               </Button>
             }
           />
-        </Modal>
+        </Modal> */}
 
         <Navbar />
         <Layout style={{
@@ -101,13 +159,8 @@ const CalendarPage: React.FC = () => {
         }}>
           <div style={{ height: "100dvh", overflow: "auto", scrollbarWidth: "none" }}>
             <FeedbackHeader />
-            <CalendarContent data={trainings} />
+            <CalendarContent />
           </div>
-          {(!!trainings?.length) && <div style={{
-            padding: (screens?.xs) ? "16px 16px 42px" : "20px 24px 48px",
-            height: (screens?.xs) ? "186px" : "220px"
-          }} >
-          </div>}
         </Layout>
       </Layout >
     </div>

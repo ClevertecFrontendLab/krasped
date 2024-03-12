@@ -8,6 +8,7 @@ import { createReduxHistoryContext } from 'redux-first-history';
 import userReducer from '@redux/userSlice';
 import feedbackReducer from '@redux/feedbackSlice';
 import trainingReducer from '@redux/trainingSlice';
+import { catalogApi } from './api/catalog/catalog';
 const initialState = {
     collapsed: false,
 };
@@ -46,6 +47,7 @@ export const store = configureStore({
         [userApi.reducerPath]: userApi.reducer,
         [feedbackApi.reducerPath]: feedbackApi.reducer,
         [trainingApi.reducerPath]: trainingApi.reducer,
+        [catalogApi.reducerPath]: catalogApi.reducer,
         userState: userReducer,
         feedbackState: feedbackReducer,
         trainingState: trainingReducer,
@@ -55,7 +57,8 @@ export const store = configureStore({
         authApi.middleware,
         userApi.middleware,
         feedbackApi.middleware,
-        trainingApi.middleware
+        trainingApi.middleware,
+        catalogApi.middleware
     ),
 });
 
