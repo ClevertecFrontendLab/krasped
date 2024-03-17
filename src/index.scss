@@ -116,6 +116,10 @@ select {
   background-color: rgba(121, 156, 212, 0.5);
 }
 
+.ant-modal-wrap{
+  pointer-events: none;
+}
+
 .ant-drawer{
   z-index: 99;
 }

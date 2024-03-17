@@ -1,4 +1,5 @@
 export interface ITrainingItem {
   "name": string,
-  "key": string
+  "key": string,
+  "label": string,
 }

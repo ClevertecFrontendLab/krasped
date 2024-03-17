@@ -1,5 +1,5 @@
 
-interface IExercise {
+export interface IExercise {
   "name": string,
   "replays": number,
   "weight": number,
@@ -7,7 +7,7 @@ interface IExercise {
   "isImplementation": boolean
 }
 
-interface IExerciseWithId extends IExercise {
+export interface IExerciseWithId extends IExercise {
   _id: string
 }
 
@@ -27,6 +27,7 @@ export interface ITraining {
   "parameters": IParameters,
   "exercises": IExerciseWithId[]
 }
+
 export interface ITrainingReq {
   "name": string,
   "date": string,
