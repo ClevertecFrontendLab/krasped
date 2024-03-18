@@ -1,10 +1,12 @@
 
 export interface IExercise {
-  "name": string,
-  "replays": number,
-  "weight": number,
-  "approaches": number,
-  "isImplementation": boolean
+  name: string,
+  replays: number,
+  weight: number,
+  approaches: number,
+  isImplementation: boolean,
+  isSelectedForDelete: boolean,
+  unicKyeForDev: number,
 }
 
 export interface IExerciseWithId extends IExercise {

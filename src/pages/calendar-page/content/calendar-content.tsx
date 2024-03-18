@@ -11,6 +11,7 @@ import noTrainingsPng from "@assets/imgs/noTrainings.png"
 import { ArrowLeftOutlined, CloseOutlined, DownOutlined, EditOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons"
 import { ITrainingItem } from "@redux/api/catalog/catalog.types"
 import { SelectionItem } from "antd/lib/table/interface"
+import { ExserciseItem } from "./exsercise-item-form"
 
 
 export const CalendarContent = () => {
@@ -41,7 +42,8 @@ export const CalendarContent = () => {
     "replays": 1,
     "weight": 0,
     "approaches": 1,
-    "isImplementation": false
+    "isImplementation": false, 
+    "isSelectedForDelete": false
   }
 
   const onPanelChange = (value: Dayjs, mode: CalendarProps<Dayjs>['mode']) => {
@@ -111,27 +113,35 @@ export const CalendarContent = () => {
       newItem.label = item.name;
       return newItem
     })
-
-    // const items: MenuProps['items'] = [
-    //   {
-    //     label: <a href="https://www.antgroup.com">1st menu item</a>,
-    //     key: '0',
-    //   },
-    //   {
-    //     label: <a href="https://www.aliyun.com">2nd menu item</a>,
-    //     key: '1',
-    //   },
-    //   {
-    //     type: 'divider',
-    //   },
-    //   {
-    //     label: '3rd menu item',
-    //     key: '3',
-    //   },
-    // ];
-    // return items
   }
 
+  const changeItemObj = (newEx: IExercise) => {
+    console.log(newEx)
+    console.log(newAddedExercise)
+    let isChanged = false
+    setNewAddedExercise(v => 
+      {const newExe = v.map(item => {
+        console.log(item?.unicKyeForDev === newEx?.unicKyeForDev, item?.name == newEx?.name)
+        if(item?.unicKyeForDev === newEx?.unicKyeForDev){isChanged = true; return newEx}
+        console.log("item")
+        if(isChanged) return item
+        console.log("newEx")
+        if(!item?.unicKyeForDev && !newEx?.unicKyeForDev && (item?.name == newEx?.name)) return newEx
+        console.log("item")
+        return item
+      })
+      console.log(newExe)
+      return newExe
+    }
+    )
+  }
+
+  const removeSelectedExersices = () => {
+    setNewAddedExercise(v => {
+      return v.filter(item => !item?.isSelectedForDelete)
+      })
+    }
+  
 
   enum colors {
     Ноги = "#FF4D4F",
@@ -265,7 +275,7 @@ export const CalendarContent = () => {
                   lineHeight: "18px"
                 }}
                 onClick={() => changeTab(2)}
-                type="primary" key="console">
+                type="primary" >
                 {trainingsSelected.length ? "Добавить тренировку" : "Создать тренировку"}
               </Button>
             </div>
@@ -365,7 +375,7 @@ export const CalendarContent = () => {
                   lineHeight: "18px"
                 }}
                 // onClick={() => {}} 
-                key="console">
+                >
                 Добавить упражнение
               </Button>
               <Button
@@ -378,7 +388,7 @@ export const CalendarContent = () => {
                   lineHeight: "18px"
                 }}
                 // onClick={() => {}} 
-                key="console">
+                >
                 Сохранить
               </Button>
             </div>
@@ -429,106 +439,10 @@ export const CalendarContent = () => {
         <div style={{
           padding: screens.xs ? "0 0 24px " : "0 0 24px"
         }}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              paddingBottom: "24px",
-              gap: "8px"
-            }}
-          >
-            <div><Input size="small" style={{ height: "24px" }}
-              addonAfter={<Checkbox style={{ marginTop: "-5px" }}></Checkbox>}
-              placeholder="Упражнение"></Input></div>
-            <div
-              style={{ display: "flex", justifyContent: "space-between" }}
-            >
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: "6px" }}
-              >
-                <div
-                  style={{
-                    width: "120px",
-                    height: "24px",
-                    paddingLeft: "8px",
-                    backgroundColor: "#F0F0F0",
-                  }}
-                >
-                  Подходы
-                </div>
-                <Input
-                  size="small"
-                  type="number" style={{
-                    padding: 0,
-                    height: "24px !important",
-                    width: "120px",
-                  }} placeholder="1"
-
-                  addonBefore={<PlusOutlined style={{ lineHeight: "24px", fontSize: "10px" }} />}
-                ></Input>
-              </div>
-              <div
-                style={{
-                  display: "flex"
-                }}
-              >
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: "6px" }}
-                >
-                  <div
-                    style={{
-                      width: "89px",
-                      height: "24px",
-                      paddingLeft: "8px",
-                      backgroundColor: "#F0F0F0",
-                    }}
-                  >
-                    Вес, кг
-                  </div>
-
-                  <Input type="number" style={{
-                    height: "24px",
-                    width: "89px",
-                  }} placeholder="0"></Input>
-                </div>
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: "6px" }}
-                >
-                  <div
-                    style={{
-                      height: "24px",
-                    }}
-                  >
-                  </div>
-                  <div
-                    style={{
-                      height: "24px",
-                      padding: "0 2px",
-                      color: "#BFBFBF"
-                    }}
-                  >x</div>
-                </div>
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: "6px" }}
-                >
-                  <div
-                    style={{
-                      width: "89px",
-                      height: "24px",
-                      paddingLeft: "8px",
-                      backgroundColor: "#F0F0F0",
-                    }}
-                  >
-                    Количество
-                  </div>
-                  <Input type="number" style={{
-                    height: "24px",
-                    width: "89px",
-                  }} placeholder="1"></Input>
-                </div>
-              </div>
-            </div>
-          </div>
+          {[...exerciseSelected, ...newAddedExercise].map((item, index)=> {
+            return <ExserciseItem key={item?.unicKyeForDev || `${dayjs().valueOf()} - ${index}`} itemObj={item} changeItemObj={changeItemObj}/>
+          })
+          }
           <div style={{
             display: "flex",
             justifyContent: "space-around",
@@ -548,8 +462,8 @@ export const CalendarContent = () => {
                 lineHeight: "18px"
               }}
               icon={<PlusOutlined />}
-              // onClick={() => {}} 
-              key="console">
+                onClick={() => {setNewAddedExercise(v=> {return [...v, {...defaultExercise, unicKyeForDev: dayjs().valueOf()}]})}} 
+              >
               Добавить еще
             </Button>
             <Button
@@ -562,8 +476,8 @@ export const CalendarContent = () => {
                 fontSize: "14px",
                 lineHeight: "18px"
               }}
-              // onClick={() => {}} 
-              key="console">
+              onClick={() => {removeSelectedExersices()}} 
+              >
               Удалить
             </Button>
           </div>
