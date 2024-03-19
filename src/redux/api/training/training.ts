@@ -63,19 +63,18 @@ export const trainingApi = createApi({
     }),
 
     deleteTraining: builder.mutation({
-      query: (body: ITrainingReq) => ({
-        url: "",
+      query: (body: ITraining) => ({
+        url: `${body._id}`,
         method: 'delete',
-        body: body,
       }),
       invalidatesTags: ['Trainings'],
     }),
 
     updateTraining: builder.mutation({
-      query: (body: ITrainingReq) => ({
-        url: "",
+      query: (body: { rest: ITrainingReq, _id: string }) => ({
+        url: `${body._id}`,
         method: 'put',
-        body: body,
+        body: body.rest,
       }),
       invalidatesTags: ['Trainings'],
     }),

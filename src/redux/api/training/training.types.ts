@@ -31,9 +31,11 @@ export interface ITraining {
 }
 
 export interface ITrainingReq {
+  "_id"?: string,
   "name": string,
   "date": string,
-  "isImplementation": boolean,
-  "parameters": IParameters,
+  "isImplementation"?: boolean,
+  "userId"?: "string",
+  "parameters"?: IParameters,
   "exercises": IExercise[]
 }

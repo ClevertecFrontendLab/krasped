@@ -26,7 +26,7 @@ const CalendarPage: React.FC = () => {
   // const [isfeedbackSuccess, setIsfeedbackSuccess] = useState(false)
 
   const dispatch = useAppDispatch()
-  const { isError, isLoading, error } = useGetAllTriningsQuery(null, { skip: !!trainings?.length });
+  const { isError, isLoading, error } = useGetAllTriningsQuery(null);
   const { refetch, isSuccess: isSuccessTrainingList, isError: isErrorTrainingList, isLoading: loadingTrainingList, error: errorTrainingList } = useGetTriningListQuery(null);
   // const [addFeedbacks, { isError: addIsError, isSuccess: addSuccess, isLoading: addLoading, error: addError }] = useAddTrainingMutation();
   const collapsed = useSelector((state: RootState) => state.app.collapsed);

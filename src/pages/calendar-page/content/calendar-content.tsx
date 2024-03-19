@@ -1,4 +1,4 @@
-import { useAppSelector } from "@hooks/typed-react-redux-hooks"
+import { useAppDispatch, useAppSelector } from "@hooks/typed-react-redux-hooks"
 import { selectIsShowAllFeedbacks } from "@redux/feedbackSlice"
 import { Card, Button, Avatar, Rate, Grid, Calendar, CalendarProps, ConfigProvider, Badge, BadgeProps, Modal, Drawer, Image, Divider, Dropdown, Space, MenuProps, Input, Checkbox } from "antd"
 import { Content } from "antd/lib/layout/layout"
@@ -8,14 +8,19 @@ import { selectIsShowCalendarDate, selectTrainingList, selectTrainings } from "@
 import { RefObject, useEffect, useRef, useState } from "react"
 import useWindowWidth from "@hooks/use-window-width"
 import noTrainingsPng from "@assets/imgs/noTrainings.png"
-import { ArrowLeftOutlined, CloseOutlined, DownOutlined, EditOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons"
+import { ArrowLeftOutlined, CloseCircleOutlined, CloseOutlined, DownOutlined, EditOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons"
 import { ITrainingItem } from "@redux/api/catalog/catalog.types"
 import { SelectionItem } from "antd/lib/table/interface"
 import { ExserciseItem } from "./exsercise-item-form"
+import { useAddTrainingMutation, useUpdateTrainingMutation } from "@redux/api/training/training"
+import { history } from "@redux/configure-store"
+import { logout } from "@redux/userSlice"
 
 
 export const CalendarContent = () => {
-
+  const dispatch = useAppDispatch()
+  const [AddTraining, { isLoading: isAddLoading, isSuccess: isAddSuccess, isError: isAddError, error: addError }] = useAddTrainingMutation();
+  const [UpdateTraining, { isLoading: isUpdateLoading, isSuccess: isUpdateSuccess, isError: isUpdateError, error: updateError }] = useUpdateTrainingMutation();
   type UserRefObject = {
     [key: string]: HTMLUListElement | null; // Замените HTMLDivElement на соответствующий тип элемента
   }
@@ -23,14 +28,15 @@ export const CalendarContent = () => {
   const ulRefs: RefObject<UserRefObject> = useRef<UserRefObject>({});
   const trainings = useAppSelector(selectTrainings)
   const trainingList = useAppSelector(selectTrainingList)
+  const [isAddTrainingError, setIsAddTrainingError] = useState<boolean>(false)
   const [isOpenFirstModal, setIsOpenFirstModal] = useState<boolean>(false)
   const [tabFirstModal, setTabFirstModal] = useState<number>(1)
-  const [isShowAddingExersice, setIsShowAddingExersice] = useState<boolean>(true)
+  const [isShowAddingExersice, setIsShowAddingExersice] = useState<boolean>(false)
   const [selectedDate, setSelectedDate] = useState<Dayjs>();
-  const [selectedTypeOfTraining, setSelectedTypeOfTraining] = useState();
+  const [selectedTypeOfTraining, setSelectedTypeOfTraining] = useState<string>();
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const [trainingsSelected, setTrainingsSelected] = useState<ITraining[]>([]);
-  const [newAddedTrainings, setNewAddedTrainings] = useState<ITrainingReq[]>([]);
+  // const [newAddedTrainings, setNewAddedTrainings] = useState<ITrainingReq[]>([]);
   const [exerciseSelected, setExerciseSelected] = useState<IExerciseWithId[]>([]);
   const [newAddedExercise, setNewAddedExercise] = useState<IExercise[]>([]);
   // const isShowCalendarDate = useAppSelector(selectIsShowCalendarDate)
@@ -42,7 +48,7 @@ export const CalendarContent = () => {
     "replays": 1,
     "weight": 0,
     "approaches": 1,
-    "isImplementation": false, 
+    "isImplementation": false,
     "isSelectedForDelete": false
   }
 
@@ -61,7 +67,7 @@ export const CalendarContent = () => {
     setSelectedTypeOfTraining(undefined);
     setTrainingsSelected([])
     setExerciseSelected([])
-    setNewAddedTrainings([])
+    // setNewAddedTrainings([])
     setNewAddedExercise([])
   }
 
@@ -75,19 +81,24 @@ export const CalendarContent = () => {
   };
 
   const handleSelectDate = (value: Dayjs) => {
-    const ulElement = ulRefs?.current?.[dayjs(value).format()] || null;
-    if (ulElement) {
-      const ulPosition = ulElement.getBoundingClientRect();
-      if (ulPosition.left + 264 > width) ulPosition.left - 264 + ulPosition.width
-      setModalPosition({
-        top: ulPosition.top - 28,
-        left: (ulPosition.left + 264 > width) ? (ulPosition.left - 264 + ulPosition.width + 8) : (ulPosition.left - 8)
-      });
-      setIsOpenFirstModal(true);
+    clearState()
+    if (dayjs().isBefore(dayjs(value), "day")) {
+      setTabFirstModal(1)
+      const ulElement = ulRefs?.current?.[dayjs(value).format()] || null;
+      if (ulElement) {
+        const ulPosition = ulElement.getBoundingClientRect();
+        if (ulPosition.left + 264 > width) ulPosition.left - 264 + ulPosition.width
+        setModalPosition({
+          top: ulPosition.top - 28,
+          left: (ulPosition.left + 264 > width) ? (ulPosition.left - 264 + ulPosition.width + 8) : (ulPosition.left - 8)
+        });
+        setIsOpenFirstModal(true);
+      }
+      setTrainingsSelected(getListData(value))
+      setSelectedDate(value);
+    } else {
+      return
     }
-    console.log(getListData(value))
-    setTrainingsSelected(getListData(value))
-    setSelectedDate(value);
 
   };
 
@@ -106,27 +117,26 @@ export const CalendarContent = () => {
   // }
 
   const transformDropdownProps = () => {
-    console.log(trainingList)
-    return trainingList.map(item => {
-      const newItem = { ...item }
-      // newItem.label = <>{item.name}</>;
-      newItem.label = item.name;
-      return newItem
-    })
+    const uniqueTrainingNames = new Set(trainingsSelected.map(item => item.name));
+    return trainingList
+      .filter(item => !uniqueTrainingNames.has(item.name))
+      .map(item => {
+        return { ...item, label: item.name };
+      });
   }
 
   const changeItemObj = (newEx: IExercise) => {
     console.log(newEx)
     console.log(newAddedExercise)
     let isChanged = false
-    setNewAddedExercise(v => 
-      {const newExe = v.map(item => {
+    setNewAddedExercise(v => {
+      const newExe = v.map(item => {
         console.log(item?.unicKyeForDev === newEx?.unicKyeForDev, item?.name == newEx?.name)
-        if(item?.unicKyeForDev === newEx?.unicKyeForDev){isChanged = true; return newEx}
+        if (item?.unicKyeForDev === newEx?.unicKyeForDev) { isChanged = true; return newEx }
         console.log("item")
-        if(isChanged) return item
+        if (isChanged) return item
         console.log("newEx")
-        if(!item?.unicKyeForDev && !newEx?.unicKyeForDev && (item?.name == newEx?.name)) return newEx
+        if (!item?.unicKyeForDev && !newEx?.unicKyeForDev && (item?.name == newEx?.name)) return newEx
         console.log("item")
         return item
       })
@@ -139,9 +149,54 @@ export const CalendarContent = () => {
   const removeSelectedExersices = () => {
     setNewAddedExercise(v => {
       return v.filter(item => !item?.isSelectedForDelete)
-      })
+    })
+  }
+
+  const onCloseExercise = () => {
+    setNewAddedExercise(v => v.filter(item => item.name))
+    setIsShowAddingExersice(false)
+  }
+
+  const editTraining = (training: ITraining) => {
+    setTabFirstModal(2)
+    setSelectedTypeOfTraining(training.name);
+    setExerciseSelected(training.exercises)
+    // setNewAddedTrainings([])
+    setNewAddedExercise(training.exercises)
+  }
+
+  const onChangeDropdown = (name: string | undefined) => {
+    setSelectedTypeOfTraining(name)
+    //если будующее
+    setExerciseSelected([])
+    setNewAddedExercise([])
+    //если прошлое
+  }
+
+  const isOldTraining = () => {
+    return trainingsSelected.find(item => item.name == selectedTypeOfTraining)
+  }
+
+  const saveCurrentTraining = () => {
+    if (!selectedTypeOfTraining) return
+    const old = trainingsSelected.find(item => item.name == selectedTypeOfTraining)
+    const training: ITrainingReq = {
+      ...old,
+      name: selectedTypeOfTraining,
+      date: dayjs(selectedDate).add(dayjs().utcOffset() / 60, 'hour').toISOString(),
+      exercises: newAddedExercise
     }
-  
+    clearState()
+    setIsOpenFirstModal(true)
+    setTabFirstModal(1)
+    if (old) {
+      const { _id, ...rest } = training as ITraining
+      UpdateTraining({ rest, _id })
+    } else {
+      AddTraining(training)
+    }
+  }
+
 
   enum colors {
     Ноги = "#FF4D4F",
@@ -171,9 +226,82 @@ export const CalendarContent = () => {
     );
   };
 
+  useEffect(() => {
+
+    if (isAddSuccess && selectedDate) { setTrainingsSelected(getListData(selectedDate)) }
+    if (isAddError) {
+      const customError = addError as { status: number }
+      if (customError.status == 403) {
+        dispatch(logout())
+        history.push("/auth/login")
+      }
+      setSelectedDate(undefined)
+      setIsAddTrainingError(true)
+      // closeFeedbackFrom()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAddLoading]);
+
+  useEffect(() => {
+
+    if (isUpdateSuccess && selectedDate) { setTrainingsSelected(getListData(selectedDate)) }
+    if (isUpdateError) {
+      const customError = updateError as { status: number }
+      if (customError.status == 403) {
+        dispatch(logout())
+        history.push("/auth/login")
+      }
+      setSelectedDate(undefined)
+      setIsAddTrainingError(true)
+      // closeFeedbackFrom()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isUpdateLoading]);
+
+  useEffect(() => {
+    if (selectedDate && isOpenFirstModal)
+      setTrainingsSelected(getListData(selectedDate))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trainings]);
+
   return (
     <Content style={{ backgroundColor: "rgb(240, 245, 255)", padding: "0 24px 93px", display: "flex", width: "100%", overflow: 'initial' }}>
+      <Modal centered
+        footer={null}
+        closable={false}
+        bodyStyle={{ padding: "16px 24px" }}
+        style={{ maxWidth: "384px", backdropFilter: 'blur(10px)' }}
+        open={isAddTrainingError}
+        onCancel={() => setIsAddTrainingError(false)}>
+        <div style={{ alignItems: "flex-start", display: "flex", width: "100%", gap: "16px" }}>
+          <CloseCircleOutlined
+            style={{
+              color: "#FF4D4F",
+              fontSize: "24px"
+            }} />
+          <div style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+          }}>
+            <div style={{ fontSize: "16px", fontWeight: 500, lineHeight: "21px" }}>При сохранении данных произошла <br />ошибка </div>
+            <div style={{ color: "#262626", fontSize: "14px", lineHeight: "18px" }}>Придется попробовать еще раз.</div>
+            <div style={{ display: "flex", width: "100%", justifyContent: "flex-end" }}>
+              <Button
+                style={{
+                  fontSize: "14px",
+                  height: "28px",
+                  lineHeight: "18px"
+                }}
+                onClick={() => { setIsAddTrainingError(false) }} type="primary" key="console">
+                Закрыть
+              </Button>
+            </div>
+          </div>
+        </div>
 
+      </Modal>
       <Calendar style={{ padding: 0, backgroundColor: "rgb(240, 245, 255)" }}
         onSelect={(value) => handleSelectDate(value as Dayjs)}
         dateCellRender={dateCellRender}
@@ -236,7 +364,8 @@ export const CalendarContent = () => {
                 flexDirection: "column",
                 paddingLeft: "12px",
                 paddingRight: "12px",
-                paddingTop: "34px"
+                paddingTop: "34px",
+                paddingBottom: "16px"
               }}>
 
                 {trainingsSelected.map((item, index) => (
@@ -251,7 +380,9 @@ export const CalendarContent = () => {
                       cursor: "pointer",
                       fontSize: "14px",
                       color: "#2F54EB"
-                    }} />G
+                    }}
+                      onClick={() => editTraining(item)}
+                    />
                   </li>
                 ))}
               </div>
@@ -301,18 +432,18 @@ export const CalendarContent = () => {
                 menu={{
                   items: transformDropdownProps(),
                   selectable: true,
-                  onSelect: (item) => setSelectedTypeOfTraining(item)
+                  onSelect: (item) => onChangeDropdown(item?.item?.props?.name || undefined)
                 }} trigger={['click']}>
                 <span style={{ width: "100%" }} onClick={e => e.preventDefault()}>
                   <Space style={{ width: "100%", justifyContent: "space-between" }}>
-                    {selectedTypeOfTraining ? selectedTypeOfTraining.item.props.name : "Выбор типа тренировки"}
+                    {selectedTypeOfTraining ? selectedTypeOfTraining : "Выбор типа тренировки"}
                     <DownOutlined />
                   </Space>
                 </span>
               </Dropdown>
             </div>
             <Divider style={{ margin: "17.5px 0 0" }} />
-            {!trainingsSelected.length ?
+            {!newAddedExercise.length ?
               <div style={{
                 display: "flex",
                 width: "100%",
@@ -328,28 +459,34 @@ export const CalendarContent = () => {
                 />
               </div> :
               <div style={{
+                maxHeight: "200px",
+                overflowY: "auto",
                 width: "100%", display:
                   "flex", gap: "8px", flexDirection: "column",
                 paddingLeft: "12px",
                 paddingRight: "12px",
-                paddingTop: "34px"
+                paddingTop: "16px",
+                paddingBottom: "16px",
               }}>
 
-                {trainingsSelected.map((item, index) => (
-                  <li style={{
-                    display: "flex", justifyContent: "space-between"
-                  }} key={item.name}>
-                    {/* <Badge color={colors?.[item.name as keyof typeof colors] || "#EB2F96"}
+                {newAddedExercise.map((item, index) => (
+                  <div style={{
+                    display: "flex", width: "100%", justifyContent: "space-between"
+                  }} key={`${item.name}-${index}`}>
 
-                      // status={item.type as BadgeProps['status']}
-                      text={item.name} />
+                    <div style={{
+                      color: "#8C8C8C"
+                    }}>{item.name}</div>
                     <EditOutlined style={{
                       cursor: "pointer",
                       fontSize: "14px",
                       color: "#2F54EB"
-                    }} /> */}
-                    123
-                  </li>
+
+                    }}
+                      onClick={() => setIsShowAddingExersice(true)}
+                    />
+
+                  </div>
                 ))}
               </div>
             }
@@ -367,28 +504,29 @@ export const CalendarContent = () => {
               }}>
               <Button
                 type="default"
-                // disabled={trainingList.length <= trainingsSelected.length}
+                disabled={!selectedTypeOfTraining}
                 style={{
                   width: "100%",
                   fontSize: "14px",
                   height: "32px",
                   lineHeight: "18px"
                 }}
-                // onClick={() => {}} 
-                >
+                onClick={() => { setIsShowAddingExersice(true) }}
+              >
                 Добавить упражнение
               </Button>
               <Button
                 type="link"
-                // disabled={trainingList.length <= trainingsSelected.length}
+                loading={isAddLoading}
+                disabled={(!newAddedExercise?.length || !selectedTypeOfTraining) && !isOldTraining()}
                 style={{
                   width: "100%",
                   fontSize: "14px",
                   height: "32px",
                   lineHeight: "18px"
                 }}
-                // onClick={() => {}} 
-                >
+                onClick={() => { saveCurrentTraining() }}
+              >
                 Сохранить
               </Button>
             </div>
@@ -397,14 +535,14 @@ export const CalendarContent = () => {
 
       </Modal>
       <Drawer
-        mask={false}
         style={{
           zIndex: 1001
           // display: (screens?.xs) ? "block" : "none", <CloseOutlined />
         }}
+        maskStyle={{ background: "none" }}
         placement={"right"}
         closable={false}
-        onClose={() => setIsShowAddingExersice(false)}
+        onClose={() => onCloseExercise()}
         open={isShowAddingExersice}
         key={"right"}
         width={408}
@@ -422,7 +560,7 @@ export const CalendarContent = () => {
               lineHeight: "26px",
             }}
           >Просмотр упражнений</div>
-          <CloseOutlined style={{ cursor: "pointer" }} />
+          <CloseOutlined onClick={() => onCloseExercise()} style={{ cursor: "pointer" }} />
 
         </div>
         <div style={{
@@ -430,8 +568,8 @@ export const CalendarContent = () => {
           fontSize: "14px", lineHeight: "18.2px"
         }}>
           <div>
-            {selectedTypeOfTraining?.item?.props?.name && <Badge color={colors?.[selectedTypeOfTraining?.item?.props?.name as keyof typeof colors] || "#EB2F96"}
-              text={selectedTypeOfTraining?.item?.props?.name} />}
+            {selectedTypeOfTraining && <Badge color={colors?.[selectedTypeOfTraining as keyof typeof colors] || "#EB2F96"}
+              text={selectedTypeOfTraining} />}
           </div>
           <div>{dayjs().format("l")}</div>
 
@@ -439,8 +577,8 @@ export const CalendarContent = () => {
         <div style={{
           padding: screens.xs ? "0 0 24px " : "0 0 24px"
         }}>
-          {[...exerciseSelected, ...newAddedExercise].map((item, index)=> {
-            return <ExserciseItem key={item?.unicKyeForDev || `${dayjs().valueOf()} - ${index}`} itemObj={item} changeItemObj={changeItemObj}/>
+          {newAddedExercise.map((item, index) => {
+            return <ExserciseItem isOldTraining={isOldTraining} key={item?.unicKyeForDev || `${dayjs().valueOf()} - ${index}`} itemObj={item} changeItemObj={changeItemObj} />
           })
           }
           <div style={{
@@ -462,11 +600,12 @@ export const CalendarContent = () => {
                 lineHeight: "18px"
               }}
               icon={<PlusOutlined />}
-                onClick={() => {setNewAddedExercise(v=> {return [...v, {...defaultExercise, unicKyeForDev: dayjs().valueOf()}]})}} 
-              >
+              onClick={() => { setNewAddedExercise(v => { return [...v, { ...defaultExercise, unicKyeForDev: dayjs().valueOf() }] }) }}
+            >
               Добавить еще
             </Button>
-            <Button
+            {isOldTraining() && <Button
+              disabled={!newAddedExercise.find(item => item?.isSelectedForDelete)}
               type="link"
               icon={<MinusOutlined />}
               // disabled={trainingList.length <= trainingsSelected.length}
@@ -476,13 +615,13 @@ export const CalendarContent = () => {
                 fontSize: "14px",
                 lineHeight: "18px"
               }}
-              onClick={() => {removeSelectedExersices()}} 
-              >
+              onClick={() => { removeSelectedExersices() }}
+            >
               Удалить
-            </Button>
+            </Button>}
           </div>
         </div>
-        <div style={{
+        {!dayjs().isBefore(dayjs(selectedDate), "day") && <div style={{
           textAlign: "center",
           color: "#8C8C8C",
           fontSize: "12px",
@@ -490,7 +629,7 @@ export const CalendarContent = () => {
           paddingBottom: screens.xs ? "12px" : "32px"
         }}>
           После сохранения внесенных изменений <br />отредактировать проведенную тренировку <br /> будет невозможно
-        </div>
+        </div>}
       </Drawer>
     </Content >
   )
