@@ -5,7 +5,7 @@ import { Content } from "antd/lib/layout/layout"
 import { IExercise, IExerciseWithId, ITraining, ITrainingReq } from "@redux/api/training/training.types"
 import dayjs, { Dayjs } from "dayjs"
 import { selectIsShowCalendarDate, selectTrainingList, selectTrainings } from "@redux/trainingSlice"
-import { RefObject, useEffect, useRef, useState } from "react"
+import { RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import useWindowWidth from "@hooks/use-window-width"
 import noTrainingsPng from "@assets/imgs/noTrainings.png"
 import { ArrowLeftOutlined, CloseCircleOutlined, CloseOutlined, DownOutlined, EditOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons"
@@ -37,7 +37,7 @@ export const CalendarContent = () => {
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const [trainingsSelected, setTrainingsSelected] = useState<ITraining[]>([]);
   // const [newAddedTrainings, setNewAddedTrainings] = useState<ITrainingReq[]>([]);
-  const [exerciseSelected, setExerciseSelected] = useState<IExerciseWithId[]>([]);
+  // const [exerciseSelected, setExerciseSelected] = useState<IExerciseWithId[]>([]);
   const [newAddedExercise, setNewAddedExercise] = useState<IExercise[]>([]);
   // const isShowCalendarDate = useAppSelector(selectIsShowCalendarDate)
   const { useBreakpoint } = Grid;
@@ -52,9 +52,7 @@ export const CalendarContent = () => {
     "isSelectedForDelete": false
   }
 
-  const onPanelChange = (value: Dayjs, mode: CalendarProps<Dayjs>['mode']) => {
-    // console.log(value.format('YYYY-MM-DD'), mode);
-  };
+
 
   const changeTab = (value: number) => {
     setTabFirstModal(value)
@@ -66,35 +64,45 @@ export const CalendarContent = () => {
     setIsShowAddingExersice(false);
     setSelectedTypeOfTraining(undefined);
     setTrainingsSelected([])
-    setExerciseSelected([])
+    // setExerciseSelected([])
     // setNewAddedTrainings([])
     setNewAddedExercise([])
   }
 
-  const getListData = (value: Dayjs) => {
+  const getListData = (value = selectedDate) => {
     const training = trainings?.filter(item =>
       dayjs(item.date).isSame(dayjs(value), "day")
     )
-    // return training.length ? training : [{ name: "Силовая" }];
-    // return training.length ? training : [{ name: "Силовая" }, { name: "Силовая" }, { name: "Силовая" }, { name: "Силовая" }, { name: "Силовая" }, { name: "Силовая" },];
     return training;
   };
 
+  const onPanelChange = (value: Dayjs, mode: CalendarProps<Dayjs>['mode']) => {
+    // console.log("panel")
+  };
+
+  const checkIsFutureDay = useCallback((value = selectedDate) => {
+    return dayjs().isBefore(dayjs(value), "day")
+  }, [selectedDate])
+
   const handleSelectDate = (value: Dayjs) => {
     clearState()
-    if (dayjs().isBefore(dayjs(value), "day")) {
+    const listOfTrainings = getListData(value)
+    if (checkIsFutureDay(value) || listOfTrainings.length) {
+      // if (true) {
       setTabFirstModal(1)
-      const ulElement = ulRefs?.current?.[dayjs(value).format()] || null;
-      if (ulElement) {
-        const ulPosition = ulElement.getBoundingClientRect();
-        if (ulPosition.left + 264 > width) ulPosition.left - 264 + ulPosition.width
-        setModalPosition({
-          top: ulPosition.top - 28,
-          left: (ulPosition.left + 264 > width) ? (ulPosition.left - 264 + ulPosition.width + 8) : (ulPosition.left - 8)
-        });
-        setIsOpenFirstModal(true);
-      }
-      setTrainingsSelected(getListData(value))
+      setTimeout(() => {
+        const ulElement = ulRefs?.current?.[dayjs(value).format()] || null;
+        if (ulElement) {
+          const ulPosition = ulElement.getBoundingClientRect();
+          if (ulPosition.left + 264 > width) ulPosition.left - 264 + ulPosition.width
+          setModalPosition({
+            top: ulPosition.top - 28,
+            left: (ulPosition.left + 264 > width) ? (ulPosition.left - 264 + ulPosition.width + 8) : (ulPosition.left - 8)
+          });
+          setIsOpenFirstModal(true);
+        }
+      }, 0)
+      setTrainingsSelected(listOfTrainings)
       setSelectedDate(value);
     } else {
       return
@@ -117,27 +125,38 @@ export const CalendarContent = () => {
   // }
 
   const transformDropdownProps = () => {
-    const uniqueTrainingNames = new Set(trainingsSelected.map(item => item.name));
-    return trainingList
-      .filter(item => !uniqueTrainingNames.has(item.name))
-      .map(item => {
-        return { ...item, label: item.name };
-      });
+    if (checkIsFutureDay()) {
+      const uniqueTrainingNames = new Set(trainingsSelected.map(item => item.name));
+      return trainingList
+        .filter(item => !uniqueTrainingNames.has(item.name))
+        .map(item => {
+          return { ...item, label: item.name };
+        });
+    } else {
+      const pastTrainings = getListData();
+      const uniqueTrainingNames = new Set(pastTrainings.map(item => item.name))
+      return trainingList
+        .filter(item => uniqueTrainingNames.has(item.name))
+        .map(item => {
+          return { ...item, label: item.name };
+        });
+    }
   }
 
   const changeItemObj = (newEx: IExercise) => {
-    console.log(newEx)
-    console.log(newAddedExercise)
+
     let isChanged = false
     setNewAddedExercise(v => {
       const newExe = v.map(item => {
-        console.log(item?.unicKyeForDev === newEx?.unicKyeForDev, item?.name == newEx?.name)
-        if (item?.unicKyeForDev === newEx?.unicKyeForDev) { isChanged = true; return newEx }
-        console.log("item")
+        console.log(item?._id)
+        console.log(newEx?._id)
+        console.log(item?.unicKyeForDev)
+        console.log(newEx?.unicKyeForDev)
+        console.log(item?.unicKyeForDev === newEx?.unicKyeForDev, item?._id == newEx?._id)
+        if (newEx?._id && item?._id == newEx?._id) { isChanged = true; return newEx }
         if (isChanged) return item
-        console.log("newEx")
-        if (!item?.unicKyeForDev && !newEx?.unicKyeForDev && (item?.name == newEx?.name)) return newEx
-        console.log("item")
+        if (newEx?.unicKyeForDev && item?.unicKyeForDev == newEx?.unicKyeForDev) { isChanged = true; return newEx }
+        // if (!item?.unicKyeForDev && !newEx?.unicKyeForDev && (item?.name == newEx?.name)) return newEx
         return item
       })
       console.log(newExe)
@@ -160,17 +179,32 @@ export const CalendarContent = () => {
   const editTraining = (training: ITraining) => {
     setTabFirstModal(2)
     setSelectedTypeOfTraining(training.name);
-    setExerciseSelected(training.exercises)
+    // setExerciseSelected(training.exercises)
     // setNewAddedTrainings([])
     setNewAddedExercise(training.exercises)
   }
 
+  const showEditTraining = (training: ITraining) => {
+    setSelectedTypeOfTraining(training.name);
+    // setExerciseSelected(training.exercises)
+    // setNewAddedTrainings([])
+    setNewAddedExercise(training.exercises)
+    setIsShowAddingExersice(true)
+  }
+
   const onChangeDropdown = (name: string | undefined) => {
     setSelectedTypeOfTraining(name)
+    const selectedTrain = getListData().find(item => item.name == name)?.exercises || []
     //если будующее
-    setExerciseSelected([])
-    setNewAddedExercise([])
+    if (checkIsFutureDay()) {
+      // setExerciseSelected([])
+      setNewAddedExercise([...selectedTrain])
+    } else {
+      // setExerciseSelected([])
+      setNewAddedExercise([...selectedTrain])
+    }
     //если прошлое
+
   }
 
   const isOldTraining = () => {
@@ -182,6 +216,8 @@ export const CalendarContent = () => {
     const old = trainingsSelected.find(item => item.name == selectedTypeOfTraining)
     const training: ITrainingReq = {
       ...old,
+      //возможны ошибки касательно того что может компличеная тренировка стать нет
+      isImplementation: checkIsFutureDay() ? false : true,
       name: selectedTypeOfTraining,
       date: dayjs(selectedDate).add(dayjs().utcOffset() / 60, 'hour').toISOString(),
       exercises: newAddedExercise
@@ -217,9 +253,9 @@ export const CalendarContent = () => {
         className="events">
         {listData.map((item, index) => (
           <li key={item._id}>
-            <Badge color={colors?.[item.name as keyof typeof colors] || "#EB2F96"}
+            <Badge color={item.isImplementation ? "#BFBFBF" : (colors?.[item.name as keyof typeof colors] || "#EB2F96")}
               // status={item.type as BadgeProps['status']}
-              text={item.name} />
+              text={<span style={{ color: item.isImplementation ? "#BFBFBF" : "inherit" }}>{item.name}</span>} />
           </li>
         ))}
       </ul>
@@ -303,7 +339,7 @@ export const CalendarContent = () => {
 
       </Modal>
       <Calendar style={{ padding: 0, backgroundColor: "rgb(240, 245, 255)" }}
-        onSelect={(value) => handleSelectDate(value as Dayjs)}
+        onChange={(value) => handleSelectDate(value as Dayjs)}
         dateCellRender={dateCellRender}
         onPanelChange={(value, mode) => onPanelChange(value as Dayjs, mode)}
       />
@@ -372,16 +408,16 @@ export const CalendarContent = () => {
                   <li style={{
                     display: "flex", justifyContent: "space-between"
                   }} key={item.name}>
-                    <Badge color={colors?.[item.name as keyof typeof colors] || "#EB2F96"}
+                    <Badge color={item.isImplementation ? "#BFBFBF" : (colors?.[item.name as keyof typeof colors] || "#EB2F96")}
 
                       // status={item.type as BadgeProps['status']}
                       text={item.name} />
                     <EditOutlined style={{
                       cursor: "pointer",
                       fontSize: "14px",
-                      color: "#2F54EB"
+                      color: item.isImplementation ? "#BFBFBF" : "#2F54EB"
                     }}
-                      onClick={() => editTraining(item)}
+                      onClick={() => (item.isImplementation ? showEditTraining(item) : editTraining(item))}
                     />
                   </li>
                 ))}
@@ -398,7 +434,7 @@ export const CalendarContent = () => {
                 paddingTop: "12px"
               }}>
               <Button
-                disabled={trainingList.length <= trainingsSelected.length}
+                disabled={trainingList.length <= trainingsSelected.length || !checkIsFutureDay()}
                 style={{
                   width: "100%",
                   fontSize: "14px",
@@ -559,7 +595,12 @@ export const CalendarContent = () => {
               fontWeight: 500,
               lineHeight: "26px",
             }}
-          >Просмотр упражнений</div>
+          > {getListData()?.find(item => item.name == selectedTypeOfTraining)?.isImplementation ?
+            <>{"Просмотр упражнений"}</>
+            : getListData()?.find(item => item.name == selectedTypeOfTraining) ?
+              <><EditOutlined style={{fontSize: "14px", paddingRight: "10px"}}/>{"Редактирование"}</>
+              :
+              <><PlusOutlined style={{fontSize: "14px", paddingRight: "10px"}}/>{"Добавление упражнений"}</>}</div>
           <CloseOutlined onClick={() => onCloseExercise()} style={{ cursor: "pointer" }} />
 
         </div>
@@ -571,17 +612,17 @@ export const CalendarContent = () => {
             {selectedTypeOfTraining && <Badge color={colors?.[selectedTypeOfTraining as keyof typeof colors] || "#EB2F96"}
               text={selectedTypeOfTraining} />}
           </div>
-          <div>{dayjs().format("l")}</div>
+          <div>{dayjs(selectedDate).format("l")}</div>
 
         </div>
         <div style={{
           padding: screens.xs ? "0 0 24px " : "0 0 24px"
         }}>
           {newAddedExercise.map((item, index) => {
-            return <ExserciseItem isOldTraining={isOldTraining} key={item?.unicKyeForDev || `${dayjs().valueOf()} - ${index}`} itemObj={item} changeItemObj={changeItemObj} />
+            return <ExserciseItem isImplementation={!!getListData()?.find(item => item.name == selectedTypeOfTraining)?.isImplementation} isOldTraining={isOldTraining} key={item?.unicKyeForDev || `${dayjs().valueOf()} - ${index}`} itemObj={item} changeItemObj={changeItemObj} />
           })
           }
-          <div style={{
+          {!getListData()?.find(item => item.name == selectedTypeOfTraining)?.isImplementation && <div style={{
             display: "flex",
             justifyContent: "space-around",
             height: "40px",
@@ -619,9 +660,9 @@ export const CalendarContent = () => {
             >
               Удалить
             </Button>}
-          </div>
+          </div>}
         </div>
-        {!dayjs().isBefore(dayjs(selectedDate), "day") && <div style={{
+        {(!checkIsFutureDay() && !getListData()?.find(item => item.name == selectedTypeOfTraining)?.isImplementation) && <div style={{
           textAlign: "center",
           color: "#8C8C8C",
           fontSize: "12px",

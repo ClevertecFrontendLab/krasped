@@ -4,7 +4,7 @@ import { Checkbox, Grid, Input } from "antd";
 import { IExercise, IExerciseWithId, ITraining, ITrainingReq } from "@redux/api/training/training.types"
 
 
-export const ExserciseItem = ({ itemObj, changeItemObj, isOldTraining }: { itemObj: IExercise, changeItemObj: (item: IExercise) => void, isOldTraining: () => ITraining | undefined }) => {
+export const ExserciseItem = ({ itemObj, changeItemObj, isOldTraining, isImplementation }: { itemObj: IExercise, changeItemObj: (item: IExercise) => void, isOldTraining: () => ITraining | undefined, isImplementation: boolean }) => {
   const { name, replays, weight, approaches, isSelectedForDelete } = itemObj
 
   // const defaultExercise = {
@@ -21,6 +21,7 @@ export const ExserciseItem = ({ itemObj, changeItemObj, isOldTraining }: { itemO
   const screens = useBreakpoint();
 
   const chageValueAndSave = (value: Partial<IExercise>) => {
+    if(isImplementation) return
     changeItemObj({ ...itemObj, ...value })
   }
   return (
@@ -33,7 +34,7 @@ export const ExserciseItem = ({ itemObj, changeItemObj, isOldTraining }: { itemO
       }}
     >
       <div><Input value={name} onChange={(e) => chageValueAndSave({ name: e.target.value })} size="small" style={{ height: "24px" }}
-        addonAfter={isOldTraining() && <Checkbox checked={isSelectedForDelete} onChange={(e) => chageValueAndSave({ isSelectedForDelete: e.target.checked })} style={{ marginTop: "-5px" }}></Checkbox>}
+        addonAfter={(isOldTraining() && !isImplementation) && <Checkbox checked={isSelectedForDelete} onChange={(e) => chageValueAndSave({ isSelectedForDelete: e.target.checked })} style={{ marginTop: "-5px" }}></Checkbox>}
         placeholder="Упражнение"></Input></div>
       <div
         style={{ display: "flex", justifyContent: "space-between" }}
@@ -61,7 +62,7 @@ export const ExserciseItem = ({ itemObj, changeItemObj, isOldTraining }: { itemO
               width: "120px",
             }} placeholder="1"
 
-            addonBefore={<PlusOutlined style={{ lineHeight: "24px", fontSize: "10px" }} />}
+            addonBefore={<PlusOutlined onClick={() => chageValueAndSave({ approaches: itemObj.approaches + 1 })} style={{ lineHeight: "24px", fontSize: "10px" }} />}
           ></Input>
         </div>
         <div
