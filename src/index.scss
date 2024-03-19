@@ -120,6 +120,10 @@ select {
   pointer-events: none;
 }
 
+.ant-modal.ant-zoom-enter, .ant-modal.ant-zoom-appear {
+  animation-duration:0s;
+}
+
 .ant-drawer{
   z-index: 99;
 }

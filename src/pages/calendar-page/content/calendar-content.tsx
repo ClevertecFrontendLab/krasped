@@ -68,6 +68,15 @@ export const CalendarContent = () => {
     // setNewAddedTrainings([])
     setNewAddedExercise([])
   }
+  const clearStateWithoutColse = () => {
+    // setIsOpenFirstModal(false);
+    setIsShowAddingExersice(false);
+    setSelectedTypeOfTraining(undefined);
+    setTrainingsSelected([])
+    // setExerciseSelected([])
+    // setNewAddedTrainings([])
+    setNewAddedExercise([])
+  }
 
   const getListData = (value = selectedDate) => {
     const training = trainings?.filter(item =>
@@ -82,12 +91,12 @@ export const CalendarContent = () => {
 
   };
 
-  const checkIsFutureDay = useCallback((value = selectedDate) => {
+  const checkIsFutureDay = (value = selectedDate) => {
     return dayjs().isBefore(dayjs(value), "day")
-  }, [selectedDate])
+  }
 
   const handleSelectDate = (value: Dayjs) => {
-    clearState()
+    clearStateWithoutColse()
     const listOfTrainings = getListData(value)
     if (checkIsFutureDay(value) || listOfTrainings.length) {
       // if (true) {
@@ -279,7 +288,15 @@ export const CalendarContent = () => {
         </ul>
       );
     } else {
-      return <></>
+      return (
+        <ul style={{
+          marginTop: "-24px",
+          height: "24px", width: "100%",
+        }}
+          ref={(ref) => (ulRefs.current !== null ? ulRefs.current[dayjs(value).format()] = ref : '')}
+          className="events">
+        </ul>
+      );
     }
 
   };
@@ -366,14 +383,14 @@ export const CalendarContent = () => {
             dateCellRender={dateCellRenderMobile}
             style={{ padding: 0, backgroundColor: "white" }}
             // dateCellRender={dateCellRender}
-            onChange={(value) => handleSelectDate(value as Dayjs)}
+            onSelect={(value) => handleSelectDate(value as Dayjs)}
             fullscreen={false}
             onPanelChange={(value, mode) => onPanelChange(value as Dayjs, mode)} />
         </div>
         :
 
         <Calendar style={{ padding: 0, backgroundColor: "rgb(240, 245, 255)" }}
-          onChange={(value) => handleSelectDate(value as Dayjs)}
+          onSelect={(value) => handleSelectDate(value as Dayjs)}
           dateCellRender={dateCellRender}
           onPanelChange={(value, mode) => onPanelChange(value as Dayjs, mode)}
         />
@@ -486,7 +503,8 @@ export const CalendarContent = () => {
                 }}
                 onClick={() => changeTab(2)}
                 type="primary" >
-                {trainingsSelected.length ? "Добавить тренировку" : "Создать тренировку"}
+                {/* {trainingsSelected.length ? "Добавить тренировку" : "Создать тренировку"} */}
+                {"Создать тренировку"}
               </Button>
             </div>
 

@@ -20,7 +20,7 @@ root.render(
     <React.StrictMode>
         <Provider store={store}>
             <HistoryRouter history={history}>
-                <ConfigProvider locale={ru}>
+                <ConfigProvider disable-animation locale={ru}>
                     <App />
                 </ConfigProvider>
             </HistoryRouter>
