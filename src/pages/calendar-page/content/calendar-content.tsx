@@ -29,8 +29,9 @@ export const CalendarContent = () => {
   const trainings = useAppSelector(selectTrainings)
   const trainingList = useAppSelector(selectTrainingList)
   const [isAddTrainingError, setIsAddTrainingError] = useState<boolean>(false)
-  const [isOpenFirstModal, setIsOpenFirstModal] = useState<boolean>(false)
-  const [tabFirstModal, setTabFirstModal] = useState<number>(1)
+  const [isOpenFirstModal1, setIsOpenFirstModal1] = useState<boolean>(false)
+  const [isOpenFirstModal2, setIsOpenFirstModal2] = useState<boolean>(false)
+  // const [tabFirstModal, setTabFirstModal] = useState<number>(1)
   const [isShowAddingExersice, setIsShowAddingExersice] = useState<boolean>(false)
   const [selectedDate, setSelectedDate] = useState<Dayjs>();
   const [selectedTypeOfTraining, setSelectedTypeOfTraining] = useState<string>();
@@ -55,12 +56,15 @@ export const CalendarContent = () => {
 
 
   const changeTab = (value: number) => {
-    setTabFirstModal(value)
+    if (value == 1) { setIsOpenFirstModal2(false); setIsOpenFirstModal1(true) }
+    if (value == 2) { setIsOpenFirstModal1(false); setIsOpenFirstModal2(true) }
+    // setTabFirstModal(value)
 
   }
 
   const clearState = () => {
-    setIsOpenFirstModal(false);
+    setIsOpenFirstModal1(false);
+    setIsOpenFirstModal2(false);
     setIsShowAddingExersice(false);
     setSelectedTypeOfTraining(undefined);
     setTrainingsSelected([])
@@ -78,30 +82,32 @@ export const CalendarContent = () => {
 
   const onPanelChange = (value: Dayjs, mode: CalendarProps<Dayjs>['mode']) => {
     console.log("panel")
-    setTimeout(() => setIsOpenFirstModal(false), 10)
+    setTimeout(() => { setIsOpenFirstModal1(false); setIsOpenFirstModal2(false) }, 10)
 
   };
 
-  const checkIsFutureDay = useCallback((value = selectedDate) => {
+  const checkIsFutureDay = (value = selectedDate) => {
     return dayjs().isBefore(dayjs(value), "day")
-  }, [selectedDate])
+  }
 
   const handleSelectDate = (value: Dayjs) => {
     clearState()
     const listOfTrainings = getListData(value)
-    if (checkIsFutureDay(value) || listOfTrainings.length) {
+    if (checkIsFutureDay(value) || listOfTrainings?.length) {
       // if (true) {
-      setTabFirstModal(1)
+      // setTabFirstModal(1)
       setTimeout(() => {
         const ulElement = ulRefs?.current?.[dayjs(value).format()] || null;
         if (ulElement) {
+          console.log("ul")
           const ulPosition = ulElement.getBoundingClientRect();
           if (ulPosition.left + 264 > width) ulPosition.left - 264 + ulPosition.width
           setModalPosition({
             top: ulPosition.top - 28,
             left: (ulPosition.left + 264 > width) ? (ulPosition.left - 264 + ulPosition.width + 8) : (ulPosition.left - 8)
           });
-          setIsOpenFirstModal(true);
+          setIsOpenFirstModal1(true);
+          setIsOpenFirstModal2(false);
         }
       }, 0)
       setTrainingsSelected(listOfTrainings)
@@ -112,9 +118,10 @@ export const CalendarContent = () => {
 
   };
 
-  useEffect(() => {
-    console.log(selectedTypeOfTraining)
-  }, [selectedTypeOfTraining])
+  // useEffect(() => {
+  //   console.log(isOpenFirstModal1)
+  //   console.log(isOpenFirstModal2)
+  // }, [isOpenFirstModal])
 
   // export interface ITraining {
   //   "_id": string,
@@ -179,7 +186,7 @@ export const CalendarContent = () => {
   }
 
   const editTraining = (training: ITraining) => {
-    setTabFirstModal(2)
+    changeTab(2)
     setSelectedTypeOfTraining(training.name);
     // setExerciseSelected(training.exercises)
     // setNewAddedTrainings([])
@@ -224,9 +231,10 @@ export const CalendarContent = () => {
       date: dayjs(selectedDate).add(dayjs().utcOffset() / 60, 'hour').toISOString(),
       exercises: newAddedExercise
     }
-    clearState()
-    setIsOpenFirstModal(true)
-    setTabFirstModal(1)
+    // clearState()
+    setIsOpenFirstModal2(false)
+    setIsOpenFirstModal1(true)
+    // setTabFirstModal(1)
     if (old) {
       const { _id, ...rest } = training as ITraining
       UpdateTraining({ rest, _id })
@@ -266,7 +274,6 @@ export const CalendarContent = () => {
 
   const dateCellRenderMobile = (value: any) => {
     const listData = getListData(value);
-    console.log(dayjs(value).isSame(dayjs(), "day"))
     if (listData?.length) {
       return (
         <ul style={{
@@ -279,7 +286,15 @@ export const CalendarContent = () => {
         </ul>
       );
     } else {
-      return <></>
+      return (
+        <ul style={{
+          marginTop: "-24px",
+          height: "24px", width: "100%",
+        }}
+          ref={(ref) => (ulRefs.current !== null ? ulRefs.current[dayjs(value).format()] = ref : '')}
+          className="events">
+        </ul>
+      )
     }
 
   };
@@ -317,7 +332,7 @@ export const CalendarContent = () => {
   }, [isUpdateLoading]);
 
   useEffect(() => {
-    if (selectedDate && isOpenFirstModal)
+    if (selectedDate && isOpenFirstModal1)
       setTrainingsSelected(getListData(selectedDate))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trainings]);
@@ -366,255 +381,284 @@ export const CalendarContent = () => {
             dateCellRender={dateCellRenderMobile}
             style={{ padding: 0, backgroundColor: "white" }}
             // dateCellRender={dateCellRender}
-            onChange={(value) => handleSelectDate(value as Dayjs)}
+            onSelect={(value) => handleSelectDate(value as Dayjs)}
             fullscreen={false}
             onPanelChange={(value, mode) => onPanelChange(value as Dayjs, mode)} />
         </div>
         :
 
         <Calendar style={{ padding: 0, backgroundColor: "rgb(240, 245, 255)" }}
-          onChange={(value) => handleSelectDate(value as Dayjs)}
+          onSelect={(value) => handleSelectDate(value as Dayjs)}
           dateCellRender={dateCellRender}
           onPanelChange={(value, mode) => onPanelChange(value as Dayjs, mode)}
         />
       }
+      {/* {tabFirstModal == 1 ? */}
       <Modal
-        closeIcon={<CloseOutlined
-          data-test-id='modal-create-training-button-close'
-        />}
-
+        // closeIcon={<CloseOutlined
+        //   data-test-id='modal-create-training-button-close'
+        // />}
+        data-test-id='modal-create-training'
         centered={screens.xs ? true : false}
-        closable={tabFirstModal == 1}
+        closable={false}
         width={screens.xs ? "calc(100% - 44px)" : 264}
         mask={false}
         footer={null}
         bodyStyle={{ padding: "16px 0 12px" }}
         style={screens.xs ? { margin: 0 } : { margin: 0, top: modalPosition.top, left: modalPosition.left }}
-        open={isOpenFirstModal}
-        onCancel={() => { setIsOpenFirstModal(false) }}
+        open={isOpenFirstModal1}
+        onCancel={() => { setIsOpenFirstModal1(false) }}
       >
-        {tabFirstModal == 1 ?
-          <div
-            data-test-id='modal-create-training'
-            style={{
-              alignItems: "flex-start",
-              justifyContent: "flex-start",
-              flexDirection: "column",
-              // display: "flex",
-              width: "100%",
-              gap: "16px"
-            }}>
+        <div
+
+          style={{
+            alignItems: "flex-start",
+            justifyContent: "flex-start",
+            flexDirection: "column",
+            // display: "flex",
+            width: "100%",
+            gap: "16px"
+          }}>
+          <div style={{
+            display: "flex", justifyContent: "space-between", width: "100%"
+          }}>
+
             <div style={{
               paddingLeft: "12px",
               fontWeight: 700, fontSize: "14px", lineHeight: "18px"
             }}>
               Тренировки на {dayjs(selectedDate).format('l')}
             </div>
-            {!trainingsSelected.length && <div
-              style={{
-                paddingLeft: "12px",
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                color: "#8C8C8C", fontSize: "14px", lineHeight: "18px"
-              }}
-            >Нет активных тренировок</div>}
-            {!trainingsSelected.length ?
-              <div style={{
-
-                display: "flex",
-                width: "100%",
-                justifyContent: "center",
-                padding: "32px 0 16px 0"
-              }}>
-                <Image
-                  // style={{ marginTop: "52px", transition: "width 0.5s ease-in-out, margin-top 0.5s ease-in-out" }}
-                  width={32}
-                  preview={false}
-                  src={noTrainingsPng}
-                  alt="no_Trainings"
-                />
-              </div> :
-              <div style={{
-                width: "100%",
-                display: "flex",
-                gap: "8px",
-                flexDirection: "column",
-                paddingLeft: "12px",
-                paddingRight: "12px",
-                paddingTop: "34px",
-                paddingBottom: "16px"
-              }}>
-
-                {trainingsSelected.map((item, index) => (
-                  <li style={{
-                    display: "flex", justifyContent: "space-between"
-                  }} key={item.name}>
-                    <Badge color={item.isImplementation ? "#BFBFBF" : (colors?.[item.name as keyof typeof colors] || "#EB2F96")}
-
-                      // status={item.type as BadgeProps['status']}
-                      text={item.name} />
-                    <EditOutlined style={{
-                      cursor: "pointer",
-                      fontSize: "14px",
-                      color: item.isImplementation ? "#BFBFBF" : "#2F54EB"
-                    }}
-                      data-test-id={`modal-update-training-edit-button${index}`}
-                      onClick={() => (item.isImplementation ? showEditTraining(item) : editTraining(item))}
-                    />
-                  </li>
-                ))}
-              </div>
-            }
-            <Divider style={{ margin: 0 }} />
             <div
+              data-test-id='modal-create-training-button-close'
               style={{
-                paddingLeft: "12px",
                 paddingRight: "12px",
-                display: "flex",
-                width: "100%",
-                justifyContent: "center",
-                paddingTop: "12px"
-              }}>
-              <Button
-                disabled={trainingList.length <= trainingsSelected.length || !checkIsFutureDay()}
-                style={{
-                  width: "100%",
-                  fontSize: "14px",
-                  height: "40px",
-                  lineHeight: "18px"
-                }}
-                onClick={() => changeTab(2)}
-                type="primary" >
-                {trainingsSelected.length ? "Добавить тренировку" : "Создать тренировку"}
-              </Button>
+              }}
+              onClick={() => { setIsOpenFirstModal1(false) }}
+            >
+              <CloseOutlined />
             </div>
-
           </div>
-          :
-          <div
-            data-test-id='modal-create-exercise'
+          {!trainingsSelected.length && <div
             style={{
-              alignItems: "flex-start",
-              justifyContent: "flex-start",
-              flexDirection: "column",
-              // display: "flex",
+              paddingLeft: "12px",
               width: "100%",
-              gap: "16px"
-            }}>
+              display: "flex",
+              alignItems: "center",
+              color: "#8C8C8C", fontSize: "14px", lineHeight: "18px"
+            }}
+          >Нет активных тренировок</div>}
+          {!trainingsSelected.length ?
             <div style={{
-              paddingTop: "2px",
+
+              display: "flex",
+              width: "100%",
+              justifyContent: "center",
+              padding: "32px 0 16px 0"
+            }}>
+              <Image
+                // style={{ marginTop: "52px", transition: "width 0.5s ease-in-out, margin-top 0.5s ease-in-out" }}
+                width={32}
+                preview={false}
+                src={noTrainingsPng}
+                alt="no_Trainings"
+              />
+            </div> :
+            <div style={{
+              width: "100%",
+              display: "flex",
+              gap: "8px",
+              flexDirection: "column",
               paddingLeft: "12px",
               paddingRight: "12px",
-              display: "flex", gap: "12px", fontSize: "14px", lineHeight: "18px"
+              paddingTop: "34px",
+              paddingBottom: "16px"
             }}>
-              <ArrowLeftOutlined data-test-id='modal-exercise-training-button-close' onClick={() => { changeTab(1) }} />
-              <Dropdown
-                menu={{
-                  items: transformDropdownProps(),
-                  selectable: true,
-                  onSelect: (item) => onChangeDropdown(item?.item?.props?.name || undefined)
-                }} trigger={['click']}>
-                <span style={{ width: "100%" }} onClick={e => e.preventDefault()}>
-                  <Space style={{ width: "100%", justifyContent: "space-between" }}>
-                    {selectedTypeOfTraining ? selectedTypeOfTraining : "Выбор типа тренировки"}
-                    <DownOutlined data-test-id='modal-create-exercise-select' />
-                  </Space>
-                </span>
-              </Dropdown>
+
+              {trainingsSelected.map((item, index) => (
+                <li style={{
+                  display: "flex", justifyContent: "space-between"
+                }} key={item.name}>
+                  <Badge color={item.isImplementation ? "#BFBFBF" : (colors?.[item.name as keyof typeof colors] || "#EB2F96")}
+
+                    // status={item.type as BadgeProps['status']}
+                    text={item.name} />
+                  <EditOutlined style={{
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    color: item.isImplementation ? "#BFBFBF" : "#2F54EB"
+                  }}
+                    data-test-id={`modal-update-training-edit-button${index}`}
+                    onClick={() => (item.isImplementation ? showEditTraining(item) : editTraining(item))}
+                  />
+                </li>
+              ))}
             </div>
-            <Divider style={{ margin: "17.5px 0 0" }} />
-            {!newAddedExercise.length ?
-              <div style={{
-                display: "flex",
-                width: "100%",
-                justifyContent: "center",
-                padding: "32px 0 16px 0"
-              }}>
-                <Image
-                  // style={{ marginTop: "52px", transition: "width 0.5s ease-in-out, margin-top 0.5s ease-in-out" }}
-                  width={32}
-                  preview={false}
-                  src={noTrainingsPng}
-                  alt="no_Trainings"
-                />
-              </div> :
-              <div style={{
-                maxHeight: "200px",
-                overflowY: "auto",
-                width: "100%", display:
-                  "flex", gap: "8px", flexDirection: "column",
-                paddingLeft: "12px",
-                paddingRight: "12px",
-                paddingTop: "16px",
-                paddingBottom: "16px",
-              }}>
-
-                {newAddedExercise.map((item, index) => (
-                  <div style={{
-                    display: "flex", width: "100%", justifyContent: "space-between"
-                  }} key={`${item.name}-${index}`}>
-
-                    <div style={{
-                      color: "#8C8C8C"
-                    }}>{item.name}</div>
-                    <EditOutlined style={{
-                      cursor: "pointer",
-                      fontSize: "14px",
-                      color: "#2F54EB"
-
-                    }}
-                      onClick={() => setIsShowAddingExersice(true)}
-                    />
-
-                  </div>
-                ))}
-              </div>
-            }
-            <Divider style={{ margin: 0 }} />
-            <div
+          }
+          <Divider style={{ margin: 0 }} />
+          <div
+            style={{
+              paddingLeft: "12px",
+              paddingRight: "12px",
+              display: "flex",
+              width: "100%",
+              justifyContent: "center",
+              paddingTop: "12px"
+            }}>
+            <Button
+              disabled={trainingList.length <= trainingsSelected.length || !checkIsFutureDay()}
               style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "8px",
                 width: "100%",
-                justifyContent: "center",
-                paddingLeft: "12px",
-                paddingRight: "12px",
-                paddingTop: "12px"
-              }}>
-              <Button
-                type="default"
-                disabled={!selectedTypeOfTraining}
-                style={{
-                  width: "100%",
-                  fontSize: "14px",
-                  height: "32px",
-                  lineHeight: "18px"
-                }}
-                onClick={() => { setIsShowAddingExersice(true) }}
-              >
-                Добавить упражнение
-              </Button>
-              <Button
-                type="link"
-                loading={isAddLoading}
-                disabled={(!newAddedExercise?.length || !selectedTypeOfTraining) && !isOldTraining()}
-                style={{
-                  width: "100%",
-                  fontSize: "14px",
-                  height: "32px",
-                  lineHeight: "18px"
-                }}
-                onClick={() => { saveCurrentTraining() }}
-              >
-                Сохранить
-              </Button>
-            </div>
+                fontSize: "14px",
+                height: "40px",
+                lineHeight: "18px"
+              }}
+              onClick={() => changeTab(2)}
+              type="primary" >
+              {/* Для тестов */}
+              {(trainingsSelected.length && checkIsFutureDay()) ? "Добавить тренировку" : "Создать тренировку"}
+            </Button>
           </div>
-        }
+
+        </div>
+      </Modal>
+
+      <Modal
+        data-test-id='modal-create-exercise'
+        centered={screens.xs ? true : false}
+        closable={false}
+        width={screens.xs ? "calc(100% - 44px)" : 264}
+        mask={false}
+        footer={null}
+        bodyStyle={{ padding: "16px 0 12px" }}
+        style={screens.xs ? { margin: 0 } : { margin: 0, top: modalPosition.top, left: modalPosition.left }}
+        open={isOpenFirstModal2}
+        onCancel={() => { setIsOpenFirstModal2(false) }}
+      >
+
+        <div
+
+          style={{
+            alignItems: "flex-start",
+            justifyContent: "flex-start",
+            flexDirection: "column",
+            // display: "flex",
+            width: "100%",
+            gap: "16px"
+          }}>
+          <div style={{
+            paddingTop: "2px",
+            paddingLeft: "12px",
+            paddingRight: "12px",
+            display: "flex", gap: "12px", fontSize: "14px", lineHeight: "18px"
+          }}>
+            <ArrowLeftOutlined data-test-id='modal-exercise-training-button-close' onClick={() => { changeTab(1) }} />
+            <Dropdown
+              menu={{
+                items: transformDropdownProps(),
+                selectable: true,
+                onSelect: (item) => onChangeDropdown(item?.item?.props?.name || undefined)
+              }} trigger={['click']}>
+              <span style={{ width: "100%" }} onClick={e => e.preventDefault()}>
+                <Space style={{ width: "100%", justifyContent: "space-between" }}>
+                  {selectedTypeOfTraining ? selectedTypeOfTraining : "Выбор типа тренировки"}
+                  <DownOutlined data-test-id='modal-create-exercise-select' />
+                </Space>
+              </span>
+            </Dropdown>
+          </div>
+          <Divider style={{ margin: "17.5px 0 0" }} />
+          {!newAddedExercise.length ?
+            <div style={{
+              display: "flex",
+              width: "100%",
+              justifyContent: "center",
+              padding: "32px 0 16px 0"
+            }}>
+              <Image
+                // style={{ marginTop: "52px", transition: "width 0.5s ease-in-out, margin-top 0.5s ease-in-out" }}
+                width={32}
+                preview={false}
+                src={noTrainingsPng}
+                alt="no_Trainings"
+              />
+            </div> :
+            <div style={{
+              maxHeight: "200px",
+              overflowY: "auto",
+              width: "100%", display:
+                "flex", gap: "8px", flexDirection: "column",
+              paddingLeft: "12px",
+              paddingRight: "12px",
+              paddingTop: "16px",
+              paddingBottom: "16px",
+            }}>
+
+              {newAddedExercise.map((item, index) => (
+                <div style={{
+                  display: "flex", width: "100%", justifyContent: "space-between"
+                }} key={`${item.name}-${index}`}>
+
+                  <div style={{
+                    color: "#8C8C8C"
+                  }}>{item.name}</div>
+                  <EditOutlined style={{
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    color: "#2F54EB"
+
+                  }}
+                    onClick={() => setIsShowAddingExersice(true)}
+                  />
+
+                </div>
+              ))}
+            </div>
+          }
+          <Divider style={{ margin: 0 }} />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              width: "100%",
+              justifyContent: "center",
+              paddingLeft: "12px",
+              paddingRight: "12px",
+              paddingTop: "12px"
+            }}>
+            <Button
+              type="default"
+              disabled={!selectedTypeOfTraining}
+              style={{
+                width: "100%",
+                fontSize: "14px",
+                height: "32px",
+                lineHeight: "18px"
+              }}
+              onClick={() => { setIsShowAddingExersice(true) }}
+            >
+              Добавить упражнение
+            </Button>
+            <Button
+              type="link"
+              loading={isAddLoading}
+              disabled={(!newAddedExercise?.length || !selectedTypeOfTraining) && !isOldTraining()}
+              style={{
+                width: "100%",
+                fontSize: "14px",
+                height: "32px",
+                lineHeight: "18px"
+              }}
+              onClick={() => { saveCurrentTraining() }}
+            >
+              Сохранить
+            </Button>
+          </div>
+        </div>
 
       </Modal>
+      {/* } */}
       <Drawer
         data-test-id='modal-drawer-right'
         style={{
