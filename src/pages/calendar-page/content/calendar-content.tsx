@@ -77,7 +77,9 @@ export const CalendarContent = () => {
   };
 
   const onPanelChange = (value: Dayjs, mode: CalendarProps<Dayjs>['mode']) => {
-    // console.log("panel")
+    console.log("panel")
+    setTimeout(() => setIsOpenFirstModal(false), 10)
+
   };
 
   const checkIsFutureDay = useCallback((value = selectedDate) => {
@@ -262,6 +264,26 @@ export const CalendarContent = () => {
     );
   };
 
+  const dateCellRenderMobile = (value: any) => {
+    const listData = getListData(value);
+    console.log(dayjs(value).isSame(dayjs(), "day"))
+    if (listData?.length) {
+      return (
+        <ul style={{
+          marginTop: "-24px",
+          height: "24px", width: "100%",
+          background: (dayjs(value).isSame(dayjs(selectedDate, "day")) || dayjs(value).isSame(dayjs(), "day")) ? "" : "#F0F5FF",
+        }}
+          ref={(ref) => (ulRefs.current !== null ? ulRefs.current[dayjs(value).format()] = ref : '')}
+          className="events">
+        </ul>
+      );
+    } else {
+      return <></>
+    }
+
+  };
+
   useEffect(() => {
 
     if (isAddSuccess && selectedDate) { setTrainingsSelected(getListData(selectedDate)) }
@@ -338,30 +360,50 @@ export const CalendarContent = () => {
         </div>
 
       </Modal>
-      <Calendar style={{ padding: 0, backgroundColor: "rgb(240, 245, 255)" }}
-        onChange={(value) => handleSelectDate(value as Dayjs)}
-        dateCellRender={dateCellRender}
-        onPanelChange={(value, mode) => onPanelChange(value as Dayjs, mode)}
-      />
+      {screens.xs ?
+        <div className="calendar-card">
+          <Calendar
+            dateCellRender={dateCellRenderMobile}
+            style={{ padding: 0, backgroundColor: "white" }}
+            // dateCellRender={dateCellRender}
+            onChange={(value) => handleSelectDate(value as Dayjs)}
+            fullscreen={false}
+            onPanelChange={(value, mode) => onPanelChange(value as Dayjs, mode)} />
+        </div>
+        :
+
+        <Calendar style={{ padding: 0, backgroundColor: "rgb(240, 245, 255)" }}
+          onChange={(value) => handleSelectDate(value as Dayjs)}
+          dateCellRender={dateCellRender}
+          onPanelChange={(value, mode) => onPanelChange(value as Dayjs, mode)}
+        />
+      }
       <Modal
+        closeIcon={<CloseOutlined
+          data-test-id='modal-create-training-button-close'
+        />}
+
+        centered={screens.xs ? true : false}
         closable={tabFirstModal == 1}
-        width={264}
+        width={screens.xs ? "calc(100% - 44px)" : 264}
         mask={false}
         footer={null}
         bodyStyle={{ padding: "16px 0 12px" }}
-        style={{ margin: 0, top: modalPosition.top, left: modalPosition.left }}
+        style={screens.xs ? { margin: 0 } : { margin: 0, top: modalPosition.top, left: modalPosition.left }}
         open={isOpenFirstModal}
         onCancel={() => { setIsOpenFirstModal(false) }}
       >
         {tabFirstModal == 1 ?
-          <div style={{
-            alignItems: "flex-start",
-            justifyContent: "flex-start",
-            flexDirection: "column",
-            // display: "flex",
-            width: "100%",
-            gap: "16px"
-          }}>
+          <div
+            data-test-id='modal-create-training'
+            style={{
+              alignItems: "flex-start",
+              justifyContent: "flex-start",
+              flexDirection: "column",
+              // display: "flex",
+              width: "100%",
+              gap: "16px"
+            }}>
             <div style={{
               paddingLeft: "12px",
               fontWeight: 700, fontSize: "14px", lineHeight: "18px"
@@ -417,6 +459,7 @@ export const CalendarContent = () => {
                       fontSize: "14px",
                       color: item.isImplementation ? "#BFBFBF" : "#2F54EB"
                     }}
+                      data-test-id={`modal-update-training-edit-button${index}`}
                       onClick={() => (item.isImplementation ? showEditTraining(item) : editTraining(item))}
                     />
                   </li>
@@ -449,21 +492,23 @@ export const CalendarContent = () => {
 
           </div>
           :
-          <div style={{
-            alignItems: "flex-start",
-            justifyContent: "flex-start",
-            flexDirection: "column",
-            // display: "flex",
-            width: "100%",
-            gap: "16px"
-          }}>
+          <div
+            data-test-id='modal-create-exercise'
+            style={{
+              alignItems: "flex-start",
+              justifyContent: "flex-start",
+              flexDirection: "column",
+              // display: "flex",
+              width: "100%",
+              gap: "16px"
+            }}>
             <div style={{
               paddingTop: "2px",
               paddingLeft: "12px",
               paddingRight: "12px",
               display: "flex", gap: "12px", fontSize: "14px", lineHeight: "18px"
             }}>
-              <ArrowLeftOutlined onClick={() => { changeTab(1) }} />
+              <ArrowLeftOutlined data-test-id='modal-exercise-training-button-close' onClick={() => { changeTab(1) }} />
               <Dropdown
                 menu={{
                   items: transformDropdownProps(),
@@ -473,7 +518,7 @@ export const CalendarContent = () => {
                 <span style={{ width: "100%" }} onClick={e => e.preventDefault()}>
                   <Space style={{ width: "100%", justifyContent: "space-between" }}>
                     {selectedTypeOfTraining ? selectedTypeOfTraining : "Выбор типа тренировки"}
-                    <DownOutlined />
+                    <DownOutlined data-test-id='modal-create-exercise-select' />
                   </Space>
                 </span>
               </Dropdown>
@@ -571,6 +616,7 @@ export const CalendarContent = () => {
 
       </Modal>
       <Drawer
+        data-test-id='modal-drawer-right'
         style={{
           zIndex: 1001
           // display: (screens?.xs) ? "block" : "none", <CloseOutlined />
@@ -581,7 +627,7 @@ export const CalendarContent = () => {
         onClose={() => onCloseExercise()}
         open={isShowAddingExersice}
         key={"right"}
-        width={408}
+        width={screens.xs ? "100%" : 408}
         bodyStyle={{
           padding: screens.xs ? "24px 16px 0" : "24px 32px 0",
         }}
@@ -598,10 +644,10 @@ export const CalendarContent = () => {
           > {getListData()?.find(item => item.name == selectedTypeOfTraining)?.isImplementation ?
             <>{"Просмотр упражнений"}</>
             : getListData()?.find(item => item.name == selectedTypeOfTraining) ?
-              <><EditOutlined style={{fontSize: "14px", paddingRight: "10px"}}/>{"Редактирование"}</>
+              <><EditOutlined style={{ fontSize: "14px", paddingRight: "10px" }} />{"Редактирование"}</>
               :
-              <><PlusOutlined style={{fontSize: "14px", paddingRight: "10px"}}/>{"Добавление упражнений"}</>}</div>
-          <CloseOutlined onClick={() => onCloseExercise()} style={{ cursor: "pointer" }} />
+              <><PlusOutlined style={{ fontSize: "14px", paddingRight: "10px" }} />{"Добавление упражнений"}</>}</div>
+          <CloseOutlined data-test-id='modal-drawer-right-button-close' onClick={() => onCloseExercise()} style={{ cursor: "pointer" }} />
 
         </div>
         <div style={{
@@ -619,7 +665,7 @@ export const CalendarContent = () => {
           padding: screens.xs ? "0 0 24px " : "0 0 24px"
         }}>
           {newAddedExercise.map((item, index) => {
-            return <ExserciseItem isImplementation={!!getListData()?.find(item => item.name == selectedTypeOfTraining)?.isImplementation} isOldTraining={isOldTraining} key={item?.unicKyeForDev || `${dayjs().valueOf()} - ${index}`} itemObj={item} changeItemObj={changeItemObj} />
+            return <ExserciseItem index={index} isImplementation={!!getListData()?.find(item => item.name == selectedTypeOfTraining)?.isImplementation} isOldTraining={isOldTraining} key={item?.unicKyeForDev || `${dayjs().valueOf()} - ${index}`} itemObj={item} changeItemObj={changeItemObj} />
           })
           }
           {!getListData()?.find(item => item.name == selectedTypeOfTraining)?.isImplementation && <div style={{

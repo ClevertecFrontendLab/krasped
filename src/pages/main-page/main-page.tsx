@@ -51,6 +51,7 @@ const MainPage: React.FC = () => {
             <Layout style={{ position: "relative" }}>
                 <LoaderComponent />
                 <Modal centered footer={null} style={{ backdropFilter: 'blur(10px)' }}
+                    data-test-id='modal-no-review'
                     closable={false} open={isCalendarError}
                     onCancel={() => setIsCalendarError(false)}>
                     <Result
@@ -64,7 +65,7 @@ const MainPage: React.FC = () => {
                         }}
                         title={<span style={{ fontWeight: 500 }}>{"Что-то пошло не так"}</span>}
                         status="500"
-                        subTitle="Произошла ошибка, попробуйте еще раз."
+                        subTitle="Произошла ошибка, попробуйте ещё раз."
                         extra={
                             <Button size='large' onClick={() => { history.push('/main') }} type="primary" key="console">
                                 Назад

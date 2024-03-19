@@ -4,7 +4,7 @@ import { Checkbox, Grid, Input } from "antd";
 import { IExercise, IExerciseWithId, ITraining, ITrainingReq } from "@redux/api/training/training.types"
 
 
-export const ExserciseItem = ({ itemObj, changeItemObj, isOldTraining, isImplementation }: { itemObj: IExercise, changeItemObj: (item: IExercise) => void, isOldTraining: () => ITraining | undefined, isImplementation: boolean }) => {
+export const ExserciseItem = ({ itemObj, changeItemObj, isOldTraining, isImplementation, index }: { index: number, itemObj: IExercise, changeItemObj: (item: IExercise) => void, isOldTraining: () => ITraining | undefined, isImplementation: boolean }) => {
   const { name, replays, weight, approaches, isSelectedForDelete } = itemObj
 
   // const defaultExercise = {
@@ -21,7 +21,7 @@ export const ExserciseItem = ({ itemObj, changeItemObj, isOldTraining, isImpleme
   const screens = useBreakpoint();
 
   const chageValueAndSave = (value: Partial<IExercise>) => {
-    if(isImplementation) return
+    if (isImplementation) return
     changeItemObj({ ...itemObj, ...value })
   }
   return (
@@ -33,8 +33,8 @@ export const ExserciseItem = ({ itemObj, changeItemObj, isOldTraining, isImpleme
         gap: "8px"
       }}
     >
-      <div><Input value={name} onChange={(e) => chageValueAndSave({ name: e.target.value })} size="small" style={{ height: "24px" }}
-        addonAfter={(isOldTraining() && !isImplementation) && <Checkbox checked={isSelectedForDelete} onChange={(e) => chageValueAndSave({ isSelectedForDelete: e.target.checked })} style={{ marginTop: "-5px" }}></Checkbox>}
+      <div><Input data-test-id={`modal-drawer-right-input-exercise${index}`} value={name} onChange={(e) => chageValueAndSave({ name: e.target.value })} size="small" style={{ height: "24px" }}
+        addonAfter={(isOldTraining() && !isImplementation) && <Checkbox data-test-id={`modal-drawer-right-checkbox-exercise${index}`} checked={isSelectedForDelete} onChange={(e) => chageValueAndSave({ isSelectedForDelete: e.target.checked })} style={{ marginTop: "-5px" }}></Checkbox>}
         placeholder="Упражнение"></Input></div>
       <div
         style={{ display: "flex", justifyContent: "space-between" }}
@@ -53,6 +53,7 @@ export const ExserciseItem = ({ itemObj, changeItemObj, isOldTraining, isImpleme
             Подходы
           </div>
           <Input
+            data-test-id={`modal-drawer-right-input-approach${index}`}
             value={approaches}
             onChange={(e) => chageValueAndSave({ approaches: +e.target.value })}
             size="small"
@@ -85,6 +86,7 @@ export const ExserciseItem = ({ itemObj, changeItemObj, isOldTraining, isImpleme
             </div>
 
             <Input type="number"
+              data-test-id={`modal-drawer-right-input-weight${index}`}
               value={weight}
               onChange={(e) => chageValueAndSave({ weight: +e.target.value })}
               style={{
@@ -123,6 +125,7 @@ export const ExserciseItem = ({ itemObj, changeItemObj, isOldTraining, isImpleme
               Количество
             </div>
             <Input type="number"
+              data-test-id={`modal-drawer-right-input-quantity${index}`}
               value={replays}
               onChange={(e) => chageValueAndSave({ replays: +e.target.value })}
               style={{

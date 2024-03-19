@@ -67,7 +67,9 @@ const CalendarPage: React.FC = () => {
     <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
       <Layout style={{ position: "relative" }}>
         <LoaderComponent />
-        <Modal centered footer={null} style={{ backdropFilter: 'blur(10px)' }} closable={false} open={isTrainingssError} onCancel={() => setIsTrainingsError(false)}>
+        <Modal
+          data-test-id='modal-no-review'
+          centered footer={null} style={{ backdropFilter: 'blur(10px)' }} closable={false} open={isTrainingssError} onCancel={() => setIsTrainingsError(false)}>
           <Result
             style={{
               maxWidth: "539px",
@@ -79,7 +81,7 @@ const CalendarPage: React.FC = () => {
             }}
             title={<span style={{ fontWeight: 500 }}>{"Что-то пошло не так"}</span>}
             status="500"
-            subTitle="Произошла ошибка, попробуйте еще раз."
+            subTitle={<span style={{ color: "#8C8C8C" }}>{"Произошла ошибка, попробуйте ещё раз."}</span>}
             extra={
               <Button size='large' onClick={() => { history.push('/main') }} type="primary" key="console">
                 Назад
@@ -96,6 +98,7 @@ const CalendarPage: React.FC = () => {
           onCancel={() => setIsTrainingListError(false)}>
           <div style={{ alignItems: "flex-start", display: "flex", width: "100%", gap: "16px" }}>
             <CloseCircleOutlined
+              data-test-id='modal-error-user-training-button-close'
               style={{
 
                 color: "#2F54EB",
@@ -107,10 +110,15 @@ const CalendarPage: React.FC = () => {
               flexDirection: "column",
               gap: "8px",
             }}>
-              <div style={{ fontSize: "16px", lineHeight: "21px" }}>При открытии данных <br /> произошла ошибка </div>
-              <div style={{ color: "#8C8C8C", fontSize: "14px", lineHeight: "18px" }}>Попробуйте ещё раз.</div>
+              <div
+                data-test-id='modal-error-user-training-title'
+                style={{ fontSize: "16px", lineHeight: "21px" }}>При открытии данных <br /> произошла ошибка </div>
+              <div
+                data-test-id='modal-error-user-training-subtitle'
+                style={{ color: "#8C8C8C", fontSize: "14px", lineHeight: "18px" }}>Попробуйте ещё раз.</div>
               <div style={{ display: "flex", width: "100%", justifyContent: "flex-end" }}>
                 <Button
+                  data-test-id='modal-error-user-training-button'
                   style={{
                     fontSize: "14px",
                     height: "28px",

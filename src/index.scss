@@ -145,6 +145,12 @@ select {
 .ant-picker-body{
   background-color: rgb(240, 245, 255);
 }
+.calendar-card{
+
+  .ant-picker-body{
+    background-color: white;
+  }
+}
 
 .ant-picker-calendar-full .ant-picker-panel .ant-picker-calendar-date{
   background-color: white
