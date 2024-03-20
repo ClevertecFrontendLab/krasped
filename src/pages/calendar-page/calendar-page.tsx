@@ -16,7 +16,7 @@ import { useAddTrainingMutation, useGetAllTriningsQuery } from '@redux/api/train
 import { selectTrainings, setIsShowCalendarDate } from '@redux/trainingSlice';
 import dayjs from 'dayjs';
 import { useGetTriningListQuery } from '@redux/api/catalog/catalog';
-import { CloseCircleOutlined, CloseOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined } from '@ant-design/icons';
 
 const CalendarPage: React.FC = () => {
   // const [form] = Form.useForm();
@@ -92,14 +92,13 @@ const CalendarPage: React.FC = () => {
 
         <Modal centered
           footer={null}
-          closeIcon={<CloseOutlined data-test-id='modal-error-user-training-button-close' />}
           bodyStyle={{ padding: "16px 24px" }}
           style={{ maxWidth: "384px", backdropFilter: 'blur(10px)' }}
           open={isTrainingListError}
           onCancel={() => setIsTrainingListError(false)}>
           <div style={{ alignItems: "flex-start", display: "flex", width: "100%", gap: "16px" }}>
             <CloseCircleOutlined
-
+              data-test-id='modal-error-user-training-button-close'
               style={{
 
                 color: "#2F54EB",

@@ -67,7 +67,7 @@ const MainPage: React.FC = () => {
                         status="500"
                         subTitle="Произошла ошибка, попробуйте ещё раз."
                         extra={
-                            <Button size='large' onClick={() => { setIsCalendarError(false) }} type="primary" key="console">
+                            <Button size='large' onClick={() => { history.push('/main') }} type="primary" key="console">
                                 Назад
                             </Button>
                         }
