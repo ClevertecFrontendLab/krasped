@@ -28,9 +28,7 @@ const MainPage: React.FC = () => {
         history.push("/feedbacks")
     }
 
-    const getCalendar = () => {
-        getTrainings(null)
-    }
+    const getCalendar = () => getTrainings(null)
 
     useEffect(() => {
         if (isSuccess) {
@@ -44,8 +42,7 @@ const MainPage: React.FC = () => {
             }
             setIsCalendarError(true)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLoading]);
+    }, [dispatch, error, isError, isLoading, isSuccess]);
     return (
         <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
             <Layout style={{ position: "relative" }}>

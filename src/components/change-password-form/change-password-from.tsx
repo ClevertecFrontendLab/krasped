@@ -40,8 +40,7 @@ const ChangePasswordFrom: React.FC = () => {
         }
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading]);
+  }, [form, isError, isLoading, isSuccess]);
   useEffect(() => {
     const locationState = history?.location?.state as ILocationState;
     if (history?.location.state && locationState?.from && locationState?.formState) {
@@ -52,8 +51,7 @@ const ChangePasswordFrom: React.FC = () => {
     } else {
       history.push("/")
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history?.location?.pathname]);
+  }, [changePassword, form]);
 
   useEffect(() => {
     if (form.isFieldsTouched(["password"])) {

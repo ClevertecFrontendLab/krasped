@@ -10,8 +10,7 @@ export const ResultLayout: React.FC = (props: PropsWithChildren) => {
     if (!history?.location.state || !locationState?.from) {
       history.push('/auth/login');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history.location.pathname]);
+  }, []);
   return (
     <>
       <Layout style={{

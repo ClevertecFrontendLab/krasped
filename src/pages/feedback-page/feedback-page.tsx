@@ -54,8 +54,7 @@ const FeedbackPage: React.FC = () => {
       }
       setIsfeedbacksError(true)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading]);
+  }, [dispatch, error, isError, isLoading]);
 
 
   useEffect(() => {
@@ -73,8 +72,7 @@ const FeedbackPage: React.FC = () => {
       setIsOpenFeedbackFrom(false)
       // closeFeedbackFrom()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addLoading]);
+  }, [addError, addIsError, addLoading, addSuccess, closeFeedbackFrom, dispatch]);
 
   return (
     <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
