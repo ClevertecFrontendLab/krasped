@@ -15,6 +15,7 @@ import { useGetAllTriningsQuery } from '@redux/api/training/training';
 import { selectTrainings, setIsShowCalendarDate } from '@redux/trainingSlice';
 import { useGetTriningListQuery } from '@redux/api/catalog/catalog';
 import { CloseCircleOutlined, CloseOutlined } from '@ant-design/icons';
+import { _AuthLogin, _Main } from '@config/constants';
 
 const CalendarPage: React.FC = () => {
   const trainings = useAppSelector(selectTrainings)
@@ -35,7 +36,7 @@ const CalendarPage: React.FC = () => {
       const customError = error as { status: number }
       if (customError.status == 403) {
         dispatch(logout())
-        history.push("/auth/login")
+        history.push(_AuthLogin)
       }
       setIsTrainingsError(true)
     }
@@ -46,7 +47,7 @@ const CalendarPage: React.FC = () => {
       const customError = errorTrainingList as { status: number }
       if (customError.status == 403) {
         dispatch(logout())
-        history.push("/auth/login")
+        history.push(_AuthLogin)
       }
       setIsTrainingListError(true)
       dispatch(setIsShowCalendarDate(false))
@@ -76,7 +77,11 @@ const CalendarPage: React.FC = () => {
             status="500"
             subTitle={<span style={{ color: "#8C8C8C" }}>{"Произошла ошибка, попробуйте ещё раз."}</span>}
             extra={
-              <Button size='large' onClick={() => { history.push('/main') }} type="primary" key="console">
+              <Button 
+              size='large' 
+              onClick={() => { history.push(_Main) }} 
+              type="primary"
+               key="console">
                 Назад
               </Button>
             }

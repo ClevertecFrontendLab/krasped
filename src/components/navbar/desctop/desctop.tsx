@@ -13,6 +13,7 @@ import { Link } from "react-router-dom"
 import { logout } from "@redux/userSlice"
 import { useAppDispatch } from "@hooks/typed-react-redux-hooks"
 import { useEffect, useState } from "react"
+import { _AuthLogin } from "@config/constants"
 
 
 export const DesctopNavbar = (props: { getCalendar?: () => void }) => {
@@ -112,7 +113,7 @@ export const DesctopNavbar = (props: { getCalendar?: () => void }) => {
           ))}
         </Menu>
         <Button
-          onClick={() => { dispatch(logout()); history.push("/auth/login") }}
+          onClick={() => { dispatch(logout()); history.push(_AuthLogin) }}
           style={{
             paddingLeft: "16px",
             display: "flex",

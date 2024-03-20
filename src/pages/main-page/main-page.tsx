@@ -14,6 +14,7 @@ import { LoaderComponent } from '@components/loader/api-loader';
 import { useGetAllTriningsMutMutation } from '@redux/api/training/training';
 import { useAppDispatch } from '@hooks/typed-react-redux-hooks';
 import { logout } from '@redux/userSlice';
+import { _AuthLogin, _Calendar, _Feedbacks } from '@config/constants';
 
 const MainPage: React.FC = () => {
     const dispatch = useAppDispatch()
@@ -25,20 +26,20 @@ const MainPage: React.FC = () => {
 
     const layoutPaddingLeft = (screens?.xs) ? '0' : (collapsed ? '64px' : '208px');
     const getFeedbacks = () => {
-        history.push("/feedbacks")
+        history.push(_Feedbacks)
     }
 
     const getCalendar = () => getTrainings(null)
 
     useEffect(() => {
         if (isSuccess) {
-            history.push("/calendar")
+            history.push(_Calendar)
         }
         if (isError) {
             const customError = error as { status: number }
             if (customError.status == 403) {
                 dispatch(logout())
-                history.push("/auth/login")
+                history.push(_AuthLogin)
             }
             setIsCalendarError(true)
         }

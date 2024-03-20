@@ -1,3 +1,4 @@
+import { _ErrorChangePassword, _Root, _SuccessChangePassword } from "@config/constants";
 import { useChangePasswordMutation, useRegistrationMutation } from "@redux/api/auth/auth";
 import { ILocationState, history } from "@redux/configure-store";
 import { Input, Button, Form, Card } from "antd"
@@ -28,11 +29,11 @@ const ChangePasswordFrom: React.FC = () => {
   };
   useEffect(() => {
     if (isSuccess) {
-      history.push('/result/success-change-password', { from: "login" });
+      history.push(_SuccessChangePassword, { from: "login" });
     }
 
     if (isError) {
-      history.push('/result/error-change-password', {
+      history.push(_ErrorChangePassword, {
         from: "reFetchChangePass",
         formState: {
           "password": form.getFieldValue("password"),
@@ -49,7 +50,7 @@ const ChangePasswordFrom: React.FC = () => {
         changePassword(locationState?.formState)
       }
     } else {
-      history.push("/")
+      history.push(_Root)
     }
   }, [changePassword, form]);
 

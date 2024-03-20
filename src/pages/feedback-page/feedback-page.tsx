@@ -18,6 +18,7 @@ import { logout } from '@redux/userSlice';
 import TextArea from 'antd/lib/input/TextArea';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
 import { IFeedbackReq } from '@redux/api/feedback/feedback.types';
+import { _AuthLogin, _Main } from '@config/constants';
 
 const FeedbackPage: React.FC = () => {
   const [form] = Form.useForm();
@@ -50,7 +51,7 @@ const FeedbackPage: React.FC = () => {
       const customError = error as { status: number }
       if (customError.status == 403) {
         dispatch(logout())
-        history.push("/auth/login")
+        history.push(_AuthLogin)
       }
       setIsfeedbacksError(true)
     }
@@ -66,7 +67,7 @@ const FeedbackPage: React.FC = () => {
       const customError = addError as { status: number }
       if (customError.status == 403) {
         dispatch(logout())
-        history.push("/auth/login")
+        history.push(_AuthLogin)
       }
       setIsfeedbackError(true)
       setIsOpenFeedbackFrom(false)
@@ -92,7 +93,7 @@ const FeedbackPage: React.FC = () => {
             status="500"
             subTitle="Произошла ошибка, попробуйте еще раз."
             extra={
-              <Button size='large' onClick={() => { history.push('/main') }} type="primary" key="console">
+              <Button size='large' onClick={() => { history.push(_Main) }} type="primary" key="console">
                 Назад
               </Button>
             }

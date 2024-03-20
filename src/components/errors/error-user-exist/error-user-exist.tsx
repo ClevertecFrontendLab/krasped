@@ -1,5 +1,6 @@
 import { Button, Grid, Result } from 'antd';
 import { history } from '@redux/configure-store';
+import { _AuthRegistration } from '@config/constants';
 
 const ErrorUserExist = () => {
   const { useBreakpoint } = Grid;
@@ -24,7 +25,12 @@ const ErrorUserExist = () => {
         </>
       }
       extra={
-        <Button size='large' data-test-id='registration-back-button' onClick={() => { history.push('/auth/registration') }} style={{ maxWidth: "369px", width: "100%" }} type="primary" key="console">
+        <Button size='large' 
+        data-test-id='registration-back-button' 
+        onClick={() => { history.push(_AuthRegistration) }} 
+        style={{ maxWidth: "369px", width: "100%" }} 
+        type="primary" 
+        key="console">
           Назад к регистрации
         </Button>
       }

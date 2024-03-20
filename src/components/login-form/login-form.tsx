@@ -1,4 +1,5 @@
 import { GooglePlusOutlined } from "@ant-design/icons";
+import { _AuthConfirmEmail, _ErrorCheckEmail, _ErrorCheckEmailNoExist, _ErrorLogin, _Root } from "@config/constants";
 import { useCheckEmailMutation, useLoginMutation } from "@redux/api/auth/auth";
 import { ILocationState, history } from "@redux/configure-store";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
@@ -47,17 +48,17 @@ export const LoginForm = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      history.push("/");
+      history.push(_Root);
     }
     if (isError) {
-      history.push("/result/error-login", { from: "login" });
+      history.push(_ErrorLogin, { from: "login" });
     }
   },
     [isError, isLoading, isSuccess]);
 
   useEffect(() => {
     if (isSuccess1) {
-      history.push("/auth/confirm-email",
+      history.push(_AuthConfirmEmail,
         {
           from: "login",
           formState: {
@@ -69,9 +70,9 @@ export const LoginForm = () => {
     if (isError1) {
       const customError = error1 as CustomError;
       if (customError?.status === 404 && customError?.data?.message === "Email не найден") {
-        history.push("/result/error-check-email-no-exist", { from: "login" });
+        history.push(_ErrorCheckEmailNoExist, { from: "login" });
       } else {
-        history.push("/result/error-check-email", {
+        history.push(_ErrorCheckEmail, {
           from: "reFetchCheck",
           formState: {
             "email": form.getFieldValue("email"),

@@ -7,6 +7,7 @@ import LogoFullSVG from "@assets/icons/logo-full.svg"
 import { logout } from "@redux/userSlice";
 import { useAppDispatch } from "@hooks/typed-react-redux-hooks";
 import { useEffect, useState } from "react";
+import { _AuthLogin } from "@config/constants";
 
 export const MobileNavbar = (props: { getCalendar?: () => void }) => {
   const [curKey, setCurKey] = useState<string>('')
@@ -116,7 +117,7 @@ export const MobileNavbar = (props: { getCalendar?: () => void }) => {
               bottom: 0,
               color: "black"
             }}
-            onClick={() => { dispatch(logout()); history.push("/auth/login") }}
+            onClick={() => { dispatch(logout()); history.push(_AuthLogin) }}
             type='link'
           >
             <span style={{

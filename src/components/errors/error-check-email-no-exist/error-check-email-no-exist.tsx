@@ -1,5 +1,6 @@
 import { Button, Grid, Result } from 'antd';
 import { history } from '@redux/configure-store';
+import { _AuthLogin } from '@config/constants';
 
 const ErrorCheckEmailNoExist = () => {
   const { useBreakpoint } = Grid;
@@ -23,7 +24,12 @@ const ErrorCheckEmailNoExist = () => {
       </>
     }
     extra={
-      <Button size='large' data-test-id='check-retry-button' onClick={() => { history.push('/auth/login') }} style={{ maxWidth: "369px", width: "100%" }} type="primary" key="console">
+      <Button size='large'
+        data-test-id='check-retry-button'
+        onClick={() => { history.push(_AuthLogin) }}
+        style={{ maxWidth: "369px", width: "100%" }}
+        type="primary"
+        key="console">
         Попробовать снова
       </Button>
     }

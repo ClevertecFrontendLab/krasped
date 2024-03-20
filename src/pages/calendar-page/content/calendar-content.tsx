@@ -14,6 +14,7 @@ import { useAddTrainingMutation, useUpdateTrainingMutation } from "@redux/api/tr
 import { history } from "@redux/configure-store"
 import { logout } from "@redux/userSlice"
 import { Option } from "antd/lib/mentions"
+import { _AuthLogin } from "@config/constants"
 
 
 
@@ -266,7 +267,7 @@ export const CalendarContent = () => {
       const customError = addError as { status: number }
       if (customError.status == 403) {
         dispatch(logout())
-        history.push("/auth/login")
+        history.push(_AuthLogin)
       }
       setSelectedDate(undefined)
       setIsAddTrainingError(true)
@@ -281,7 +282,7 @@ export const CalendarContent = () => {
       const customError = updateError as { status: number }
       if (customError.status == 403) {
         dispatch(logout())
-        history.push("/auth/login")
+        history.push(_AuthLogin)
       }
       setSelectedDate(undefined)
       setIsPutError(true)

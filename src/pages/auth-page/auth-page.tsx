@@ -4,6 +4,7 @@ import LogoFullSVG from "@assets/icons/logo-full.svg"
 import { RegisterForm } from "@components/register-form/register-form"
 import { useEffect, useState } from "react"
 import { history } from "@redux/configure-store"
+import { _Auth, _AuthLogin, _AuthRegistration } from "@config/constants"
 
 const AuthPage: React.FC = () => {
   const { useBreakpoint } = Grid;
@@ -12,15 +13,15 @@ const AuthPage: React.FC = () => {
 
   const changeTab = (tab: string): void => {
     setTab(tab);
-    (tab === "2") ? history.push("/auth/registration") : history.push("/auth/login")
+    (tab === "2") ? history.push(_AuthRegistration) : history.push(_AuthLogin)
 
   };
 
   useEffect(() => {
-    if (history?.location.pathname === "/auth") {
-      history.push("/auth/login")
+    if (history?.location.pathname === _Auth) {
+      history.push(_AuthLogin)
     } else {
-      if (history?.location.pathname === "/auth/registration") { setTab("2") } else { setTab("1") }
+      if (history?.location.pathname === _AuthRegistration) { setTab("2") } else { setTab("1") }
     }
   }, [])
   return (

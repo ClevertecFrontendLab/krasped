@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button, Grid, Result } from 'antd';
 import { ILocationState, history } from '@redux/configure-store';
+import { _AuthLogin } from '@config/constants';
 
 const ErrorLogin = () => {
   const { useBreakpoint } = Grid;
@@ -23,7 +24,7 @@ const ErrorLogin = () => {
       <Button
         size='large'
         data-test-id='login-retry-button'
-        onClick={() => { history.push('/auth/login') }}
+        onClick={() => { history.push(_AuthLogin) }}
         style={{ maxWidth: "369px", width: "100%" }}
         type="primary"
         key="console">
