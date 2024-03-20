@@ -36,22 +36,6 @@ export const catalogApi = createApi({
         } catch (error) { /* empty */ }
       },
     }),
-
-    // getAllTriningsMut: builder.mutation<ITraining[], null>({
-    //   query() {
-    //     return {
-    //       url: "",
-    //       method: 'get',
-    //       credentials: "include"
-    //     }
-    //   },
-    //   async onQueryStarted(args, { dispatch, queryFulfilled }) {
-    //     try {
-    //       const { data } = await queryFulfilled;
-    //       dispatch(setTrainings(data));
-    //     } catch (error) { /* empty */ }
-    //   },
-    // }),
   })
 })
 

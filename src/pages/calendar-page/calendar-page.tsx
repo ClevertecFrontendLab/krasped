@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Grid, Layout, Modal, Result } from 'antd';
+import { Button, Grid, Layout, Modal, Result } from 'antd';
 
 import Main_page_light from "@assets/imgs/Main_page_light.png"
 
-import s from './feedback-page.module.scss';
 import { Navbar } from '@components/navbar';
 import { useSelector } from 'react-redux';
 import { RootState, history } from '@redux/configure-store';
@@ -12,23 +11,19 @@ import { CalendarContent } from './content/calendar-content';
 import { useAppDispatch, useAppSelector } from '@hooks/typed-react-redux-hooks';
 import { LoaderComponent } from '@components/loader/api-loader';
 import { logout } from '@redux/userSlice';
-import { useAddTrainingMutation, useGetAllTriningsQuery } from '@redux/api/training/training';
+import { useGetAllTriningsQuery } from '@redux/api/training/training';
 import { selectTrainings, setIsShowCalendarDate } from '@redux/trainingSlice';
-import dayjs from 'dayjs';
 import { useGetTriningListQuery } from '@redux/api/catalog/catalog';
 import { CloseCircleOutlined, CloseOutlined } from '@ant-design/icons';
 
 const CalendarPage: React.FC = () => {
-  // const [form] = Form.useForm();
   const trainings = useAppSelector(selectTrainings)
   const [isTrainingssError, setIsTrainingsError] = useState(false)
   const [isTrainingListError, setIsTrainingListError] = useState(false)
-  // const [isfeedbackSuccess, setIsfeedbackSuccess] = useState(false)
 
   const dispatch = useAppDispatch()
   const { isError, isLoading, error } = useGetAllTriningsQuery(null);
   const { refetch, isSuccess: isSuccessTrainingList, isError: isErrorTrainingList, isLoading: loadingTrainingList, error: errorTrainingList } = useGetTriningListQuery(null);
-  // const [addFeedbacks, { isError: addIsError, isSuccess: addSuccess, isLoading: addLoading, error: addError }] = useAddTrainingMutation();
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
@@ -132,28 +127,6 @@ const CalendarPage: React.FC = () => {
           </div>
 
         </Modal>
-
-        {/* <Modal centered footer={null} style={{ backdropFilter: 'blur(10px)' }} closable={false} open={isfeedbackSuccess} onCancel={() => setIsfeedbackSuccess(false)}>
-          <Result
-            style={{
-              maxWidth: "539px",
-              width: "calc(100% - 16px)",
-              margin: "16px",
-              padding: screens.xs ? "32px 16px" : "64px 0",
-              zIndex: 1,
-              backgroundColor: "white"
-            }}
-            status="success"
-            title={<span style={{ fontWeight: 500 }}>{"Отзыв успешно опубликован"}</span>}
-
-            extra={
-              <Button size='large' onClick={() => { setIsfeedbackSuccess(false) }} style={{ maxWidth: "369px", width: "100%" }} type="primary" >
-                Отлично
-              </Button>
-            }
-          />
-        </Modal> */}
-
         <Navbar />
         <Layout style={{
           position: 'relative',

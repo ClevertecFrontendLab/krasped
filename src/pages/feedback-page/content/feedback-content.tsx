@@ -56,7 +56,6 @@ export const FeedbackContent = ({ data, openFeedback }: { data: IFeedback[] | un
 
               <div
                 style={{
-                  // width: "calc(100% - 186px)",
                   display: "flex",
                   flexDirection: "column",
                   gap: "12px"

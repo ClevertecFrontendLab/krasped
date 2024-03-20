@@ -24,8 +24,7 @@ export const MobileNavbar = (props: { getCalendar?: () => void }) => {
     const key = navItems.find((item) => history?.location.pathname.includes(item.key)
     )
     setCurKey(key?.key || '')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history?.location.pathname])
+  }, [navItems, history?.location.pathname])
 
   return (
     <>

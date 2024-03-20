@@ -31,8 +31,7 @@ export const DesctopNavbar = (props: { getCalendar?: () => void }) => {
     const key = navItems.find((item) => history?.location.pathname.includes(item.key)
     )
     setCurKey(key?.key || '')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history?.location.pathname])
+  }, [navItems, history?.location.pathname])
 
   return (
     <>
@@ -100,7 +99,6 @@ export const DesctopNavbar = (props: { getCalendar?: () => void }) => {
                 to={item.href}
                 onClick={(e) => {
                   e.preventDefault();
-                  console.log("click")
                   typeof props?.getCalendar == "function" ? props?.getCalendar() : ''
                 }}>
                 <span style={{

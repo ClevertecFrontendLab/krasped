@@ -30,7 +30,6 @@ const FeedbackPage: React.FC = () => {
   const dispatch = useAppDispatch()
   const { isError, isLoading, error } = useGetAllFeedbacksQuery(null);
   const [addFeedbacks, { isError: addIsError, isSuccess: addSuccess, isLoading: addLoading, error: addError }] = useAddFeedbackMutation();
-  // const { data, error, isLoading, refetch } = useGetMeQuery();
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();

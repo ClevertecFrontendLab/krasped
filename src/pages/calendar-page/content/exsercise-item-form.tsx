@@ -1,27 +1,15 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { useAppDispatch } from "@hooks/typed-react-redux-hooks";
 import { Checkbox, Grid, Input } from "antd";
-import { IExercise, IExerciseWithId, ITraining, ITrainingReq } from "@redux/api/training/training.types"
+import { IExercise, ITraining, } from "@redux/api/training/training.types"
 
 
 export const ExserciseItem = ({ itemObj, changeItemObj, isOldTraining, isImplementation, index }: { index: number, itemObj: IExercise, changeItemObj: (item: IExercise) => void, isOldTraining: () => ITraining | undefined, isImplementation: boolean }) => {
   const { name, replays, weight, approaches, isSelectedForDelete } = itemObj
 
-  // const defaultExercise = {
-  //   "name": "",
-  //   "replays": 1,
-  //   "weight": 0,
-  //   "approaches": 1,
-  //   "isImplementation": false, 
-  //   "isSelectedForDelete": false
-  // }
-  const dispatch = useAppDispatch()
-  // const isShowAllFeedbacks = useAppSelector(selectIsShowAllFeedbacks)
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
 
   const chageValueAndSave = (value: Partial<IExercise>) => {
-    console.log(value)
     if (isImplementation) return
     changeItemObj({ ...itemObj, ...value })
   }
