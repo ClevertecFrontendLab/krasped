@@ -21,6 +21,7 @@ export const ExserciseItem = ({ itemObj, changeItemObj, isOldTraining, isImpleme
   const screens = useBreakpoint();
 
   const chageValueAndSave = (value: Partial<IExercise>) => {
+    console.log(value)
     if (isImplementation) return
     changeItemObj({ ...itemObj, ...value })
   }
