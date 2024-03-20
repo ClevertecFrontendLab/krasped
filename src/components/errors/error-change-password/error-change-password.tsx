@@ -13,7 +13,8 @@ const ErrorChangePassword: React.FC = () => {
     } else {
       history.push(_AuthChangePassword, history?.location?.state)
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history?.location?.pathname]);
   return (
     <Result
       style={{

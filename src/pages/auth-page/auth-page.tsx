@@ -23,7 +23,8 @@ const AuthPage: React.FC = () => {
     } else {
       if (history?.location.pathname === _AuthRegistration) { setTab("2") } else { setTab("1") }
     }
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history?.location])
   return (
     <Card
       bodyStyle={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", padding: 0 }}

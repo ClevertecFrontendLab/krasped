@@ -43,7 +43,7 @@ export const LoginForm = () => {
     form.validateFields(['email']).then((res) => {
       postForgotPassword(res)
     })
-      .catch(errorInfo => {/*empty*/});
+      .catch(errorInfo => { });
   }
 
   useEffect(() => {
@@ -54,7 +54,8 @@ export const LoginForm = () => {
       history.push(_ErrorLogin, { from: "login" });
     }
   },
-    [isError, isLoading, isSuccess]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isLoading]);
 
   useEffect(() => {
     if (isSuccess1) {
@@ -81,7 +82,8 @@ export const LoginForm = () => {
       }
     }
   },
-    [error1, form, isError1, isLoading1, isSuccess1]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isLoading1]);
 
   useEffect(() => {
     const locationState = history?.location?.state as ILocationState;
@@ -89,7 +91,8 @@ export const LoginForm = () => {
       form.setFieldsValue(locationState.formState)
       postForgotPassword(locationState?.formState)
     }
-  }, [form, postForgotPassword]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history?.location?.pathname]);
   return (
     <Form
       form={form}

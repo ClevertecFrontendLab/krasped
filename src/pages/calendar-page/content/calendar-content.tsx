@@ -23,7 +23,7 @@ export const CalendarContent = () => {
   const [AddTraining, { isLoading: isAddLoading, isSuccess: isAddSuccess, isError: isAddError, error: addError }] = useAddTrainingMutation();
   const [UpdateTraining, { isLoading: isUpdateLoading, isSuccess: isUpdateSuccess, isError: isUpdateError, error: updateError }] = useUpdateTrainingMutation();
   type UserRefObject = {
-    [key: string]: HTMLUListElement | null;
+    [key: string]: HTMLUListElement | null; 
   }
   const width = useWindowWidth()
   const ulRefs: RefObject<UserRefObject> = useRef<UserRefObject>({});
@@ -272,7 +272,8 @@ export const CalendarContent = () => {
       setSelectedDate(undefined)
       setIsAddTrainingError(true)
     }
-  }, [addError, dispatch, getListData, isAddError, isAddLoading, isAddSuccess, selectedDate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAddLoading]);
 
   useEffect(() => {
 
@@ -288,12 +289,14 @@ export const CalendarContent = () => {
       setIsPutError(true)
       // closeFeedbackFrom()
     }
-  }, [dispatch, getListData, isUpdateError, isUpdateLoading, isUpdateSuccess, selectedDate, updateError]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isUpdateLoading]);
 
   useEffect(() => {
     if (selectedDate && isOpenFirstModal)
       setTrainingsSelected(getListData(selectedDate))
-  }, [getListData, isOpenFirstModal, selectedDate, trainings]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trainings]);
 
   return (
     <Content style={{ backgroundColor: "rgb(240, 245, 255)", padding: "0 24px 93px", display: "flex", width: "100%", overflow: 'initial' }}>

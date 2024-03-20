@@ -20,7 +20,8 @@ const ConfirmEmailForm: React.FC = () => {
     } else {
       history.push(_Root)
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history?.location?.pathname]);
 
   useEffect(() => {
     if (isSuccess) {

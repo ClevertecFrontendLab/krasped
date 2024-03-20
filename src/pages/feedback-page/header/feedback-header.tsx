@@ -25,7 +25,7 @@ export const FeedbackHeader: React.FC = () => {
           lineHeight: "18.2px",
           paddingRight: "4px"
         }}
-      >Главная /</Button>
+      >{"Главная /"}</Button>
       <Button
         type="link"
         disabled

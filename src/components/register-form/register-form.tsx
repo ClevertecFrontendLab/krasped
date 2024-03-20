@@ -61,7 +61,8 @@ export const RegisterForm: React.FC = () => {
         });
       }
     }
-  }, [error, form, isError, isLoading, isSuccess]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
 
   useEffect(() => {
     const locationState = history?.location?.state as ILocationState;
@@ -69,7 +70,8 @@ export const RegisterForm: React.FC = () => {
       form.setFieldsValue(locationState.formState)
       regUser(locationState?.formState)
     }
-  }, [form, regUser]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history?.location?.pathname]);
 
   useEffect(() => {
     if (form.isFieldsTouched(["password"])) {

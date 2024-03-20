@@ -40,7 +40,8 @@ const CalendarPage: React.FC = () => {
       }
       setIsTrainingsError(true)
     }
-  }, [dispatch, error, isError, isLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
 
   useEffect(() => {
     if (isErrorTrainingList) {
@@ -55,7 +56,8 @@ const CalendarPage: React.FC = () => {
     if (isSuccessTrainingList) {
       dispatch(setIsShowCalendarDate(true))
     }
-  }, [dispatch, errorTrainingList, isErrorTrainingList, isSuccessTrainingList, loadingTrainingList]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadingTrainingList]);
 
   return (
     <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
