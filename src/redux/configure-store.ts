@@ -10,7 +10,7 @@ import feedbackReducer from '@redux/feedbackSlice';
 import trainingReducer from '@redux/trainingSlice';
 import { catalogApi } from './api/catalog/catalog';
 const initialState = {
-    collapsed: false,
+    collapsed: true,
 };
 
 export interface ILocationState {
