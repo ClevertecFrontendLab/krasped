@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Grid, Result } from 'antd';
 import { history } from '@redux/configure-store';
+import { _AuthLogin } from '@config/constants';
 
 const SuccessChangePassword: React.FC = () => {
   const { useBreakpoint } = Grid;
@@ -26,7 +27,12 @@ const SuccessChangePassword: React.FC = () => {
         </>
       }
       extra={
-        <Button size='large' data-test-id='change-entry-button' onClick={() => { history.push('/auth/login', { state: "reReg" }) }} style={{ maxWidth: "369px", width: "100%" }} type="primary" key="console">
+        <Button size='large' 
+        data-test-id='change-entry-button' 
+        onClick={() => { history.push(_AuthLogin, { state: "reReg" }) }} 
+        style={{ maxWidth: "369px", width: "100%" }} 
+        type="primary" 
+        key="console">
           Вход
         </Button>
       }

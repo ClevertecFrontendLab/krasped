@@ -16,7 +16,7 @@ export const feedbackApi = createApi({
       }
       return headers;
     },
-  }), {maxRetries:2}),
+  }), { maxRetries: 2 }),
 
   tagTypes: ['Feedbacks'],
   endpoints: (builder) => ({
@@ -33,7 +33,6 @@ export const feedbackApi = createApi({
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          console.log(data)
           dispatch(setFeedbacks(data));
         } catch (error) { /* empty */ }
       },

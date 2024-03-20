@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Grid, Layout, Modal, Result } from 'antd';
 
 import Main_page_light from "@assets/imgs/Main_page_light.png"
@@ -11,24 +11,50 @@ import { MainFooter } from './footer/main-footer';
 import { useSelector } from 'react-redux';
 import { RootState, history } from '@redux/configure-store';
 import { LoaderComponent } from '@components/loader/api-loader';
-// import { useGetMeQuery } from '@api/user/user';
+import { useGetAllTriningsMutMutation } from '@redux/api/training/training';
+import { useAppDispatch } from '@hooks/typed-react-redux-hooks';
+import { logout } from '@redux/userSlice';
+import { _AuthLogin, _Calendar, _Feedbacks } from '@config/constants';
 
 const MainPage: React.FC = () => {
-    // const { data, error, isLoading, refetch } = useGetMeQuery();
-    const [isfeedbacksError, setIsfeedbacksError] = useState(false)
+    const dispatch = useAppDispatch()
+    const [getTrainings, { isSuccess, isError, isLoading, error }] = useGetAllTriningsMutMutation();
+    const [isCalendarError, setIsCalendarError] = useState(false)
     const collapsed = useSelector((state: RootState) => state.app.collapsed);
     const { useBreakpoint } = Grid;
     const screens = useBreakpoint();
 
     const layoutPaddingLeft = (screens?.xs) ? '0' : (collapsed ? '64px' : '208px');
-    const getFeedbacks = () =>{
-        history.push("/feedbacks")
+    const getFeedbacks = () => {
+        history.push(_Feedbacks)
     }
+
+    const getCalendar = () => {
+        getTrainings(null)
+    }
+
+    useEffect(() => {
+        if (isSuccess) {
+            history.push(_Calendar)
+        }
+        if (isError) {
+            const customError = error as { status: number }
+            if (customError.status == 403) {
+                dispatch(logout())
+                history.push(_AuthLogin)
+            }
+            setIsCalendarError(true)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoading]);
     return (
         <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
             <Layout style={{ position: "relative" }}>
                 <LoaderComponent />
-                <Modal centered footer={null} style={{ backdropFilter: 'blur(10px)' }} closable={false} open={isfeedbacksError} onCancel={() => setIsfeedbacksError(false)}>
+                <Modal centered footer={null} style={{ backdropFilter: 'blur(10px)' }}
+                    data-test-id='modal-no-review'
+                    closable={false} open={isCalendarError}
+                    onCancel={() => setIsCalendarError(false)}>
                     <Result
                         style={{
                             maxWidth: "539px",
@@ -40,15 +66,15 @@ const MainPage: React.FC = () => {
                         }}
                         title={<span style={{ fontWeight: 500 }}>{"Что-то пошло не так"}</span>}
                         status="500"
-                        subTitle="Произошла ошибка, попробуйте еще раз."
+                        subTitle="Произошла ошибка, попробуйте ещё раз."
                         extra={
-                            <Button size='large' onClick={() => { history.push('/main') }} type="primary" key="console">
+                            <Button size='large' onClick={() => { setIsCalendarError(false) }} type="primary" key="console">
                                 Назад
                             </Button>
                         }
                     />
                 </Modal>
-                <Navbar />
+                <Navbar getCalendar={getCalendar} />
                 <Layout className={s.layout} style={{
                     position: 'relative',
                     transition: "padding-left 0.146s linear",
@@ -61,7 +87,7 @@ const MainPage: React.FC = () => {
 
                 }}>
                     <MainHeader />
-                    <MainContent />
+                    <MainContent getCalendar={getCalendar} />
                     <MainFooter getFeedbacks={getFeedbacks} />
                 </Layout>
             </Layout >

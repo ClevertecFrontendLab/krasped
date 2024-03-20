@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Button, Grid, Result } from 'antd';
 import { ILocationState, history } from '@redux/configure-store';
 import VerificationInput from "react-verification-input";
-import { useConfirmEmailMutation } from '@api/auth/auth';
+import { useConfirmEmailMutation } from '@redux/api/auth/auth';
 import styles from './confirm-email-form.module.scss';
+import { _AuthChangePassword, _Root } from '@config/constants';
 
 const ConfirmEmailForm: React.FC = () => {
   const { useBreakpoint } = Grid;
@@ -17,14 +18,14 @@ const ConfirmEmailForm: React.FC = () => {
     if (history?.location.state && locationState?.from && locationState?.formState) {
       setEmail(locationState?.formState?.email)
     } else {
-      history.push("/")
+      history.push(_Root)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history?.location?.pathname]);
 
   useEffect(() => {
     if (isSuccess) {
-      history.push("/auth/change-password", history?.location?.state)
+      history.push(_AuthChangePassword, history?.location?.state)
     }
 
   }, [isLoading])

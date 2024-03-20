@@ -1,4 +1,5 @@
 import { SettingOutlined } from "@ant-design/icons"
+import { _Main } from "@config/constants";
 import { history } from "@redux/configure-store";
 import { Button, Grid } from "antd"
 import { Header } from "antd/lib/layout/layout"
@@ -16,7 +17,7 @@ export const FeedbackHeader: React.FC = () => {
     }}>
       <Button
         type="link"
-        onClick={() => history.push("/main")}
+        onClick={() => history.push(_Main)}
         style={{
           color: "#8C8C8C",
           fontWeight: 400,

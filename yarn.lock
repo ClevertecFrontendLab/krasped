@@ -1206,6 +1206,18 @@ ansi-styles@^6.0.0:
   resolved "https://registry.npmjs.org/ansi-styles/-/ansi-styles-6.2.1.tgz"
   integrity sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==
 
+antd-dayjs-vite-plugin@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/antd-dayjs-vite-plugin/-/antd-dayjs-vite-plugin-2.0.0.tgz#ba1db5a11e3195d848fe2cee050eb289c7718de1"
+  integrity sha512-aj8rs77i9XSuCNMsVHlJ4WOvZxOFD+/WE5cFjGmsuy9C/0mu/wpWGmid2jge3THCOf3RrY0d/3VMsbLTfCpUxQ==
+  dependencies:
+    antd-dayjs-webpack-plugin "^1.0.6"
+
+antd-dayjs-webpack-plugin@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/antd-dayjs-webpack-plugin/-/antd-dayjs-webpack-plugin-1.0.6.tgz#7d98bcb51422248b8cd4a32e352a0425a3bffa3a"
+  integrity sha512-UlK3BfA0iE2c5+Zz/Bd2iPAkT6cICtrKG4/swSik5MZweBHtgmu1aUQCHvICdiv39EAShdZy/edfP6mlkS/xXg==
+
 antd@^4.24.15:
   version "4.24.15"
   resolved "https://registry.npmjs.org/antd/-/antd-4.24.15.tgz"

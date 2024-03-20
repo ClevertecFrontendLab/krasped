@@ -1,5 +1,6 @@
 import { GooglePlusOutlined } from "@ant-design/icons";
-import { useRegistrationMutation } from "@api/auth/auth";
+import { _Error, _ErrorUserExist, _Success } from "@config/constants";
+import { useRegistrationMutation } from "@redux/api/auth/auth";
 import { ILocationState, history } from "@redux/configure-store";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { Input, Button, Form, Grid } from "antd"
@@ -42,15 +43,15 @@ export const RegisterForm: React.FC = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      history.push('/result/success', { from: "login" });
+      history.push(_Success, { from: "login" });
     }
 
     if (isError) {
       const customError = error as CustomError;
       if ((customError?.status) === 409) {
-        history.push('/result/error-user-exist', { from: "login" });
+        history.push(_ErrorUserExist, { from: "login" });
       } else {
-        history.push('/result/error', {
+        history.push(_Error, {
           from: "reFetchGeg",
           formState: {
             "email": form.getFieldValue("email"),

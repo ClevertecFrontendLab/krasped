@@ -6,6 +6,7 @@ import { ResultLayout } from '@components/layouts/result-layout/result-layout';
 import { SuspenceLoaderComponent } from '@components/loader/suspence-loader';
 import ProtectedRoute from '@components/protected-routes/protected-route';
 import AnonimRoute from '@components/anonim-route/anonim-route';
+import { _Auth, _AuthChangePassword, _AuthConfirmEmail, _AuthLogin, _AuthRegistration, _Calendar, _Error, _ErrorChangePassword, _ErrorCheckEmail, _ErrorCheckEmailNoExist, _ErrorLogin, _ErrorUserExist, _Feedbacks, _Main, _Result, _Success, _SuccessChangePassword } from '@config/constants';
 
 const App: React.FC = () => {
   const AuthPage = React.lazy(() => import('@pages/auth-page/auth-page'));
@@ -21,25 +22,33 @@ const App: React.FC = () => {
   const SuccessChangePassword = React.lazy(() => import('@components/errors/success-change-password/success-change-password'));
   const ErrorChangePassword = React.lazy(() => import('@components/errors/error-change-password/error-change-password'));
   const FeedbackPage = React.lazy(() => import('@pages/feedback-page/feedback-page'));
+  const CalendarPage = React.lazy(() => import('@pages/calendar-page/calendar-page'));
 
   return (
 
     <Routes>
-      <Route path='main' element={
+      <Route path={_Main} element={
         <ProtectedRoute>
           <React.Suspense fallback={<SuspenceLoaderComponent />}>
             <MainPage />
           </React.Suspense>
         </ProtectedRoute>
       } />
-      <Route path='feedbacks' element={
+      <Route path={_Feedbacks} element={
         <ProtectedRoute>
           <React.Suspense fallback={<SuspenceLoaderComponent />}>
             <FeedbackPage />
           </React.Suspense>
         </ProtectedRoute>
       } />
-      <Route path='/auth' element={
+      <Route path={_Calendar} element={
+        <ProtectedRoute>
+          <React.Suspense fallback={<SuspenceLoaderComponent />}>
+            <CalendarPage />
+          </React.Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path={_Auth} element={
         <AnonimRoute>
           <React.Suspense fallback={<SuspenceLoaderComponent />}>
             <AuthLayout />
@@ -47,33 +56,33 @@ const App: React.FC = () => {
         </AnonimRoute>
       } >
         <Route index element={<AuthPage />} />
-        <Route path='/auth/login' element={<AuthPage />} />
-        <Route path='/auth/registration' element={<AuthPage />} />
-        <Route path='/auth/confirm-email' element={<ConfirmEmailForm />} />
-        <Route path='/auth/change-password' element={<ChangePasswordFrom />} />
-        <Route path="*" element={<Navigate to="/main" replace />} />
+        <Route path={_AuthLogin} element={<AuthPage />} />
+        <Route path={_AuthRegistration} element={<AuthPage />} />
+        <Route path={_AuthConfirmEmail} element={<ConfirmEmailForm />} />
+        <Route path={_AuthChangePassword} element={<ChangePasswordFrom />} />
+        <Route path="*" element={<Navigate to={_Main} replace />} />
       </Route>
-      <Route path='/result' element={
+      <Route path={_Result} element={
 
         <React.Suspense fallback={<SuspenceLoaderComponent />}>
           <ResultLayout />
         </React.Suspense>
       } >
         {/* {/* <Route path='/result/login' element={<AuthPage />} /> */}
-        <Route path='/result/error-login' element={<ErrorLogin />} />
-        <Route path='/result/success' element={<RegisterSuccess />} />
+        <Route path={_ErrorLogin} element={<ErrorLogin />} />
+        <Route path={_Success} element={<RegisterSuccess />} />
         {/* status 409 */}
-        <Route path='/result/error-user-exist' element={<ErrorUserExist />} />
-        <Route path='/result/error' element={<Error />} />
+        <Route path={_ErrorUserExist} element={<ErrorUserExist />} />
+        <Route path={_Error} element={<Error />} />
         {/* status 404 и message ‘Email не найден’ */}
-        <Route path='/result/error-check-email-no-exist' element={<ErrorCheckEmailNoExist />} />
+        <Route path={_ErrorCheckEmailNoExist} element={<ErrorCheckEmailNoExist />} />
         {/* status 404 и без message ‘Email не найден’ */}
-        <Route path='/result/error-check-email' element={<ErrorCheckEmail />} />
-        <Route path='/result/error-change-password' element={<ErrorChangePassword />} />
-        <Route path='/result/success-change-password' element={<SuccessChangePassword />} />
-        <Route path="*" element={<Navigate to="/main" replace />} />
+        <Route path={_ErrorCheckEmail} element={<ErrorCheckEmail />} />
+        <Route path={_ErrorChangePassword} element={<ErrorChangePassword />} />
+        <Route path={_SuccessChangePassword} element={<SuccessChangePassword />} />
+        <Route path="*" element={<Navigate to={_Main} replace />} />
       </Route>
-      <Route path="*" element={<Navigate to="/main" replace state={{ from: window.location.search }} />} />
+      <Route path="*" element={<Navigate to={_Main} replace state={{ from: window.location.search }} />} />
       {/* <Route path='*' element={<NotFoundPage />} /> */}
     </Routes>
   );

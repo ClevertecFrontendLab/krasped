@@ -11,13 +11,14 @@ import { FeedbackHeader } from './header/feedback-header';
 import { FeedbackContent } from './content/feedback-content';
 import { FeedbackFooter } from './footer/feedback-footer';
 import { useAppDispatch, useAppSelector } from '@hooks/typed-react-redux-hooks';
-import { useAddFeedbackMutation, useGetAllFeedbacksQuery } from '@api/feedback/feedback';
+import { useAddFeedbackMutation, useGetAllFeedbacksQuery } from '@redux/api/feedback/feedback';
 import { LoaderComponent } from '@components/loader/api-loader';
 import { selectFeedbacks } from '@redux/feedbackSlice';
 import { logout } from '@redux/userSlice';
 import TextArea from 'antd/lib/input/TextArea';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
-import { IFeedbackReq } from '@api/feedback/feedback.types';
+import { IFeedbackReq } from '@redux/api/feedback/feedback.types';
+import { _AuthLogin, _Main } from '@config/constants';
 
 const FeedbackPage: React.FC = () => {
   const [form] = Form.useForm();
@@ -30,7 +31,6 @@ const FeedbackPage: React.FC = () => {
   const dispatch = useAppDispatch()
   const { isError, isLoading, error } = useGetAllFeedbacksQuery(null);
   const [addFeedbacks, { isError: addIsError, isSuccess: addSuccess, isLoading: addLoading, error: addError }] = useAddFeedbackMutation();
-  // const { data, error, isLoading, refetch } = useGetMeQuery();
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
@@ -51,7 +51,7 @@ const FeedbackPage: React.FC = () => {
       const customError = error as { status: number }
       if (customError.status == 403) {
         dispatch(logout())
-        history.push("/auth/login")
+        history.push(_AuthLogin)
       }
       setIsfeedbacksError(true)
     }
@@ -68,7 +68,7 @@ const FeedbackPage: React.FC = () => {
       const customError = addError as { status: number }
       if (customError.status == 403) {
         dispatch(logout())
-        history.push("/auth/login")
+        history.push(_AuthLogin)
       }
       setIsfeedbackError(true)
       setIsOpenFeedbackFrom(false)
@@ -95,7 +95,7 @@ const FeedbackPage: React.FC = () => {
             status="500"
             subTitle="Произошла ошибка, попробуйте еще раз."
             extra={
-              <Button size='large' onClick={() => { history.push('/main') }} type="primary" key="console">
+              <Button size='large' onClick={() => { history.push(_Main) }} type="primary" key="console">
                 Назад
               </Button>
             }

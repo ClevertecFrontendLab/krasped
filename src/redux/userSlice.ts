@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IUser } from '@api/user/user.types';
+import { IUser } from '@redux/api/user/user.types';
 import { push } from "redux-first-history";
 import { RootState } from './configure-store';
 interface IUserState {

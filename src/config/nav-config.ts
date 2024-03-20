@@ -10,34 +10,37 @@ import React from 'react';
 const items = [
   {
     icon: CalenderSVG,
-    name: 'Календарь',
-    href: '/auth',
+    label: 'Календарь',
+    href: '',
+    key: "calendar"
   },
   {
     icon: HeartFilled,
-    name: 'Тренировки',
+    label: 'Тренировки',
     href: '',
+    key: "heart"
   },
   {
     icon: TrophyFilled,
-    name: 'Достижения',
+    label: 'Достижения',
     href: '',
+    key: "achive"
   },
   {
     icon: IdcardOutlined,
-    name: 'Профиль',
+    label: 'Профиль',
     href: '',
+    key: "profile"
   },
 ]
 
 export const navItems = items.map(
-  (item, index) => ({
-    key: String(index + 1),
+  (item) => ({
+    ...item,
     icon: (item?.icon !== CalenderSVG) ? React.createElement(item.icon) : React.createElement(Image, {
       src: item.icon,
-      alt: 'Calendar',
+      preview: false,
+      alt: item.key,
     }),
-    label: item.name,
-    href: item.href,
   }),
 );

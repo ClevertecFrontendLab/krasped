@@ -3,6 +3,7 @@ import { PropsWithChildren, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/typed-react-redux-hooks";
 import { logout, selectToken, setToken } from "@redux/userSlice";
 import { useLocalStorage } from "@hooks/useLocalStorage";
+import { _AuthLogin } from "@config/constants";
 
 export const ProtectedRoute = ({ children }: PropsWithChildren) => {
   const dispatch = useAppDispatch()
@@ -15,7 +16,7 @@ export const ProtectedRoute = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     if ((!token && storageToken) || searchToken) {
-      if(!!searchToken){
+      if(searchToken){
         setTok(searchToken)
       }
       dispatch(setToken(searchToken || storageToken))
@@ -26,7 +27,7 @@ export const ProtectedRoute = ({ children }: PropsWithChildren) => {
     return children;
   } else {
     dispatch(logout())
-    return <Navigate to="/auth/login" />;
+    return <Navigate to={_AuthLogin} />;
   }
 
 };

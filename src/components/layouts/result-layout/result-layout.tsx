@@ -3,12 +3,13 @@ import Enter_page_light from "@assets/imgs/Enter_page_light.png"
 import { Outlet } from "react-router-dom"
 import { PropsWithChildren, useEffect } from "react"
 import { ILocationState, history } from "@redux/configure-store"
+import { _AuthLogin } from "@config/constants"
 
 export const ResultLayout: React.FC = (props: PropsWithChildren) => {
   useEffect(() => {
     const locationState = history?.location?.state as ILocationState;
     if (!history?.location.state || !locationState?.from) {
-      history.push('/auth/login');
+      history.push(_AuthLogin);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history.location.pathname]);

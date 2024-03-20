@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button, Grid, Result } from 'antd';
 import { ILocationState, history } from '@redux/configure-store';
+import { _AuthRegistration } from '@config/constants';
 
 const Error: React.FC = () => {
   const { useBreakpoint } = Grid;
@@ -25,7 +26,12 @@ const Error: React.FC = () => {
         </>
       }
       extra={
-        <Button size='large' data-test-id='registration-retry-button' onClick={() => { history.push('/auth/registration', history?.location?.state) }} style={{ maxWidth: "369px", width: "100%" }} type="primary" key="console">
+        <Button size='large'
+          data-test-id='registration-retry-button'
+          onClick={() => { history.push(_AuthRegistration, history?.location?.state) }}
+          style={{ maxWidth: "369px", width: "100%" }}
+          type="primary"
+          key="console">
           Повторить
         </Button>
       }

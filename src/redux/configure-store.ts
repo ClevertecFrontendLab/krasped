@@ -1,13 +1,16 @@
-import { authApi } from '@api/auth/auth';
-import { userApi } from '@api/user/user';
-import { feedbackApi } from '@api/feedback/feedback';
+import { authApi } from '@redux/api/auth/auth';
+import { userApi } from '@redux/api/user/user';
+import { feedbackApi } from '@redux/api/feedback/feedback';
+import { trainingApi } from '@redux/api/training/training';
 import { PayloadAction, combineReducers, configureStore, createSlice } from '@reduxjs/toolkit';
 import { createBrowserHistory } from 'history';
 import { createReduxHistoryContext } from 'redux-first-history';
 import userReducer from '@redux/userSlice';
 import feedbackReducer from '@redux/feedbackSlice';
+import trainingReducer from '@redux/trainingSlice';
+import { catalogApi } from './api/catalog/catalog';
 const initialState = {
-    collapsed: false,
+    collapsed: true,
 };
 
 export interface ILocationState {
@@ -43,14 +46,19 @@ export const store = configureStore({
         [authApi.reducerPath]: authApi.reducer,
         [userApi.reducerPath]: userApi.reducer,
         [feedbackApi.reducerPath]: feedbackApi.reducer,
+        [trainingApi.reducerPath]: trainingApi.reducer,
+        [catalogApi.reducerPath]: catalogApi.reducer,
         userState: userReducer,
         feedbackState: feedbackReducer,
+        trainingState: trainingReducer,
     }),
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(
         routerMiddleware,
         authApi.middleware,
         userApi.middleware,
-        feedbackApi.middleware
+        feedbackApi.middleware,
+        trainingApi.middleware,
+        catalogApi.middleware
     ),
 });
 

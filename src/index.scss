@@ -116,8 +116,22 @@ select {
   background-color: rgba(121, 156, 212, 0.5);
 }
 
+.ant-modal-wrap{
+  pointer-events: none;
+}
+
+.ant-modal.ant-zoom-enter, .ant-modal.ant-zoom-appear {
+  animation-duration:0s;
+}
+
 .ant-drawer{
   z-index: 99;
+}
+
+.mobileDrower{
+  .ant-drawer-content {
+    border-radius: 20px;
+  }
 }
 
 .ant-btn-primary {
@@ -132,6 +146,24 @@ select {
 
 .ant-tabs-ink-bar {
   background-color:#2F54EB;
+}
+
+.ant-picker-calendar-full.ant-picker-panel.ant-picker-calendar-date{
+  border-top: none;
+}
+
+.ant-picker-body{
+  background-color: rgb(240, 245, 255);
+}
+.calendar-card{
+
+  .ant-picker-body{
+    background-color: white;
+  }
+}
+
+.ant-picker-calendar-full .ant-picker-panel .ant-picker-calendar-date{
+  background-color: white
 }
 
 

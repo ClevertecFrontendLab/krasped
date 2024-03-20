@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button, Grid, Result } from 'antd';
 import { ILocationState, history } from '@redux/configure-store';
+import { _AuthChangePassword } from '@config/constants';
 
 const ErrorChangePassword: React.FC = () => {
   const { useBreakpoint } = Grid;
@@ -10,7 +11,7 @@ const ErrorChangePassword: React.FC = () => {
     if (history?.location.state && locationState?.from && locationState?.formState) {
       if (locationState?.from === "reFetchChangePass") { /* empty */ }
     } else {
-      history.push("/auth/change-password", history?.location?.state)
+      history.push(_AuthChangePassword, history?.location?.state)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history?.location?.pathname]);
@@ -32,7 +33,11 @@ const ErrorChangePassword: React.FC = () => {
         </>
       }
       extra={
-        <Button data-test-id='change-retry-button' size='large' onClick={() => { history.push('/auth/change-password', history?.location?.state) }} style={{ maxWidth: "369px", width: "100%" }} type="primary" key="console">
+        <Button
+          data-test-id='change-retry-button'
+          size='large'
+          onClick={() => { history.push(_AuthChangePassword, history?.location?.state) }}
+          style={{ maxWidth: "369px", width: "100%" }} type="primary" key="console">
           Повторить
         </Button>
       }
