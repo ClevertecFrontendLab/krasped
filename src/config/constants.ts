@@ -2,6 +2,9 @@ export const _Root = "/";
 export const _Main = "/main";
 export const _Feedbacks = "/feedbacks";
 export const _Calendar = "/calendar";
+export const _Profile = "/profile";
+export const _Settings = "/settings";
+export const _NotFoundPage = "/404";
 
 export const _Auth = "/auth";
 export const _AuthChangePassword = "/auth/change-password";

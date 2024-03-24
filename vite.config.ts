@@ -4,6 +4,7 @@ import { defineConfig } from 'vite';
 import { antdDayjs } from 'antd-dayjs-vite-plugin';
 
 export default defineConfig({
+    // base: 'krasped',
     plugins: [react(), antdDayjs()],
     server: {
         host: true,

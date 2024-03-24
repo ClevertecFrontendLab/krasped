@@ -1,5 +1,5 @@
 import { SettingOutlined } from "@ant-design/icons"
-import { _Main } from "@config/constants";
+import { _Calendar, _Main, _Settings } from "@config/constants";
 import { history } from "@redux/configure-store";
 import { Button, Grid } from "antd"
 import { Header } from "antd/lib/layout/layout"
@@ -54,6 +54,7 @@ export const FeedbackHeader: React.FC = () => {
             color: "#262626",
           }}
           type={screens?.xs ? "default" : "link"}
+          onClick={() => { history.push(_Settings, { from: _Calendar }) }}
         >
           {!screens?.xs ? "Настройки" : ''}
         </Button>

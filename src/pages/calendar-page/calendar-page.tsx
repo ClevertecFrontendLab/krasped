@@ -79,11 +79,11 @@ const CalendarPage: React.FC = () => {
             status="500"
             subTitle={<span style={{ color: "#8C8C8C" }}>{"Произошла ошибка, попробуйте ещё раз."}</span>}
             extra={
-              <Button 
-              size='large' 
-              onClick={() => { history.push(_Main) }} 
-              type="primary"
-               key="console">
+              <Button
+                size='large'
+                onClick={() => { history.push(_Main) }}
+                type="primary"
+                key="console">
                 Назад
               </Button>
             }

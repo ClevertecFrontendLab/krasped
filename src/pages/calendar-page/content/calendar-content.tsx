@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@hooks/typed-react-redux-hooks"
-import { Button, Grid, Calendar, CalendarProps, ConfigProvider, Badge, BadgeProps, Modal, Drawer, Image, Divider, Dropdown, Space, MenuProps, Input, Checkbox, Select } from "antd"
+import { Button, Grid, Calendar, CalendarProps, ConfigProvider, Badge, BadgeProps, Modal, Drawer, Image, Divider, Dropdown, Space, MenuProps, Input, Checkbox, Select, Alert } from "antd"
 import { Content } from "antd/lib/layout/layout"
 import { IExercise, ITraining, ITrainingReq } from "@redux/api/training/training.types"
 import dayjs, { Dayjs } from "dayjs"
@@ -23,7 +23,7 @@ export const CalendarContent = () => {
   const [AddTraining, { isLoading: isAddLoading, isSuccess: isAddSuccess, isError: isAddError, error: addError }] = useAddTrainingMutation();
   const [UpdateTraining, { isLoading: isUpdateLoading, isSuccess: isUpdateSuccess, isError: isUpdateError, error: updateError }] = useUpdateTrainingMutation();
   type UserRefObject = {
-    [key: string]: HTMLUListElement | null; 
+    [key: string]: HTMLUListElement | null;
   }
   const width = useWindowWidth()
   const ulRefs: RefObject<UserRefObject> = useRef<UserRefObject>({});
@@ -300,6 +300,7 @@ export const CalendarContent = () => {
 
   return (
     <Content style={{ backgroundColor: "rgb(240, 245, 255)", padding: "0 24px 93px", display: "flex", width: "100%", overflow: 'initial' }}>
+
       <Modal centered
         footer={null}
         closeIcon={<CloseOutlined data-test-id='modal-error-user-training-button-close' />}

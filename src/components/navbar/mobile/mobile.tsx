@@ -101,7 +101,7 @@ export const MobileNavbar = (props: { getCalendar?: () => void }) => {
                   margin: 0,
                   padding: 0,
                 }}
-                onClick={() => { typeof props?.getCalendar == "function" ? props?.getCalendar() : '' }}
+                onClick={() => { typeof props?.getCalendar == "function" ? props?.getCalendar() : history.push(item.href) }}
                 key={item.key} className={index === navItems.length - 1 ? 'last-menu-item' : ''}>
                 {item.label}
               </Menu.Item>

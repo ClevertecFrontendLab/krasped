@@ -100,7 +100,7 @@ export const DesctopNavbar = (props: { getCalendar?: () => void }) => {
                 to={item.href}
                 onClick={(e) => {
                   e.preventDefault();
-                  typeof props?.getCalendar == "function" ? props?.getCalendar() : ''
+                  typeof props?.getCalendar == "function" ? props?.getCalendar() : history.push(item.href)
                 }}>
                 <span style={{
                   color: "#061178",
