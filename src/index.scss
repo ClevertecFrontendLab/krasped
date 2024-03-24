@@ -167,6 +167,13 @@ select {
 }
 
 
+// .ant-radio-inner::after{
+//   background-color: #2F54EB;
+// }
+// .ant-radio-inner{ 
+//   background-color: white;
+// }
+
 /* Удаляем все анимации и переходы для людей, которые предпочитай их не использовать */
 @media (prefers-reduced-motion: reduce) {
   * {

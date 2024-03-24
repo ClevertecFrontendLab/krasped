@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "@hooks/typed-react-redux-hooks";
 import { logout, selectToken, setToken } from "@redux/userSlice";
 import { useLocalStorage } from "@hooks/useLocalStorage";
 import { _AuthLogin } from "@config/constants";
+import { useGetMeQuery } from "@redux/api/user/user";
 
 export const ProtectedRoute = ({ children }: PropsWithChildren) => {
   const dispatch = useAppDispatch()
@@ -11,12 +12,13 @@ export const ProtectedRoute = ({ children }: PropsWithChildren) => {
   const token = useAppSelector(selectToken);
 
   const location = useLocation();
-    const searchParams = new URLSearchParams(location?.state?.from);
-    const searchToken = searchParams.get('accessToken');
+  const searchParams = new URLSearchParams(location?.state?.from);
+  const searchToken = searchParams.get('accessToken');
+  useGetMeQuery(null, { skip: !token });
 
   useEffect(() => {
     if ((!token && storageToken) || searchToken) {
-      if(searchToken){
+      if (searchToken) {
         setTok(searchToken)
       }
       dispatch(setToken(searchToken || storageToken))

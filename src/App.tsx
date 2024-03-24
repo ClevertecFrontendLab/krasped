@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthLayout } from "@components/layouts/auth-layout/auth-layout"
@@ -7,6 +7,9 @@ import { SuspenceLoaderComponent } from '@components/loader/suspence-loader';
 import ProtectedRoute from '@components/protected-routes/protected-route';
 import AnonimRoute from '@components/anonim-route/anonim-route';
 import { _Auth, _AuthChangePassword, _AuthConfirmEmail, _AuthLogin, _AuthRegistration, _Calendar, _Error, _ErrorChangePassword, _ErrorCheckEmail, _ErrorCheckEmailNoExist, _ErrorLogin, _ErrorUserExist, _Feedbacks, _Main, _NotFoundPage, _Profile, _Result, _Settings, _Success, _SuccessChangePassword } from '@config/constants';
+import { useAppDispatch, useAppSelector } from './hooks';
+import { useGetMeQuery } from '@redux/api/user/user';
+import { selectToken } from '@redux/userSlice';
 
 const App: React.FC = () => {
   const AuthPage = React.lazy(() => import('@pages/auth-page/auth-page'));
