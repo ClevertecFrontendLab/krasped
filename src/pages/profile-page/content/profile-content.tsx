@@ -5,8 +5,10 @@ import { _Error, _ErrorUserExist, _Success } from "@config/constants";
 import { useRegistrationMutation } from "@redux/api/auth/auth";
 import { ILocationState, history } from "@redux/configure-store";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { Input, Button, Form, Grid, Avatar, Image, Alert } from "antd"
+import { Input, Button, Form, Grid, Avatar, Image, Alert, Upload } from "antd"
 import { useEffect, useState } from "react";
+import { selectToken } from "@redux/userSlice";
+import { useAppSelector } from "@hooks/typed-react-redux-hooks";
 type FieldType = {
   firstName: string,
   lastName: string,
@@ -23,18 +25,49 @@ type CustomError = FetchBaseQueryError & {
 
 
 export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | undefined, openFeedback: React.Dispatch<React.SetStateAction<boolean>> }) => {
-
+  const token = useAppSelector(selectToken);
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
   const [isValid, setIsValid] = useState(true)
+  const [isLoadingImage, setIsLoadingImage] = useState(false)
+  const [imgUrl, setImgUrl] = useState()
   const [form] = Form.useForm();
   const password = Form.useWatch('password', { form, preserve: true });
+
   const [regUser, { isLoading, isSuccess, error, isError }] = useRegistrationMutation();
   const validateMessages = {
     required: '${label} is required!',
     types: {
       email: '${label} is not a valid email!',
     },
+  };
+
+  // const state = {
+  //   previewVisible: false,
+  //   previewImage: '',
+  //   fileList: [
+  //     {
+  //       uid: '-1',
+  //       name: 'image.png',
+  //       status: 'done',
+  //       url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+  //     },
+  //   ]
+  // }
+
+  const handleChange = info => {
+    if (info.file.status === 'uploading') {
+      setIsLoadingImage(true);
+      return;
+    }
+    if (info.file.status === 'done') {
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj, (imageUrl) => {
+        setIsLoadingImage(false);
+        setImgUrl(imageUrl);
+      }
+      );
+    }
   };
 
   const onFinish = (values: FieldType) => {
@@ -44,10 +77,6 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
     }
     regUser(payload)
   };
-
-  const googleLogin = () => {
-    window.location.href = 'https://marathon-api.clevertec.ru/auth/google';
-  }
 
   useEffect(() => {
     if (isSuccess) {
@@ -71,6 +100,46 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
+
+  function getBase64(img, callback) {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result));
+    reader.readAsDataURL(img);
+  }
+
+  const uploadButton = (
+    <div>
+      <span
+                  style={{
+                    lineHeight: "20px",
+                    fontSize: "25px",
+                    color: "#000000"
+                  }}
+                >+</span>
+                <div
+                  style={{
+                    color: "#8C8C8C",
+                    lineHeight: "18px",
+                    maxWidth: "70px",
+                    fontSize: "14px"
+                  }}
+                >Загрузить фото профиля</div>
+    </div>
+  );
+
+  function beforeUpload(file) {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      console.error('You can only upload JPG/PNG file!');
+      return
+    }
+    const isLt5M = file.size / 1024 / 1024 < 5;
+    if (!isLt5M) {
+      console.error('Image must smaller than 2MB!');
+      return
+    }
+    return isJpgOrPng && isLt5M;
+  }
 
   useEffect(() => {
     const locationState = history?.location?.state as ILocationState;
@@ -144,7 +213,7 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
               gap: "24px"
             }}
           >
-            <div
+            {/* <div
               style={{
 
                 border: "1px dashed #D9D9D9",
@@ -152,8 +221,8 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
                 width: "106px",
 
               }}
-            >
-              <div
+            > */}
+              {/* <div
                 style={{
                   height: "104px",
                   width: "104px",
@@ -167,22 +236,8 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
                   textAlign: "center",
                 }}
               >
-                <span
-                  style={{
-                    lineHeight: "20px",
-                    fontSize: "25px",
-                    color: "#000000"
-                  }}
-                >+</span>
-                <div
-                  style={{
-                    color: "#8C8C8C",
-                    lineHeight: "18px",
-                    maxWidth: "70px",
-                    fontSize: "14px"
-                  }}
-                >Загрузить фото профиля</div>
-              </div>
+                
+              </div> */}
               {/* <Image
                 style={{ transition: "width 0.5s ease-in-out, margin-top 0.5s ease-in-out" }}
                 width={86}
@@ -190,7 +245,27 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
                 src={''}
                 alt="avatar"
               /> */}
-            </div>
+            {/* </div> */}
+            <Upload
+              method="post"
+              maxCount={1}
+              name="file"
+              defaultFileList={[]}
+              action="https://marathon-api.clevertec.ru/upload-image"
+              headers={
+                  {'Authorization': `Bearer ${token}`}
+              }
+              onRemove={() => setImgUrl(undefined)}
+              withCredentials={true}
+              supportServerRender={false}
+              listType="picture-card"
+              onChange={handleChange}
+              beforeUpload={beforeUpload}
+            >
+              {imgUrl ? 
+              null : 
+              uploadButton}
+          </Upload>
             <div style={{
               display: "flex",
               width: "100%",

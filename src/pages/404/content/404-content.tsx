@@ -2,6 +2,7 @@ import { Button, Grid, Result } from "antd"
 import { Content } from "antd/lib/layout/layout"
 
 import { _AuthLogin } from "@config/constants"
+import { history } from "@redux/configure-store";
 
 
 
@@ -17,7 +18,7 @@ export const CalendarContent = () => {
         status="404"
         title="Такой страницы нет"
         subTitle="Извините, страница не найдена, возможно, она была удалена или перемещена."
-        extra={<Button type="primary">На главную</Button>}
+        extra={<Button onClick={() => history.push('/')} type="primary">На главную</Button>}
       />
     </Content >
   )
