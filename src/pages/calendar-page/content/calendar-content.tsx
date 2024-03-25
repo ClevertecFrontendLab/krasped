@@ -4,7 +4,7 @@ import { Content } from "antd/lib/layout/layout"
 import { IExercise, ITraining, ITrainingReq } from "@redux/api/training/training.types"
 import dayjs, { Dayjs } from "dayjs"
 import { selectTrainingList, selectTrainings } from "@redux/trainingSlice"
-import { RefObject, useEffect, useRef, useState } from "react"
+import React, { RefObject, useEffect, useRef, useState } from "react"
 import useWindowWidth from "@hooks/use-window-width"
 import noTrainingsPng from "@assets/imgs/noTrainings.png"
 import { ArrowLeftOutlined, CloseCircleOutlined, CloseOutlined, DownOutlined, EditOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons"
@@ -355,12 +355,13 @@ export const CalendarContent = () => {
             onPanelChange={(value, mode) => onPanelChange(value as Dayjs, mode)} />
         </div>
         :
-
-        <Calendar style={{ padding: 0, backgroundColor: "rgb(240, 245, 255)" }}
-          onSelect={(value) => handleSelectDate(value as Dayjs)}
-          dateCellRender={dateCellRender}
-          onPanelChange={(value, mode) => onPanelChange(value as Dayjs, mode)}
-        />
+        <div className="calendar-desctop">
+          <Calendar style={{ padding: 0, backgroundColor: "rgb(240, 245, 255)" }}
+            onSelect={(value) => handleSelectDate(value as Dayjs)}
+            dateCellRender={dateCellRender}
+            onPanelChange={(value, mode) => onPanelChange(value as Dayjs, mode)}
+          />
+        </div>
       }
       {isOpenFirstModal && <Modal
         closeIcon={<CloseOutlined

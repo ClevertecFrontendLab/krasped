@@ -1,14 +1,16 @@
 import { IFeedback } from "@redux/api/feedback/feedback.types"
 import { Content } from "antd/lib/layout/layout"
-import { GooglePlusOutlined } from "@ant-design/icons";
 import { _Error, _ErrorUserExist, _Success } from "@config/constants";
 import { useRegistrationMutation } from "@redux/api/auth/auth";
 import { ILocationState, history } from "@redux/configure-store";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { Input, Button, Form, Grid, Avatar, Image, Alert, Upload } from "antd"
-import { useEffect, useState } from "react";
+import { Input, Button, Form, Grid, Avatar, Image, Alert, Upload, DatePicker } from "antd"
+import React, { useEffect, useState } from "react";
 import { selectToken } from "@redux/userSlice";
 import { useAppSelector } from "@hooks/typed-react-redux-hooks";
+import dayjs from "dayjs";
+import { CalendarFilled } from "@ant-design/icons";
+import CalenderSVG from "@assets/icons/calendat-disabled.svg"
 type FieldType = {
   firstName: string,
   lastName: string,
@@ -33,6 +35,11 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
   const [imgUrl, setImgUrl] = useState()
   const [form] = Form.useForm();
   const password = Form.useWatch('password', { form, preserve: true });
+  const Icon = React.createElement(Image, {
+    src: CalenderSVG,
+    preview: false,
+    alt: CalenderSVG,
+  })
 
   const [regUser, { isLoading, isSuccess, error, isError }] = useRegistrationMutation();
   const validateMessages = {
@@ -110,20 +117,20 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
   const uploadButton = (
     <div>
       <span
-                  style={{
-                    lineHeight: "20px",
-                    fontSize: "25px",
-                    color: "#000000"
-                  }}
-                >+</span>
-                <div
-                  style={{
-                    color: "#8C8C8C",
-                    lineHeight: "18px",
-                    maxWidth: "70px",
-                    fontSize: "14px"
-                  }}
-                >Загрузить фото профиля</div>
+        style={{
+          lineHeight: "20px",
+          fontSize: "25px",
+          color: "#000000"
+        }}
+      >+</span>
+      <div
+        style={{
+          color: "#8C8C8C",
+          lineHeight: "18px",
+          maxWidth: "70px",
+          fontSize: "14px"
+        }}
+      >Загрузить фото профиля</div>
     </div>
   );
 
@@ -222,7 +229,7 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
 
               }}
             > */}
-              {/* <div
+            {/* <div
                 style={{
                   height: "104px",
                   width: "104px",
@@ -238,7 +245,7 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
               >
                 
               </div> */}
-              {/* <Image
+            {/* <Image
                 style={{ transition: "width 0.5s ease-in-out, margin-top 0.5s ease-in-out" }}
                 width={86}
                 preview={false}
@@ -253,7 +260,7 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
               defaultFileList={[]}
               action="https://marathon-api.clevertec.ru/upload-image"
               headers={
-                  {'Authorization': `Bearer ${token}`}
+                { 'Authorization': `Bearer ${token}` }
               }
               onRemove={() => setImgUrl(undefined)}
               withCredentials={true}
@@ -262,16 +269,18 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
               onChange={handleChange}
               beforeUpload={beforeUpload}
             >
-              {imgUrl ? 
-              null : 
-              uploadButton}
-          </Upload>
-            <div style={{
-              display: "flex",
-              width: "100%",
-              flexDirection: "column",
-              gap: "16px",
-            }}>
+              {imgUrl ?
+                null :
+                uploadButton}
+            </Upload>
+            <div
+              style={{
+
+                display: "flex",
+                width: "100%",
+                flexDirection: "column",
+                gap: "16px",
+              }}>
               <Form.Item<FieldType>
                 style={{ marginBottom: 0 }}
                 name="firstName"
@@ -298,9 +307,15 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
                 hasFeedback
                 rules={[{ required: true }]}
               >
-                <Input
-                  size="large"
-                  placeholder="Дата рождения" />
+                <div className="calendar-card">
+                  <DatePicker
+                    suffixIcon={Icon}
+                    allowClear={false}
+                    style={{ width: "100%" }}
+                    size="large"
+                    placeholder={"Дата рождения"}
+                    format={'DD.MM.YYYY'} />
+                </div>
               </Form.Item>
             </div>
           </div>
