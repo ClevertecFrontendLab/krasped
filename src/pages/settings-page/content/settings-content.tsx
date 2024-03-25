@@ -32,8 +32,18 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
   const [isOpenFeedbackFrom, setIsOpenFeedbackFrom] = useState(false)
   const [isfeedbackError, setIsfeedbackError] = useState(false)
   const [isfeedbackSuccess, setIsfeedbackSuccess] = useState(false)
-  const [isShowAddingExersice, setIsShowAddingExersice] = useState<boolean>(true)
+  const [isShowAddingExersice, setIsShowAddingExersice] = useState<boolean>(false)
   const [value, setValue] = useState(1);
+
+  const benifits = [
+    { name: "Cтатистика за месяц", free: true, pro: true },
+    { name: "Статистика за все время", free: false, pro: true },
+    { name: "Совместные тренировки", free: true, pro: true },
+    { name: "Участие в марафонах", free: false, pro: true },
+    { name: "Приложение iOS", free: false, pro: true },
+    { name: "Приложение Android", free: false, pro: true },
+    { name: "Индивидуальный Chat GPT", free: false, pro: true },
+  ]
 
   const onChange = (e: RadioChangeEvent) => {
     console.log('radio checked', e.target.value);
@@ -213,14 +223,27 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
           >
             Сравнить тарифы
           </div>
-          <CloseOutlined data-test-id='modal-drawer-right-button-close' onClick={() => setIsShowAddingExersice(true)} style={{ cursor: "pointer" }} />
+          <CloseOutlined data-test-id='modal-drawer-right-button-close' onClick={() => setIsShowAddingExersice(false)} style={{ cursor: "pointer" }} />
 
         </div>
-        <div>Ваш PRO tarif активен до 02.07</div>
+        <div
+          style={{
+            width: "100%",
+            padding: "14px 0",
+            display: "flex",
+            justifyContent: "center",
+            fontSize: "16px",
+            fontWeight: 500,
+            color: "#030852",
+            backgroundColor: "#F0F5FF",
+            marginBottom: "48px",
+          }}
+        >Ваш PRO tarif активен до 02.07</div>
         <div>
           <div style={{
             display: "flex",
-            justifyContent: "space-between"
+            justifyContent: "space-between",
+            paddingBottom: "24px",
           }}>
             <div></div>
             <div style={{
@@ -229,30 +252,62 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
               gap: "14px",
               width: "126px",
             }}>
-              <div>free</div>
+              <div style={{
+                backgroundColor: "#F0F0F0",
+                padding: "2px 10px",
+                fontSize: "12px",
+              }}>FREE</div>
               <div
-                style={{ display: "flex" }}
-              >pro<CheckCircleOutlined style={{ color: "#52C41A" }} /></div>
+                style={{
+                  display: "flex",
+                  gap: "4px",
+                  backgroundColor: "#F0F5FF",
+                  padding: "2px 10px",
+                  color: "#1D39C4",
+                  fontSize: "12px"
+                }}
+              >PRO<CheckCircleOutlined style={{ color: "#52C41A" }} /></div>
             </div>
           </div>
           <div style={{
             display: "flex",
-            justifyContent: "space-between"
+            flexDirection: "column",
+            gap: "16px",
+            width: "100%",
+            paddingBottom: "86px",
           }}>
-            <div>Статистика за месяц</div>
-            <div style={{
-              display: "flex",
-              justifyContent: "space-around",
-              gap: "14px",
-              width: "126px",
-            }}>
-              <CheckCircleFilled />
-              <div><CloseCircleOutlined /></div>
-            </div>
+            {benifits.map(item => {
+              return (<div style={{
+                display: "flex",
+                justifyContent: "space-between"
+              }}>
+                <div style={{ color: "#262626" }}>{item.name}</div>
+                <div style={{
+                  display: "flex",
+                  justifyContent: "space-around",
+                  gap: "14px",
+                  width: "126px",
+                }}>
+                  {item.free ?
+                    <CheckCircleFilled style={{ fontSize: "18px" }} /> :
+                    <CloseCircleOutlined style={{ color: "#BFBFBF", fontSize: "18px" }} />}
+                  <div>{item.pro ?
+                    <CheckCircleFilled style={{ fontSize: "18px" }} /> :
+                    <CheckCircleFilled style={{ fontSize: "18px" }} />}
+                  </div>
+                </div>
+              </div>)
+            })
+            }
           </div>
         </div>
         <div>
-          <div>Cтоимость тарифа</div>
+          <div style={{
+            fontSize: "14px",
+            fontWeight: 700,
+            color: "#262626",
+            paddingBottom: "24px",
+          }}>Cтоимость тарифа</div>
           <div style={{
             display: "flex",
             justifyContent: "space-between",
@@ -260,7 +315,8 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
             <div style={{
               display: "flex",
               flexDirection: "column",
-              justifyContent: "space-between"
+              justifyContent: "space-between",
+              height: "115px"
             }}>
               <div>6 месяцев</div>
               <div>9 месяцев</div>
@@ -278,12 +334,31 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
                   flexDirection: "column",
                   justifyContent: "space-between"
                 }}>
-                <div>5,5$</div>
-                <div>8,5$</div>
-                <div>10$</div>
+                <div
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    color: "#262626",
+                  }}>5,5 $</div>
+                <div
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    color: "#262626",
+                  }}>8,5 $</div>
+                <div
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    color: "#262626",
+                  }}>10 $</div>
               </div>
               <Radio.Group onChange={onChange} value={value}>
-                <Space direction="vertical">
+                <Space style={{
+                  gap: 0,
+                  justifyContent: "space-between",
+                  height: "100%"
+                }} direction="vertical">
                   <Radio value={1}></Radio>
                   <Radio value={2}></Radio>
                   <Radio value={3}></Radio>
@@ -364,7 +439,7 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
                   fontSize: "14px",
                   padding: "4px 0"
                 }}
-                onClick={() => setIsOpenFeedbackFrom(true)} type="link" >
+                onClick={() => setIsShowAddingExersice(true)} type="link" >
                 Подробнее
               </Button>
             </div>
@@ -421,7 +496,7 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
                   fontSize: "14px",
                   padding: "4px 0"
                 }}
-                onClick={() => setIsOpenFeedbackFrom(true)} type="link" >
+                onClick={() => setIsShowAddingExersice(true)} type="link" >
                 Подробнее
               </Button>
             </div>
