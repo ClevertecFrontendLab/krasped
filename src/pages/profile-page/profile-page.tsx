@@ -25,7 +25,7 @@ const ProfilePage: React.FC = () => {
   const [isfeedbackError, setIsfeedbackError] = useState(false)
   const [isfeedbackSuccess, setIsfeedbackSuccess] = useState(false)
   const [isOpenFeedbackFrom, setIsOpenFeedbackFrom] = useState(false)
-  useGetMeQuery(null);
+  const {refetch} = useGetMeQuery(null);
 
   // const feedbacks = useAppSelector(selectFeedbacks)
   const dispatch = useAppDispatch()
@@ -76,6 +76,10 @@ const ProfilePage: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addLoading]);
+
+  useEffect(() => {
+    refetch()
+  },[])
 
   return (
     <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
