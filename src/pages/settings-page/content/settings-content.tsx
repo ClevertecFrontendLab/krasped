@@ -466,8 +466,10 @@ export const SettingsContent = () => {
             paddingTop: "36px"
           }}
         >
-          <Button disabled={!value} onClick={() => updateTariff()} type="primary" >
-            Активировать
+          <Button
+            style={{ width: screens.xs ? "100%" : "initial" }}
+            disabled={!value} onClick={() => updateTariff()} type="primary" >
+            Выбрать и оплатить
           </Button>
         </div>}
       </Drawer>
@@ -488,8 +490,9 @@ export const SettingsContent = () => {
         <div
           style={{
             display: "flex",
+            flexDirection: screens.xs ? "column" : "row",
             width: "100%",
-            gap: "25px",
+            gap: screens.xs ? "12px" : "25px",
             paddingBottom: "40px"
           }}
         >
@@ -503,7 +506,7 @@ export const SettingsContent = () => {
 
             }}
             style={{
-              width: "240px",
+              width: screens.xs ? "100%" : "240px",
               height: "300px",
               boxShadow: "0 2px 8px 0 rgba(0, 0, 0, 0.15)"
             }}>
@@ -533,7 +536,11 @@ export const SettingsContent = () => {
                 Подробнее
               </Button>
             </div>
-            <Image preview={false} src={FreePng} />
+            <Image
+              style={{
+                maxHeight: screens.xs ? "200px" : "initial"
+              }}
+              preview={false} src={FreePng} />
             <div
               style={{
                 justifyContent: "center",
@@ -560,7 +567,7 @@ export const SettingsContent = () => {
 
             }}
             style={{
-              width: "240px",
+              width: screens.xs ? "100%" : "240px",
               height: "300px",
               boxShadow: "0 2px 8px 0 rgba(0, 0, 0, 0.15)"
             }}>
@@ -590,7 +597,11 @@ export const SettingsContent = () => {
                 Подробнее
               </Button>
             </div>
-            <Image preview={false} src={user?.tariff?.expired ? ProPng : ProPngDisabled} />
+            <Image
+              style={{
+                maxHeight: screens.xs ? "200px" : "initial"
+              }}
+              preview={false} src={user?.tariff?.expired ? ProPng : ProPngDisabled} />
             <div
               style={{
                 justifyContent: "center",
@@ -634,7 +645,7 @@ export const SettingsContent = () => {
           >
             <div
               style={{
-                display: "flex",
+                display: screens.xs ? "initial" : "flex",
                 fontWeight: 700,
                 fontSize: "14px",
                 lineHeight: "18px",
@@ -642,9 +653,13 @@ export const SettingsContent = () => {
               }}
             >
               Открыт для совместных тренировок
-              <Tooltip placement="bottomLeft" title={
-                "включеная функция позволит участвовать в совместнях тренировках"
-              }>
+              <Tooltip
+                style={{
+                  fontSize: "14px",
+                }}
+                placement="bottomLeft" title={
+                  "включеная функция позволит участвовать в совместнях тренировках"
+                }>
                 <InfoCircleOutlined style={{ fontSize: "16px", color: "#8C8C8C" }} />
               </Tooltip>            </div>
             <Switch onChange={onChangeIsReady} checked={isReady} />
@@ -665,9 +680,13 @@ export const SettingsContent = () => {
               }}
             >
               Уведомления
-              <Tooltip placement="bottomLeft" title={
-                "включеная функция позволит получать уведомления об активностях"
-              }>
+              <Tooltip
+                style={{
+                  fontSize: "14px",
+                }}
+                placement="bottomLeft" title={
+                  "включеная функция позволит получать уведомления об активностях"
+                }>
                 <InfoCircleOutlined style={{ fontSize: "16px", color: "#8C8C8C" }} />
               </Tooltip>
             </div>
@@ -685,13 +704,18 @@ export const SettingsContent = () => {
                 fontWeight: 700,
                 fontSize: "14px",
                 lineHeight: "18px",
-                gap: "8px"
+                gap: "8px",
+                color: user?.tariff?.tariffId ? "initial" : "#BFBFBF"
               }}
             >
               Тёмная тема
-              <Tooltip placement="bottomLeft" title={
-                "темная тема доступна для PRO tarif"
-              }>
+              <Tooltip
+                style={{
+                  fontSize: "14px",
+                }}
+                placement={screens.xs ? undefined : "bottomLeft"} title={
+                  "темная тема доступна для PRO tarif"
+                }>
                 <InfoCircleOutlined style={{ fontSize: "16px", color: "#8C8C8C" }} />
               </Tooltip>
             </div>
@@ -702,13 +726,23 @@ export const SettingsContent = () => {
 
         <div style={{
           display: "flex",
-          gap: "8px",
+          flexDirection: screens.xs ? "column" : "row",
+          width: "100%",
+          gap: screens.xs ? "16px" : "8px",
           alignItems: "center"
         }}>
-          <Button onClick={() => setIsOpenFeedbackFrom(true)} type="primary" >
+          <Button
+            style={{
+              width: screens.xs ? "100%" : "initial",
+            }}
+            onClick={() => setIsOpenFeedbackFrom(true)} type="primary" >
             Написать отзыв
           </Button>
-          <Button type='link' onClick={() => history.push(_Feedbacks)} >
+          <Button
+            style={{
+              width: screens.xs ? "100%" : "initial",
+            }}
+            type='link' onClick={() => history.push(_Feedbacks)} >
             Смотреть все отзывы
           </Button>
         </div>

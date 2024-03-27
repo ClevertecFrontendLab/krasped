@@ -356,12 +356,38 @@ export const ProfileContent = () => {
           <div
             style={{
               display: "flex",
+              flexDirection: screens.xs? "column-reverse" : "row",
               width: "100%",
               gap: "24px"
             }}
           >
 
-            <Upload
+            {screens.xs ? 
+
+<Upload
+method="post"
+maxCount={1}
+name="file"
+defaultFileList={[]}
+action="https://marathon-api.clevertec.ru/upload-image"
+headers={
+  { 'Authorization': `Bearer ${token}` }
+}
+onRemove={() => setImgUrl(undefined)}
+withCredentials={true}
+supportServerRender={false}
+listType="picture-card"
+onChange={handleChange}
+beforeUpload={beforeUpload}
+>
+{firstImageUrl ? (
+  <img src={firstImageUrl} alt="First Image" style={{ width: '100px', height: '100px' }} />
+) : (
+  imgUrl || isLoadingImage ? null : uploadButton
+)}
+</Upload>
+            
+            : <Upload
               method="post"
               maxCount={1}
               name="file"
@@ -382,7 +408,7 @@ export const ProfileContent = () => {
               ) : (
                 imgUrl || isLoadingImage ? null : uploadButton
               )}
-            </Upload>
+            </Upload>}
             <div
               style={{
 
@@ -489,8 +515,9 @@ export const ProfileContent = () => {
           </Form.Item>
         </div>
 
-        <Form.Item style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-          <Button disabled={isLoadingImageError ||
+        <Form.Item<FieldType> style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+          <Button disabled={
+            isLoadingImageError ||
             !form.isFieldsTouched()
           } onClick={() => setIsValid(false)} size="large" style={{ width: screens.xs ? "100%" : "" }} type="primary" htmlType="submit" className="login-form-button">
             Сохранить изменения
