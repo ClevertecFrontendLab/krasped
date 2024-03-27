@@ -18,7 +18,7 @@ import { _AuthLogin, _Calendar, _Feedbacks } from '@config/constants';
 import { useGetMeQuery } from '@redux/api/user/user';
 
 const MainPage: React.FC = () => {
-    useGetMeQuery(null);
+    const {refetch} = useGetMeQuery(null);
     const dispatch = useAppDispatch()
     const [getTrainings, { isSuccess, isError, isLoading, error }] = useGetAllTriningsMutMutation();
     const [isCalendarError, setIsCalendarError] = useState(false)
@@ -49,6 +49,10 @@ const MainPage: React.FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoading]);
+
+    useEffect(() => {
+        refetch()
+    },[])
     return (
         <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
             <Layout style={{ position: "relative" }}>

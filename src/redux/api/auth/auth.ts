@@ -36,7 +36,7 @@ export const authApi = createApi({
           if (isRememberMe) {
             window.localStorage.setItem("token", data.accessToken)
           }
-          await dispatch(userApi.endpoints.getMe.initiate(null));
+          // await dispatch(userApi.endpoints.getMe.initiate(null));
         } catch (error) { /* empty */ }
       },
     }),
