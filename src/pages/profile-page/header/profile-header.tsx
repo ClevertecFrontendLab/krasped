@@ -25,6 +25,7 @@ export const ProfileHeader: React.FC = () => {
         Профиль
       </div>
       <Button
+        data-test-id='header-settings'
         shape={screens?.xs ? "circle" : "default"}
         icon={screens?.lg || screens?.xs ? <SettingOutlined /> : <></>}
         style={{

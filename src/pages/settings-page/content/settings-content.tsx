@@ -136,6 +136,7 @@ export const SettingsContent = () => {
       position: "relative",
     }}>
       <Modal centered
+        data-test-id='tariff-modal-success'
         footer={null}
         closeIcon={<CloseOutlined />}
         bodyStyle={{ padding: "56px 32px" }}
@@ -252,6 +253,7 @@ export const SettingsContent = () => {
             justifyContent: (screens?.xs) ? "center" : 'end'
           }}>
             <Button htmlType='submit'
+              data-test-id='new-review-submit-button'
               disabled={!rating}
               size='large' onClick={() => { form.submit(); }}
               style={{ maxWidth: "369px", width: (screens?.xs) ? "100%" : "" }} type="primary" >
@@ -294,6 +296,7 @@ export const SettingsContent = () => {
         </Form>
       </Modal>
       <Drawer
+        data-test-id='tariff-sider'
         style={{
           zIndex: 1001
         }}
@@ -399,12 +402,14 @@ export const SettingsContent = () => {
           </div>
         </div>
         {!user?.tariff?.expired && <div>
-          <div style={{
-            fontSize: "14px",
-            fontWeight: 700,
-            color: "#262626",
-            paddingBottom: "24px",
-          }}>Cтоимость тарифа</div>
+          <div
+            data-test-id='tariff-cost'
+            style={{
+              fontSize: "14px",
+              fontWeight: 700,
+              color: "#262626",
+              paddingBottom: "24px",
+            }}>Cтоимость тарифа</div>
           <div style={{
             display: "flex",
             justifyContent: "space-between",
@@ -558,6 +563,7 @@ export const SettingsContent = () => {
             </div>
           </Card>
           <Card
+            data-test-id='pro-tariff-card'
             bodyStyle={{
               padding: 0,
               display: "flex",
@@ -620,7 +626,7 @@ export const SettingsContent = () => {
                 {`активен до ${dayjs(user?.tariff?.expired).format("DD.MM")}`}
               </div>
                 :
-                <Button onClick={() => setIsShowActiveTariff(true)} type="primary" >
+                <Button data-test-id='activate-tariff-btn' onClick={() => setIsShowActiveTariff(true)} type="primary" >
                   Активировать
                 </Button>
               }
@@ -654,6 +660,7 @@ export const SettingsContent = () => {
             >
               Открыт для совместных тренировок
               <Tooltip
+                data-test-id='tariff-trainings-icon'
                 style={{
                   fontSize: "14px",
                 }}
@@ -662,7 +669,7 @@ export const SettingsContent = () => {
                 }>
                 <InfoCircleOutlined style={{ fontSize: "16px", color: "#8C8C8C" }} />
               </Tooltip>            </div>
-            <Switch onChange={onChangeIsReady} checked={isReady} />
+            <Switch data-test-id='tariff-trainings' onChange={onChangeIsReady} checked={isReady} />
           </div>
           <div
             style={{
@@ -681,6 +688,7 @@ export const SettingsContent = () => {
             >
               Уведомления
               <Tooltip
+                data-test-id='tariff-notifications-icon'
                 style={{
                   fontSize: "14px",
                 }}
@@ -690,7 +698,7 @@ export const SettingsContent = () => {
                 <InfoCircleOutlined style={{ fontSize: "16px", color: "#8C8C8C" }} />
               </Tooltip>
             </div>
-            <Switch onChange={onChangeIsSendNotification} checked={isSendNotification} />
+            <Switch data-test-id='tariff-notifications' onChange={onChangeIsSendNotification} checked={isSendNotification} />
           </div>
           <div
             style={{
@@ -710,6 +718,7 @@ export const SettingsContent = () => {
             >
               Тёмная тема
               <Tooltip
+                data-test-id='tariff-theme-icon'
                 style={{
                   fontSize: "14px",
                 }}
@@ -719,7 +728,7 @@ export const SettingsContent = () => {
                 <InfoCircleOutlined style={{ fontSize: "16px", color: "#8C8C8C" }} />
               </Tooltip>
             </div>
-            <Switch disabled={!user?.tariff?.tariffId} />
+            <Switch data-test-id='tariff-theme' disabled={!user?.tariff?.tariffId} />
           </div>
 
         </div>

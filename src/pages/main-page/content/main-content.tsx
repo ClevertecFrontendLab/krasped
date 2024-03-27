@@ -84,7 +84,7 @@ export const MainContent = (props: { getCalendar: () => void }) => {
               headStyle={{ wordWrap: "break-word", display: "flex", alignItems: "center", justifyContent: "center", height: "45px" }}
               bodyStyle={{ textAlign: "center", height: "56px", padding: "12px" }}
               bordered={false} >
-              <Button type='link' onClick={() => history.push(_Profile)}>
+              <Button data-test-id='menu-button-profile' type='link' onClick={() => history.push(_Profile)}>
                 <IdcardTwoTone />
                 Профиль
               </Button>

@@ -16,6 +16,7 @@ export const SettingsHeader: React.FC = () => {
       backgroundColor: "#F0F5FF"
     }}>
       <div
+        data-test-id='settings-back'
         onClick={() => history.push((history?.location?.state as ILocationState)?.from || '/')}
         style={{
           display: "flex",

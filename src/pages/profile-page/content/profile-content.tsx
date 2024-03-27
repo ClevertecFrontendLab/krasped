@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { selectToken, selectUser } from "@redux/userSlice";
 import { useAppSelector } from "@hooks/typed-react-redux-hooks";
 import dayjs from "dayjs";
-import { CloseCircleOutlined } from "@ant-design/icons";
+import { CloseCircleOutlined, UploadOutlined } from "@ant-design/icons";
 import CalenderSVG from "@assets/icons/calendat-disabled.svg"
 import { useUpdateUserMutation } from "@redux/api/user/user";
 import { RcFile, UploadChangeParam, UploadFile } from "antd/lib/upload";
@@ -117,30 +117,50 @@ export const ProfileContent = () => {
 
 
   function getBase64(img: RcFile | undefined, callback: (item: string | ArrayBuffer | null) => void) {
-    if(!img) return
+    if (!img) return
     const reader = new FileReader();
     reader.addEventListener('load', () => callback(reader.result));
     reader.readAsDataURL(img);
   }
 
   const uploadButton = (
-    <div>
-      <span
-        style={{
-          lineHeight: "20px",
-          fontSize: "25px",
-          color: "#000000"
-        }}
-      >+</span>
-      <div
-        style={{
-          color: "#8C8C8C",
-          lineHeight: "18px",
-          maxWidth: "70px",
-          fontSize: "14px"
-        }}
-      >Загрузить фото профиля</div>
-    </div>
+    <>
+      {screens.xs ?
+        <div style={{display: "flex", width: "100%"}}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              width: "100%",
+              color: "#8C8C8C",
+              lineHeight: "18px",
+              fontSize: "14px"
+            }}
+          >Загрузить фото профиля :</div>
+          <Button size="large" icon={<UploadOutlined />}>Загрузить</Button>
+        </div>
+        :
+        <div>
+          <span
+            style={{
+              lineHeight: "20px",
+              fontSize: "25px",
+              color: "#000000"
+            }}
+          >+</span>
+          <div
+            style={{
+              color: "#8C8C8C",
+              lineHeight: "18px",
+              maxWidth: "70px",
+              fontSize: "14px"
+            }}
+          >Загрузить фото профиля</div>
+        </div>
+      }
+
+    </>
+
   );
 
   function beforeUpload(file: { type: string; size: number; }) {
@@ -247,14 +267,12 @@ export const ProfileContent = () => {
             gap: "8px",
           }}>
             <div
-              data-test-id='modal-error-user-training-title'
               style={{ fontSize: "16px", lineHeight: "21px" }}>Файл слишком большой</div>
             <div
-              data-test-id='modal-error-user-training-subtitle'
               style={{ color: "#8C8C8C", fontSize: "14px", lineHeight: "18px" }}>Выберите файл размером до 5 МБ</div>
             <div style={{ display: "flex", width: "100%", justifyContent: "flex-end" }}>
               <Button
-                data-test-id='modal-error-user-training-button'
+                data-test-id='big-file-error-close'
                 style={{
                   fontSize: "14px",
                   height: "28px",
@@ -315,6 +333,7 @@ export const ProfileContent = () => {
 
       </Modal>
       {isSuccessSaved && <Alert
+        data-test-id='alert'
         style={{
           alignSelf: "center",
           zIndex: 2,
@@ -356,59 +375,73 @@ export const ProfileContent = () => {
           <div
             style={{
               display: "flex",
-              flexDirection: screens.xs? "column-reverse" : "row",
+              flexDirection: screens.xs ? "column-reverse" : "row",
               width: "100%",
               gap: "24px"
             }}
           >
 
-            {screens.xs ? 
-
-<Upload
-method="post"
-maxCount={1}
-name="file"
-defaultFileList={[]}
-action="https://marathon-api.clevertec.ru/upload-image"
-headers={
-  { 'Authorization': `Bearer ${token}` }
-}
-onRemove={() => setImgUrl(undefined)}
-withCredentials={true}
-supportServerRender={false}
-listType="picture-card"
-onChange={handleChange}
-beforeUpload={beforeUpload}
->
-{firstImageUrl ? (
-  <img src={firstImageUrl} alt="First Image" style={{ width: '100px', height: '100px' }} />
-) : (
-  imgUrl || isLoadingImage ? null : uploadButton
-)}
-</Upload>
-            
-            : <Upload
-              method="post"
-              maxCount={1}
-              name="file"
-              defaultFileList={[]}
-              action="https://marathon-api.clevertec.ru/upload-image"
-              headers={
-                { 'Authorization': `Bearer ${token}` }
-              }
-              onRemove={() => setImgUrl(undefined)}
-              withCredentials={true}
-              supportServerRender={false}
-              listType="picture-card"
-              onChange={handleChange}
-              beforeUpload={beforeUpload}
-            >
-              {firstImageUrl ? (
-                <img src={firstImageUrl} alt="First Image" style={{ width: '100px', height: '100px' }} />
-              ) : (
-                imgUrl || isLoadingImage ? null : uploadButton
-              )}
-            </Upload>}
+            {!!user?.email && (screens.xs ?
+              <Upload
+                data-test-id='profile-avatar'
+                method="post"
+                style={{width: "100%"}}
+                maxCount={1}
+                onPreview={() => {}}
+                name="file"
+                defaultFileList={user?.imgSrc ? [
+                  {
+                    uid: '-1',
+                    name: 'image.png',
+                    status: 'done',
+                    url: `https://training-api.clevertec.ru/${user?.imgSrc}`,
+                  },
+                ] : []}
+                action="https://marathon-api.clevertec.ru/upload-image"
+                headers={
+                  { 'Authorization': `Bearer ${token}` }
+                }
+                onRemove={() => setImgUrl(undefined)}
+                withCredentials={true}
+                supportServerRender={false}
+                listType="picture"
+                onChange={handleChange}
+                beforeUpload={beforeUpload}
+              >
+                {imgUrl ? null : uploadButton}
+              </Upload>
+              : <Upload
+                data-test-id='profile-avatar'
+                method="post"
+                maxCount={1}
+                onPreview={() => {}}
+                name="file"
+                defaultFileList={user?.imgSrc ? [
+                  {
+                    uid: '-1',
+                    name: 'image.png',
+                    status: 'done',
+                    url: `https://training-api.clevertec.ru/${user?.imgSrc}`,
+                  },
+                ] : []}
+                action="https://marathon-api.clevertec.ru/upload-image"
+                headers={
+                  { 'Authorization': `Bearer ${token}` }
+                }
+                onRemove={() => setImgUrl(undefined)}
+                withCredentials={true}
+                supportServerRender={false}
+                listType="picture-card"
+                onChange={handleChange}
+                beforeUpload={beforeUpload}
+              >
+                {/* {firstImageUrl ? (
+                  <img src={firstImageUrl} alt="First Image" style={{ width: '100px', height: '100px' }} />
+                ) : (
+                  imgUrl || isLoadingImage ? null : uploadButton
+                )} */}
+                {imgUrl ? null : uploadButton}
+              </Upload>)}
             <div
               style={{
 
@@ -420,27 +453,30 @@ beforeUpload={beforeUpload}
               <Form.Item<FieldType>
                 style={{ marginBottom: 0 }}
                 name="firstName"
-                hasFeedback
+                 
               >
                 <Input
+                  data-test-id='profile-name'
                   size="large"
                   placeholder="Имя" />
               </Form.Item>
               <Form.Item<FieldType>
                 style={{ marginBottom: 0 }}
                 name="lastName"
-                hasFeedback
+                 
               >
                 <Input
+                  data-test-id='profile-surname'
                   size="large"
                   placeholder="Фамилия" />
               </Form.Item>
               <Form.Item<FieldType>
                 style={{ marginBottom: 0 }}
                 name="birthday"
-                hasFeedback
+                 
               >
                 <DatePicker
+                  data-test-id='profile-birthday'
                   suffixIcon={Icon}
                   allowClear={false}
                   style={{ width: "100%" }}
@@ -466,11 +502,12 @@ beforeUpload={beforeUpload}
           paddingBottom: "54px",
         }}>
           <Form.Item<FieldType>
+            
             style={{ marginBottom: 0 }}
             name="email"
             rules={[{ required: true }, { type: 'email' }]}
           >
-            <Input size="large" addonBefore={'email:'} />
+            <Input data-test-id='profile-email' size="large" addonBefore={'email:'} />
           </Form.Item>
           <Form.Item<FieldType>
             extra={isValid && <span style={{ fontSize: "12px" }}>{'Пароль не менее 8 символов, с заглавной буквой и цифрой'}</span>}
@@ -484,9 +521,9 @@ beforeUpload={beforeUpload}
                 message: 'Пароль не менее 8 символов, с заглавной буквой и цифрой'
               }),
             ]}
-            hasFeedback
+             
           >
-            <Input.Password size="large" placeholder="Пароль" />
+            <Input.Password data-test-id='profile-password' size="large" placeholder="Пароль" />
           </Form.Item>
 
           <Form.Item<FieldType>
@@ -494,7 +531,7 @@ beforeUpload={beforeUpload}
             style={{ marginBottom: 0 }}
             name="confirm"
             dependencies={['password']}
-            hasFeedback
+             
             rules={[
               ({ getFieldValue }) => ({
                 required: !!getFieldValue('password'),
@@ -511,15 +548,17 @@ beforeUpload={beforeUpload}
               }),
             ]}
           >
-            <Input.Password size="large" autoComplete="new-password" placeholder="Повторите пароль" />
+            <Input.Password data-test-id='profile-repeat-password' size="large" autoComplete="new-password" placeholder="Повторите пароль" />
           </Form.Item>
         </div>
 
         <Form.Item<FieldType> style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-          <Button disabled={
-            isLoadingImageError ||
-            !form.isFieldsTouched()
-          } onClick={() => setIsValid(false)} size="large" style={{ width: screens.xs ? "100%" : "" }} type="primary" htmlType="submit" className="login-form-button">
+          <Button
+            data-test-id='profile-submit'
+            disabled={
+              isLoadingImageError ||
+              !form.isFieldsTouched()
+            } onClick={() => setIsValid(false)} size="large" style={{ width: screens.xs ? "100%" : "" }} type="primary" htmlType="submit" className="login-form-button">
             Сохранить изменения
           </Button>
         </Form.Item>
