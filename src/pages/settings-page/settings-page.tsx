@@ -32,7 +32,7 @@ const SettingsPage: React.FC = () => {
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
-  const {refetch} = useGetMeQuery(null);
+  // const {refetch} = useGetMeQuery(null);
 
   const sendFeedback = (values: IFeedbackReq) => {
     addFeedbacks(values)
@@ -62,9 +62,9 @@ const SettingsPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addLoading]);
 
-  useEffect(() => {
-    refetch()
-  },[])
+  // useEffect(() => {
+  //   refetch()
+  // },[])
 
   return (
     <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
