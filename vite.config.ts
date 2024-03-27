@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { antdDayjs } from 'antd-dayjs-vite-plugin';
 
-export default defineConfig({
-    // base: 'krasped',
+export default defineConfig(({command}) => ({
+    base: command === 'build' ? 'krasped' : '/',
     plugins: [react(), antdDayjs()],
     server: {
         host: true,
@@ -24,4 +24,4 @@ export default defineConfig({
             '@utils': path.resolve(__dirname, 'src/utils'),
         },
     },
-});
+}));
