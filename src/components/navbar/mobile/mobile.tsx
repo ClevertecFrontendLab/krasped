@@ -7,7 +7,7 @@ import LogoFullSVG from "@assets/icons/logo-full.svg"
 import { logout } from "@redux/userSlice";
 import { useAppDispatch } from "@hooks/typed-react-redux-hooks";
 import { useEffect, useState } from "react";
-import { _AuthLogin } from "@config/constants";
+import { _AuthLogin, _Calendar } from "@config/constants";
 
 export const MobileNavbar = (props: { getCalendar?: () => void }) => {
   const [curKey, setCurKey] = useState<string>('')
@@ -101,7 +101,7 @@ export const MobileNavbar = (props: { getCalendar?: () => void }) => {
                   margin: 0,
                   padding: 0,
                 }}
-                onClick={() => { typeof props?.getCalendar == "function" ? props?.getCalendar() : history.push(item.href) }}
+                onClick={() => { return (typeof props?.getCalendar == "function" && item.href==_Calendar) ? props?.getCalendar() : history.push(item.href) }}
                 key={item.key} className={index === navItems.length - 1 ? 'last-menu-item' : ''}>
                 {item.label}
               </Menu.Item>
