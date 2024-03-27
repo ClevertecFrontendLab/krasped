@@ -3,16 +3,14 @@ import { Button, Form, Grid, Layout, Modal, Rate, Result } from 'antd';
 
 import Main_page_light from "@assets/imgs/Main_page_light.png"
 
-import s from './profile-page.module.scss';
 import { Navbar } from '@components/navbar';
 import { useSelector } from 'react-redux';
 import { RootState, history } from '@redux/configure-store';
 import { SettingsHeader } from './header/settings-header';
 import { SettingsContent } from './content/settings-content';
-import { useAppDispatch, useAppSelector } from '@hooks/typed-react-redux-hooks';
-import { useAddFeedbackMutation, useGetAllFeedbacksQuery } from '@redux/api/feedback/feedback';
+import { useAppDispatch } from '@hooks/typed-react-redux-hooks';
+import { useAddFeedbackMutation } from '@redux/api/feedback/feedback';
 import { LoaderComponent } from '@components/loader/api-loader';
-import { selectFeedbacks } from '@redux/feedbackSlice';
 import { logout } from '@redux/userSlice';
 import TextArea from 'antd/lib/input/TextArea';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
@@ -27,9 +25,7 @@ const SettingsPage: React.FC = () => {
   const [isfeedbackError, setIsfeedbackError] = useState(false)
   const [isfeedbackSuccess, setIsfeedbackSuccess] = useState(false)
   const [isOpenFeedbackFrom, setIsOpenFeedbackFrom] = useState(false)
-  const feedbacks = useAppSelector(selectFeedbacks)
   const dispatch = useAppDispatch()
-  // const { isError, isLoading, error } = useGetAllFeedbacksQuery(null);
   useGetTariffListQuery(null)
   const [addFeedbacks, { isError: addIsError, isSuccess: addSuccess, isLoading: addLoading, error: addError }] = useAddFeedbackMutation();
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
@@ -47,19 +43,6 @@ const SettingsPage: React.FC = () => {
 
   const layoutPaddingLeft = (screens?.xs) ? '0' : (collapsed ? '64px' : '208px');
 
-  // useEffect(() => {
-  //   if (isError) {
-  //     const customError = error as { status: number }
-  //     if (customError.status == 403) {
-  //       dispatch(logout())
-  //       history.push(_AuthLogin)
-  //     }
-  //     setIsfeedbacksError(true)
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [isLoading]);
-
-
   useEffect(() => {
     if (addSuccess) {
       setIsfeedbackSuccess(true)
@@ -73,7 +56,6 @@ const SettingsPage: React.FC = () => {
       }
       setIsfeedbackError(true)
       setIsOpenFeedbackFrom(false)
-      // closeFeedbackFrom()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addLoading]);
@@ -233,7 +215,7 @@ const SettingsPage: React.FC = () => {
                 padding: screens.xs ? "24px 0 42px" : "24px 24px 42px",
               }}
             >
-              <SettingsContent openFeedback={setIsOpenFeedbackFrom} data={feedbacks} />
+              <SettingsContent />
             </div>
           </div>
         </Layout>

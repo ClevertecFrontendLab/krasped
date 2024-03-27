@@ -3,17 +3,14 @@ import { Button, Form, Grid, Layout, Modal, Rate, Result } from 'antd';
 
 import Main_page_light from "@assets/imgs/Main_page_light.png"
 
-import s from './profile-page.module.scss';
 import { Navbar } from '@components/navbar';
 import { useSelector } from 'react-redux';
 import { RootState, history } from '@redux/configure-store';
 import { ProfileHeader } from './header/profile-header';
 import { ProfileContent } from './content/profile-content';
-import { FeedbackFooter } from './footer/profile-footer';
-import { useAppDispatch, useAppSelector } from '@hooks/typed-react-redux-hooks';
+import { useAppDispatch } from '@hooks/typed-react-redux-hooks';
 import { useAddFeedbackMutation, useGetAllFeedbacksQuery } from '@redux/api/feedback/feedback';
 import { LoaderComponent } from '@components/loader/api-loader';
-import { selectFeedbacks } from '@redux/feedbackSlice';
 import { logout } from '@redux/userSlice';
 import TextArea from 'antd/lib/input/TextArea';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
@@ -232,7 +229,7 @@ const ProfilePage: React.FC = () => {
                 padding: screens.xs ? "24px 0 42px" : "24px 24px 42px",
               }}
             >
-              <ProfileContent openFeedback={setIsOpenFeedbackFrom} />
+              <ProfileContent />
             </div>
           </div>
         </Layout>

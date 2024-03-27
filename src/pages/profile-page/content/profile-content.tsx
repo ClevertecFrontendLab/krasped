@@ -1,17 +1,16 @@
-import { IFeedback } from "@redux/api/feedback/feedback.types"
 import { Content } from "antd/lib/layout/layout"
 import { _Error, _ErrorUserExist, _Success } from "@config/constants";
-import { useRegistrationMutation } from "@redux/api/auth/auth";
-import { ILocationState, history } from "@redux/configure-store";
+import { history } from "@redux/configure-store";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { Input, Button, Form, Grid, Avatar, Image, Alert, Upload, DatePicker, Modal } from "antd"
+import { Input, Button, Form, Grid, Image, Alert, Upload, DatePicker, Modal } from "antd"
 import React, { useEffect, useState } from "react";
 import { selectToken, selectUser } from "@redux/userSlice";
 import { useAppSelector } from "@hooks/typed-react-redux-hooks";
 import dayjs from "dayjs";
-import { CalendarFilled, CloseCircleOutlined, CloseOutlined } from "@ant-design/icons";
+import { CloseCircleOutlined } from "@ant-design/icons";
 import CalenderSVG from "@assets/icons/calendat-disabled.svg"
 import { useUpdateUserMutation } from "@redux/api/user/user";
+import { RcFile, UploadChangeParam, UploadFile } from "antd/lib/upload";
 type FieldType = {
   firstName: string,
   lastName: string,
@@ -25,7 +24,6 @@ type FieldType = {
 type CustomError = FetchBaseQueryError & {
   status: number;
 };
-
 interface FieldData {
   name: string | number | (string | number)[];
   value?: any;
@@ -34,13 +32,7 @@ interface FieldData {
   errors?: string[];
 }
 
-interface CustomizedFormProps {
-  onChange: (fields: FieldData[]) => void;
-  fields: FieldData[];
-}
-
-
-export const ProfileContent = ({ openFeedback }: { openFeedback: React.Dispatch<React.SetStateAction<boolean>> }) => {
+export const ProfileContent = () => {
   const [fields, setFields] = useState<FieldData[]>();
   const token = useAppSelector(selectToken);
   const { useBreakpoint } = Grid;
@@ -48,6 +40,7 @@ export const ProfileContent = ({ openFeedback }: { openFeedback: React.Dispatch<
   const [isValid, setIsValid] = useState(true)
   const [isSuccessSaved, setIsSuccessSaved] = useState(false)
   const [isErrorSaved, setIsErrorSaved] = useState(false)
+  const [isBigImage, setIsBigImage] = useState(false)
   const [isLoadingImage, setIsLoadingImage] = useState(false)
   const [isLoadingImageError, setIsLoadingImageError] = useState(false)
   const [imgUrl, setImgUrl] = useState<string>()
@@ -82,8 +75,7 @@ export const ProfileContent = ({ openFeedback }: { openFeedback: React.Dispatch<
   //   ]
   // }
 
-  const handleChange = info => {
-    console.log(info)
+  const handleChange = (info: UploadChangeParam<UploadFile>): void => {
     if (info.file.status === 'uploading') {
       setFirstImageUrl(undefined)
       setIsLoadingImage(true);
@@ -92,7 +84,7 @@ export const ProfileContent = ({ openFeedback }: { openFeedback: React.Dispatch<
     }
     if (info.file.status === 'done') {
       // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (imageUrl) => {
+      getBase64(info.file.originFileObj, () => {
         setIsLoadingImage(false);
         setImgUrl(info?.file?.response?.url);
       }
@@ -119,13 +111,13 @@ export const ProfileContent = ({ openFeedback }: { openFeedback: React.Dispatch<
       // readyForJointTraining: true,
       // sendNotification: true
     }
-    console.log(payload)
     updateUser(payload)
   };
 
 
 
-  function getBase64(img, callback) {
+  function getBase64(img: RcFile | undefined, callback: (item: string | ArrayBuffer | null) => void) {
+    if(!img) return
     const reader = new FileReader();
     reader.addEventListener('load', () => callback(reader.result));
     reader.readAsDataURL(img);
@@ -151,15 +143,15 @@ export const ProfileContent = ({ openFeedback }: { openFeedback: React.Dispatch<
     </div>
   );
 
-  function beforeUpload(file) {
+  function beforeUpload(file: { type: string; size: number; }) {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-      console.error('You can only upload JPG/PNG file!');
-      return
-    }
+    // if (!isJpgOrPng) {
+    //   console.error('You can only upload JPG/PNG file!');
+    //   return
+    // }
     const isLt5M = file.size / 1024 / 1024 < 5;
     if (!isLt5M) {
-      console.error('Image must smaller than 2MB!');
+      setIsBigImage(true)
       return
     }
     return isJpgOrPng && isLt5M;
@@ -201,9 +193,7 @@ export const ProfileContent = ({ openFeedback }: { openFeedback: React.Dispatch<
   useEffect(() => {
     setImgUrl(user?.imgSrc ? user?.imgSrc : undefined)
 
-    console.log(user?.email)
     if (!form.getFieldValue("email") && user?.imgSrc) {
-      console.log(user)
       setFirstImageUrl(`https://training-api.clevertec.ru/${user?.imgSrc}`)
     }
     setFields([
@@ -217,10 +207,10 @@ export const ProfileContent = ({ openFeedback }: { openFeedback: React.Dispatch<
 
   useEffect(() => {
     if (form.isFieldsTouched(["password"])) {
-      form.validateFields(['password']).then((res) => {
+      form.validateFields(['password']).then(() => {
         setIsValid(true)
       })
-        .catch(errorInfo => {
+        .catch(() => {
           setIsValid(false)
         });
     }
@@ -242,6 +232,49 @@ export const ProfileContent = ({ openFeedback }: { openFeedback: React.Dispatch<
         closable={false}
         bodyStyle={{ padding: "16px 24px" }}
         style={{ maxWidth: "384px", backdropFilter: 'blur(10px)' }}
+        open={isBigImage}
+        onCancel={() => { setIsBigImage(false) }}>
+        <div style={{ alignItems: "flex-start", display: "flex", width: "100%", gap: "16px" }}>
+          <CloseCircleOutlined
+            style={{
+              color: "red",
+              fontSize: "22px"
+            }} />
+          <div style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+          }}>
+            <div
+              data-test-id='modal-error-user-training-title'
+              style={{ fontSize: "16px", lineHeight: "21px" }}>Файл слишком большой</div>
+            <div
+              data-test-id='modal-error-user-training-subtitle'
+              style={{ color: "#8C8C8C", fontSize: "14px", lineHeight: "18px" }}>Выберите файл размером до 5 МБ</div>
+            <div style={{ display: "flex", width: "100%", justifyContent: "flex-end" }}>
+              <Button
+                data-test-id='modal-error-user-training-button'
+                style={{
+                  fontSize: "14px",
+                  height: "28px",
+                  lineHeight: "18px"
+                }}
+                onClick={() => {
+                  setIsBigImage(false)
+                }} type="primary" key="console">
+                Закрыть
+              </Button>
+            </div>
+          </div>
+        </div>
+
+      </Modal>
+      <Modal centered
+        footer={null}
+        closable={false}
+        bodyStyle={{ padding: "16px 24px" }}
+        style={{ maxWidth: "384px", backdropFilter: 'blur(10px)' }}
         open={isErrorSaved}
         onCancel={() => { setIsErrorSaved(false) }}>
         <div style={{ alignItems: "flex-start", display: "flex", width: "100%", gap: "16px" }}>
@@ -257,9 +290,13 @@ export const ProfileContent = ({ openFeedback }: { openFeedback: React.Dispatch<
             gap: "8px",
           }}>
             <div
-              style={{ fontSize: "16px", lineHeight: "21px" }}>При сохранении данных произошла ошибка</div>
+              style={{ fontSize: "16px", lineHeight: "21px" }}>
+              При сохранении данных произошла ошибка
+            </div>
             <div
-              style={{ color: "#8C8C8C", fontSize: "14px", lineHeight: "18px" }}>Придётся попробовать ещё раз</div>
+              style={{ color: "#8C8C8C", fontSize: "14px", lineHeight: "18px" }}>
+              Придётся попробовать ещё раз
+            </div>
             <div style={{ display: "flex", width: "100%", justifyContent: "flex-end" }}>
               <Button
                 style={{
@@ -345,9 +382,6 @@ export const ProfileContent = ({ openFeedback }: { openFeedback: React.Dispatch<
               ) : (
                 imgUrl || isLoadingImage ? null : uploadButton
               )}
-              {/* {imgUrl || isLoadingImage ?
-                null :
-                uploadButton} */}
             </Upload>
             <div
               style={{
@@ -361,7 +395,6 @@ export const ProfileContent = ({ openFeedback }: { openFeedback: React.Dispatch<
                 style={{ marginBottom: 0 }}
                 name="firstName"
                 hasFeedback
-              // rules={[{ required: true }]}
               >
                 <Input
                   size="large"
@@ -371,7 +404,6 @@ export const ProfileContent = ({ openFeedback }: { openFeedback: React.Dispatch<
                 style={{ marginBottom: 0 }}
                 name="lastName"
                 hasFeedback
-              // rules={[{ required: true }]}
               >
                 <Input
                   size="large"
@@ -381,7 +413,6 @@ export const ProfileContent = ({ openFeedback }: { openFeedback: React.Dispatch<
                 style={{ marginBottom: 0 }}
                 name="birthday"
                 hasFeedback
-              // rules={[{ required: true }]}
               >
                 <DatePicker
                   suffixIcon={Icon}
@@ -459,7 +490,9 @@ export const ProfileContent = ({ openFeedback }: { openFeedback: React.Dispatch<
         </div>
 
         <Form.Item style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-          <Button disabled={isLoadingImageError} onClick={() => setIsValid(false)} size="large" style={{ width: screens.xs ? "100%" : "" }} type="primary" htmlType="submit" className="login-form-button">
+          <Button disabled={isLoadingImageError ||
+            !form.isFieldsTouched()
+          } onClick={() => setIsValid(false)} size="large" style={{ width: screens.xs ? "100%" : "" }} type="primary" htmlType="submit" className="login-form-button">
             Сохранить изменения
           </Button>
         </Form.Item>

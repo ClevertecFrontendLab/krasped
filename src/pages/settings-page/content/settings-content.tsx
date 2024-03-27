@@ -1,11 +1,9 @@
-import { IFeedback, IFeedbackReq } from "@redux/api/feedback/feedback.types"
+import { IFeedbackReq } from "@redux/api/feedback/feedback.types"
 import { Content } from "antd/lib/layout/layout"
-import { CheckCircleFilled, CheckCircleOutlined, CheckOutlined, CloseCircleOutlined, CloseOutlined, GooglePlusOutlined, InfoCircleOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
+import { CheckCircleFilled, CheckCircleOutlined, CheckOutlined, CloseCircleOutlined, CloseOutlined, InfoCircleOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
 import { _AuthLogin, _Error, _ErrorUserExist, _Feedbacks, _Success } from "@config/constants";
-import { useRegistrationMutation } from "@redux/api/auth/auth";
-import { ILocationState, history } from "@redux/configure-store";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { Input, Button, Form, Grid, Avatar, Image, Alert, Modal, Rate, Result, Card, Switch, Tooltip, Drawer, Space, Radio, RadioChangeEvent } from "antd"
+import { history } from "@redux/configure-store";
+import { Button, Form, Grid, Image, Modal, Rate, Result, Card, Switch, Tooltip, Drawer, Space, Radio, RadioChangeEvent } from "antd"
 import { useEffect, useState } from "react";
 import TextArea from "antd/lib/input/TextArea";
 import { useAddFeedbackMutation } from "@redux/api/feedback/feedback";
@@ -19,16 +17,10 @@ import dayjs from "dayjs";
 import { ITariffAdd } from "@redux/api/user/user.types";
 import { IPeriod } from "@redux/api/catalog/catalog.types";
 
-
-type CustomError = FetchBaseQueryError & {
-  status: number;
-};
-
-
-export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | undefined, openFeedback: React.Dispatch<React.SetStateAction<boolean>> }) => {
+export const SettingsContent = () => {
   const [addFeedbacks, { isError: addIsError, isSuccess: addSuccess, isLoading: addLoading, error: addError }] = useAddFeedbackMutation();
   const [updateUserTariff, { isError: tariffIsError, isSuccess: tariffSuccess, isLoading: tariffLoading, error: tariffError }] = useUpdateTariffMutation();
-  const [updateUser, { isLoading, isSuccess, error, isError }] = useUpdateUserMutation();
+  const [updateUser] = useUpdateUserMutation();
   const dispatch = useAppDispatch()
   const { useBreakpoint } = Grid;
   const user = useAppSelector(selectUser)
@@ -39,7 +31,7 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
   const [isOpenFeedbackFrom, setIsOpenFeedbackFrom] = useState(false)
   const [isfeedbackError, setIsfeedbackError] = useState(false)
   const [isfeedbackSuccess, setIsfeedbackSuccess] = useState(false)
-  const [isActivateSuccess, setIsActivateSuccess] = useState(true)
+  const [isActivateSuccess, setIsActivateSuccess] = useState(false)
   const [isShowActiveTariff, setIsShowActiveTariff] = useState<boolean>(false)
   const [isSendNotification, setIsSendNotification] = useState<boolean>(false)
   const [isReady, setIsReady] = useState<boolean>(false)
@@ -56,7 +48,6 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
   ]
 
   const onChange = (e: RadioChangeEvent) => {
-    console.log('radio checked', e.target.value);
     setValue(e.target.value);
   };
 
@@ -69,20 +60,11 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
     addFeedbacks(values)
   };
 
-  // const updateSwitchers = () => {
-  //   const payload = {
-  //     // ...user,
-  //     readyForJointTraining: isReady,
-  //     sendNotification: isSendNotification
-  //   }
-  //   console.log(payload)
-  //   updateUser(payload)
-  // };
-
   const onChangeIsReady = (checked: boolean) => {
     setIsReady(checked);
     updateUser({ readyForJointTraining: checked })
   };
+
   const onChangeIsSendNotification = (checked: boolean) => {
     setIsSendNotification(checked);
     updateUser({ sendNotification: checked })
@@ -104,9 +86,6 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
     }
   };
 
-
-
-
   useEffect(() => {
     setIsSendNotification(user?.sendNotification || false)
     setIsReady(user?.readyForJointTraining || false)
@@ -125,7 +104,6 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
       }
       setIsfeedbackError(true)
       setIsOpenFeedbackFrom(false)
-      // closeFeedbackFrom()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addLoading]);
@@ -141,9 +119,6 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
         dispatch(logout())
         history.push(_AuthLogin)
       }
-      // setIsfeedbackError(true)
-      // setIsOpenFeedbackFrom(false)
-      // closeFeedbackFrom()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tariffLoading]);
@@ -440,12 +415,9 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
               justifyContent: "space-between",
               height: "115px"
             }}>
-              {tariffs?.periods?.map(item => {
+              {tariffs?.periods?.map((item) => {
                 return (<div key={item.text}>{item.text}</div>)
               })}
-              {/* <div>6 месяцев</div>
-              <div>9 месяцев</div>
-              <div>12 месяцев</div> */}
             </div>
             <div style={{
               display: "flex",
@@ -470,24 +442,6 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
                       }}>{`${item.cost} $`}</div>
                   )
                 })}
-                {/* <div
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: 500,
-                    color: "#262626",
-                  }}>5,5 $</div>
-                <div
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: 500,
-                    color: "#262626",
-                  }}>8,5 $</div>
-                <div
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: 500,
-                    color: "#262626",
-                  }}>10 $</div> */}
               </div>
               <Radio.Group onChange={onChange} value={value}>
                 <Space style={{
@@ -498,9 +452,6 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
                   {tariffs?.periods?.map((item) => {
                     return (<Radio key={item.text} value={item}></Radio>)
                   })}
-                  {/* <Radio value={1}></Radio>
-                  <Radio value={2}></Radio>
-                  <Radio value={3}></Radio> */}
                 </Space>
               </Radio.Group>
             </div>
@@ -639,7 +590,7 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
                 Подробнее
               </Button>
             </div>
-            <Image preview={false} src={ProPngDisabled} />
+            <Image preview={false} src={user?.tariff?.expired ? ProPng : ProPngDisabled} />
             <div
               style={{
                 justifyContent: "center",
