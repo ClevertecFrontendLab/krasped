@@ -41,10 +41,9 @@ export const ProfileContent = () => {
   const [isSuccessSaved, setIsSuccessSaved] = useState(false)
   const [isErrorSaved, setIsErrorSaved] = useState(false)
   const [isBigImage, setIsBigImage] = useState(false)
-  const [isLoadingImage, setIsLoadingImage] = useState(false)
+  // const [isLoadingImage, setIsLoadingImage] = useState(false)
   const [isLoadingImageError, setIsLoadingImageError] = useState(false)
   const [imgUrl, setImgUrl] = useState<string>()
-  const [firstImageUrl, setFirstImageUrl] = useState<string>();
   const [form] = Form.useForm();
   const password = Form.useWatch('password', { form, preserve: true });
   const user = useAppSelector(selectUser)
@@ -77,21 +76,20 @@ export const ProfileContent = () => {
 
   const handleChange = (info: UploadChangeParam<UploadFile>): void => {
     if (info.file.status === 'uploading') {
-      setFirstImageUrl(undefined)
-      setIsLoadingImage(true);
+      // setIsLoadingImage(true);
       setIsLoadingImageError(false);
       return;
     }
     if (info.file.status === 'done') {
       // Get this url from response in real world.
       getBase64(info.file.originFileObj, () => {
-        setIsLoadingImage(false);
+        // setIsLoadingImage(false);
         setImgUrl(info?.file?.response?.url);
       }
       );
     }
     if (info.file.status === 'error') {
-      setIsLoadingImage(false);
+      // setIsLoadingImage(false);
       setIsLoadingImageError(true);
       setImgUrl(info?.file?.response?.url);
     }
@@ -136,7 +134,7 @@ export const ProfileContent = () => {
               lineHeight: "18px",
               fontSize: "14px"
             }}
-          >Загрузить фото профиля :</div>
+          >Загрузить фото профиля</div>
           <Button size="large" icon={<UploadOutlined />}>Загрузить</Button>
         </div>
         :
@@ -164,17 +162,18 @@ export const ProfileContent = () => {
   );
 
   function beforeUpload(file: { type: string; size: number; }) {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    setIsBigImage(true)
+    // const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     // if (!isJpgOrPng) {
     //   console.error('You can only upload JPG/PNG file!');
     //   return
     // }
     const isLt5M = file.size / 1024 / 1024 < 5;
     if (!isLt5M) {
-      setIsBigImage(true)
+      setIsLoadingImageError(true);
       return
-    }
-    return isJpgOrPng && isLt5M;
+    } else{setIsBigImage(false)}
+    return isLt5M || Upload.LIST_IGNORE;
   }
 
   const resetFields = () => {
@@ -185,9 +184,6 @@ export const ProfileContent = () => {
       { name: ['email'], value: user?.email ?? '' },
 
     ])
-    if (user?.imgSrc) {
-      setFirstImageUrl(`https://training-api.clevertec.ru/${user?.imgSrc}`)
-    }
   }
 
   useEffect(() => {
@@ -211,11 +207,8 @@ export const ProfileContent = () => {
 
 
   useEffect(() => {
+    console.log(user)
     setImgUrl(user?.imgSrc ? user?.imgSrc : undefined)
-
-    if (!form.getFieldValue("email") && user?.imgSrc) {
-      setFirstImageUrl(`https://training-api.clevertec.ru/${user?.imgSrc}`)
-    }
     setFields([
       { name: ['firstName'], value: user?.firstName ?? '' },
       { name: ['lastName'], value: user?.lastName ?? '' },
@@ -224,6 +217,18 @@ export const ProfileContent = () => {
     ])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
+
+  useEffect(() => {
+    console.log(user)
+    setImgUrl(user?.imgSrc ? user?.imgSrc : undefined)
+    setFields([
+      { name: ['firstName'], value: user?.firstName ?? '' },
+      { name: ['lastName'], value: user?.lastName ?? '' },
+      { name: ['birthday'], value: dayjs(user?.birthday) ?? null },
+      { name: ['email'], value: user?.email ?? '' },
+    ])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (form.isFieldsTouched(["password"])) {
@@ -247,7 +252,7 @@ export const ProfileContent = () => {
       overflow: 'initial',
       position: "relative",
     }}>
-      <Modal centered
+      {isBigImage && <Modal centered
         footer={null}
         closable={false}
         bodyStyle={{ padding: "16px 24px" }}
@@ -287,7 +292,7 @@ export const ProfileContent = () => {
           </div>
         </div>
 
-      </Modal>
+      </Modal>}
       <Modal centered
         footer={null}
         closable={false}
@@ -380,10 +385,11 @@ export const ProfileContent = () => {
               gap: "24px"
             }}
           >
-
+          <Form.Item
+                data-test-id='profile-avatar'
+            >
             {!!user?.email && (screens.xs ?
               <Upload
-                data-test-id='profile-avatar'
                 method="post"
                 style={{width: "100%"}}
                 maxCount={1}
@@ -394,7 +400,7 @@ export const ProfileContent = () => {
                     uid: '-1',
                     name: 'image.png',
                     status: 'done',
-                    url: `https://training-api.clevertec.ru/${user?.imgSrc}`,
+                    url:  user.imgSrc.includes('https') ? user.imgSrc : `https://training-api.clevertec.ru/${user.imgSrc}`,
                   },
                 ] : []}
                 action="https://marathon-api.clevertec.ru/upload-image"
@@ -411,7 +417,6 @@ export const ProfileContent = () => {
                 {imgUrl ? null : uploadButton}
               </Upload>
               : <Upload
-                data-test-id='profile-avatar'
                 method="post"
                 maxCount={1}
                 onPreview={() => {}}
@@ -421,7 +426,7 @@ export const ProfileContent = () => {
                     uid: '-1',
                     name: 'image.png',
                     status: 'done',
-                    url: `https://training-api.clevertec.ru/${user?.imgSrc}`,
+                    url: user.imgSrc.includes('https') ? user.imgSrc : `https://training-api.clevertec.ru/${user?.imgSrc}`,
                   },
                 ] : []}
                 action="https://marathon-api.clevertec.ru/upload-image"
@@ -442,6 +447,7 @@ export const ProfileContent = () => {
                 )} */}
                 {imgUrl ? null : uploadButton}
               </Upload>)}
+              </Form.Item>
             <div
               style={{
 

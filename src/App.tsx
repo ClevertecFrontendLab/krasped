@@ -7,9 +7,6 @@ import { SuspenceLoaderComponent } from '@components/loader/suspence-loader';
 import ProtectedRoute from '@components/protected-routes/protected-route';
 import AnonimRoute from '@components/anonim-route/anonim-route';
 import { _Auth, _AuthChangePassword, _AuthConfirmEmail, _AuthLogin, _AuthRegistration, _Calendar, _Error, _ErrorChangePassword, _ErrorCheckEmail, _ErrorCheckEmailNoExist, _ErrorLogin, _ErrorUserExist, _Feedbacks, _Main, _NotFoundPage, _Profile, _Result, _Settings, _Success, _SuccessChangePassword } from '@config/constants';
-import { useAppDispatch, useAppSelector } from './hooks';
-import { useGetMeQuery } from '@redux/api/user/user';
-import { selectToken } from '@redux/userSlice';
 
 const App: React.FC = () => {
   const AuthPage = React.lazy(() => import('@pages/auth-page/auth-page'));
@@ -29,7 +26,7 @@ const App: React.FC = () => {
   const ProfilePage = React.lazy(() => import('@pages/profile-page/profile-page'));
   const SettingsPage = React.lazy(() => import('@pages/settings-page/settings-page'));
   const NotFoundPage = React.lazy(() => import('@pages/404/404-page'));
-
+  
   return (
 
     <Routes>

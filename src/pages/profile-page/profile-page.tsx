@@ -16,17 +16,20 @@ import TextArea from 'antd/lib/input/TextArea';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
 import { IFeedbackReq } from '@redux/api/feedback/feedback.types';
 import { _AuthLogin, _Main } from '@config/constants';
+import { useGetMeQuery } from '@redux/api/user/user';
 
 const ProfilePage: React.FC = () => {
   const [form] = Form.useForm();
   const rating = Form.useWatch('rating', form);
-  const [isfeedbacksError, setIsfeedbacksError] = useState(false)
+  // const [isfeedbacksError, setIsfeedbacksError] = useState(false)
   const [isfeedbackError, setIsfeedbackError] = useState(false)
   const [isfeedbackSuccess, setIsfeedbackSuccess] = useState(false)
   const [isOpenFeedbackFrom, setIsOpenFeedbackFrom] = useState(false)
+  useGetMeQuery(null);
+
   // const feedbacks = useAppSelector(selectFeedbacks)
   const dispatch = useAppDispatch()
-  const { isError, isLoading, error } = useGetAllFeedbacksQuery(null);
+  // const { isError, isLoading, error } = useGetAllFeedbacksQuery(null);
   const [addFeedbacks, { isError: addIsError, isSuccess: addSuccess, isLoading: addLoading, error: addError }] = useAddFeedbackMutation();
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
   const { useBreakpoint } = Grid;
@@ -43,17 +46,17 @@ const ProfilePage: React.FC = () => {
 
   const layoutPaddingLeft = (screens?.xs) ? '0' : (collapsed ? '64px' : '208px');
 
-  useEffect(() => {
-    if (isError) {
-      const customError = error as { status: number }
-      if (customError.status == 403) {
-        dispatch(logout())
-        history.push(_AuthLogin)
-      }
-      setIsfeedbacksError(true)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading]);
+  // useEffect(() => {
+  //   if (isError) {
+  //     const customError = error as { status: number }
+  //     if (customError.status == 403) {
+  //       dispatch(logout())
+  //       history.push(_AuthLogin)
+  //     }
+  //     setIsfeedbacksError(true)
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [isLoading]);
 
 
   useEffect(() => {
@@ -78,7 +81,7 @@ const ProfilePage: React.FC = () => {
     <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
       <Layout style={{ position: "relative" }}>
         <LoaderComponent />
-        <Modal centered footer={null} style={{ backdropFilter: 'blur(10px)' }} closable={false} open={isfeedbacksError} onCancel={() => setIsfeedbacksError(false)}>
+        {/* <Modal centered footer={null} style={{ backdropFilter: 'blur(10px)' }} closable={false} open={isfeedbacksError} onCancel={() => setIsfeedbacksError(false)}>
           <Result
             style={{
               maxWidth: "539px",
@@ -97,7 +100,7 @@ const ProfilePage: React.FC = () => {
               </Button>
             }
           />
-        </Modal>
+        </Modal> */}
         <Modal centered footer={null} style={{ backdropFilter: 'blur(10px)' }} closable={false} open={isfeedbackError} onCancel={() => setIsfeedbackError(false)}>
           <Result
             style={{

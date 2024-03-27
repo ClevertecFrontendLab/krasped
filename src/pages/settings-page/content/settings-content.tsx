@@ -33,8 +33,8 @@ export const SettingsContent = () => {
   const [isfeedbackSuccess, setIsfeedbackSuccess] = useState(false)
   const [isActivateSuccess, setIsActivateSuccess] = useState(false)
   const [isShowActiveTariff, setIsShowActiveTariff] = useState<boolean>(false)
-  const [isSendNotification, setIsSendNotification] = useState<boolean>(false)
-  const [isReady, setIsReady] = useState<boolean>(false)
+  const [isSendNotification, setIsSendNotification] = useState<boolean>(user?.sendNotification || false)
+  const [isReady, setIsReady] = useState<boolean>(user?.readyForJointTraining || false)
   const [value, setValue] = useState<IPeriod>();
 
   const benifits = [
@@ -89,7 +89,7 @@ export const SettingsContent = () => {
   useEffect(() => {
     setIsSendNotification(user?.sendNotification || false)
     setIsReady(user?.readyForJointTraining || false)
-  }, [user])
+  }, [])
 
   useEffect(() => {
     if (addSuccess) {
@@ -295,7 +295,7 @@ export const SettingsContent = () => {
           </Form.Item>
         </Form>
       </Modal>
-      <Drawer
+      {isShowActiveTariff && <Drawer
         data-test-id='tariff-sider'
         style={{
           zIndex: 1001
@@ -403,33 +403,63 @@ export const SettingsContent = () => {
         </div>
         {!user?.tariff?.expired && <div>
           <div
-            data-test-id='tariff-cost'
+
             style={{
               fontSize: "14px",
               fontWeight: 700,
               color: "#262626",
               paddingBottom: "24px",
             }}>Cтоимость тарифа</div>
-          <div style={{
+          {/* <div style={{
             display: "flex",
             justifyContent: "space-between",
-          }}>
-            <div style={{
+          }}> */}
+            <Radio.Group style={{width: "100%"}} onChange={onChange} value={value}>
+            <div data-test-id='tariff-cost' style={{
               display: "flex",
+              width: "100%",
               flexDirection: "column",
               justifyContent: "space-between",
               height: "115px"
             }}>
               {tariffs?.periods?.map((item) => {
-                return (<div key={item.text}>{item.text}</div>)
+                return (<div style={{
+                  display: "flex",
+                  width: "100%",
+                  justifyContent: "space-between",
+                }} key={item.text}>
+
+                  <div
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    color: "#262626",
+                  }}
+                  >{item.text}</div>
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "space-around",
+                    gap: "14px",
+                    width: "126px",
+                  }}>
+                    <div
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: 500,
+                        color: "#262626",
+                      }}>{`${(''+item.cost).replace(/\./g, ',')} $`}</div>
+                      <Radio data-test-id={`tariff-${(''+item.cost).replace(/\./g, ',')}`} value={item}></Radio>
+                  </div>
+                </div>)
               })}
-            </div>
-            <div style={{
+            </div></Radio.Group>
+            {/* <div style={{
               display: "flex",
               justifyContent: "space-around",
               gap: "14px",
               width: "126px",
             }}>
+
               <div
                 style={{
                   display: "flex",
@@ -437,6 +467,7 @@ export const SettingsContent = () => {
                   justifyContent: "space-between"
                 }}>
                 {tariffs?.periods?.map(item => {
+
                   return (
                     <div
                       key={item.text}
@@ -455,12 +486,13 @@ export const SettingsContent = () => {
                   height: "100%"
                 }} direction="vertical">
                   {tariffs?.periods?.map((item) => {
+
                     return (<Radio key={item.text} value={item}></Radio>)
                   })}
                 </Space>
               </Radio.Group>
-            </div>
-          </div>
+            </div> */}
+          {/* </div> */}
         </div>}
         {!user?.tariff?.expired && <div
           style={{
@@ -472,12 +504,13 @@ export const SettingsContent = () => {
           }}
         >
           <Button
+            data-test-id='tariff-submit'
             style={{ width: screens.xs ? "100%" : "initial" }}
             disabled={!value} onClick={() => updateTariff()} type="primary" >
             Выбрать и оплатить
           </Button>
         </div>}
-      </Drawer>
+      </Drawer>}
       <div style={{
         display: "flex",
         flexDirection: "column",
@@ -660,16 +693,15 @@ export const SettingsContent = () => {
             >
               Открыт для совместных тренировок
               <Tooltip
-                data-test-id='tariff-trainings-icon'
                 style={{
                   fontSize: "14px",
                 }}
                 placement="bottomLeft" title={
-                  "включеная функция позволит участвовать в совместнях тренировках"
+                  "включеная функция позволит участвовать в совместных тренировках"
                 }>
-                <InfoCircleOutlined style={{ fontSize: "16px", color: "#8C8C8C" }} />
+                <InfoCircleOutlined data-test-id='tariff-trainings-icon' style={{ fontSize: "16px", color: "#8C8C8C" }} />
               </Tooltip>            </div>
-            <Switch data-test-id='tariff-trainings' onChange={onChangeIsReady} checked={isReady} />
+            <Switch data-test-id='tariff-trainings' onChange={(e) => onChangeIsReady(e)} checked={isReady} />
           </div>
           <div
             style={{
@@ -688,17 +720,17 @@ export const SettingsContent = () => {
             >
               Уведомления
               <Tooltip
-                data-test-id='tariff-notifications-icon'
+
                 style={{
                   fontSize: "14px",
                 }}
                 placement="bottomLeft" title={
                   "включеная функция позволит получать уведомления об активностях"
                 }>
-                <InfoCircleOutlined style={{ fontSize: "16px", color: "#8C8C8C" }} />
+                <InfoCircleOutlined data-test-id='tariff-notifications-icon' style={{ fontSize: "16px", color: "#8C8C8C" }} />
               </Tooltip>
             </div>
-            <Switch data-test-id='tariff-notifications' onChange={onChangeIsSendNotification} checked={isSendNotification} />
+            <Switch data-test-id='tariff-notifications' onChange={(e) => { setIsSendNotification(e); onChangeIsSendNotification(e) }} checked={isSendNotification} />
           </div>
           <div
             style={{
@@ -718,14 +750,14 @@ export const SettingsContent = () => {
             >
               Тёмная тема
               <Tooltip
-                data-test-id='tariff-theme-icon'
+
                 style={{
                   fontSize: "14px",
                 }}
                 placement={screens.xs ? undefined : "bottomLeft"} title={
                   "темная тема доступна для PRO tarif"
                 }>
-                <InfoCircleOutlined style={{ fontSize: "16px", color: "#8C8C8C" }} />
+                <InfoCircleOutlined data-test-id='tariff-theme-icon' style={{ fontSize: "16px", color: "#8C8C8C" }} />
               </Tooltip>
             </div>
             <Switch data-test-id='tariff-theme' disabled={!user?.tariff?.tariffId} />

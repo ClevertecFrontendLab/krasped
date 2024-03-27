@@ -15,8 +15,10 @@ import { useGetAllTriningsMutMutation } from '@redux/api/training/training';
 import { useAppDispatch } from '@hooks/typed-react-redux-hooks';
 import { logout } from '@redux/userSlice';
 import { _AuthLogin, _Calendar, _Feedbacks } from '@config/constants';
+import { useGetMeQuery } from '@redux/api/user/user';
 
 const MainPage: React.FC = () => {
+    useGetMeQuery(null);
     const dispatch = useAppDispatch()
     const [getTrainings, { isSuccess, isError, isLoading, error }] = useGetAllTriningsMutMutation();
     const [isCalendarError, setIsCalendarError] = useState(false)
