@@ -9,7 +9,6 @@ import { useSelector } from 'react-redux';
 import { RootState, history } from '@redux/configure-store';
 import { SettingsHeader } from './header/settings-header';
 import { SettingsContent } from './content/settings-content';
-import { FeedbackFooter } from './footer/profile-footer';
 import { useAppDispatch, useAppSelector } from '@hooks/typed-react-redux-hooks';
 import { useAddFeedbackMutation, useGetAllFeedbacksQuery } from '@redux/api/feedback/feedback';
 import { LoaderComponent } from '@components/loader/api-loader';
@@ -19,6 +18,7 @@ import TextArea from 'antd/lib/input/TextArea';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
 import { IFeedbackReq } from '@redux/api/feedback/feedback.types';
 import { _AuthLogin, _Main } from '@config/constants';
+import { useGetTariffListQuery } from '@redux/api/catalog/catalog';
 
 const SettingsPage: React.FC = () => {
   const [form] = Form.useForm();
@@ -29,7 +29,8 @@ const SettingsPage: React.FC = () => {
   const [isOpenFeedbackFrom, setIsOpenFeedbackFrom] = useState(false)
   const feedbacks = useAppSelector(selectFeedbacks)
   const dispatch = useAppDispatch()
-  const { isError, isLoading, error } = useGetAllFeedbacksQuery(null);
+  // const { isError, isLoading, error } = useGetAllFeedbacksQuery(null);
+  useGetTariffListQuery(null)
   const [addFeedbacks, { isError: addIsError, isSuccess: addSuccess, isLoading: addLoading, error: addError }] = useAddFeedbackMutation();
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
   const { useBreakpoint } = Grid;
@@ -46,17 +47,17 @@ const SettingsPage: React.FC = () => {
 
   const layoutPaddingLeft = (screens?.xs) ? '0' : (collapsed ? '64px' : '208px');
 
-  useEffect(() => {
-    if (isError) {
-      const customError = error as { status: number }
-      if (customError.status == 403) {
-        dispatch(logout())
-        history.push(_AuthLogin)
-      }
-      setIsfeedbacksError(true)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading]);
+  // useEffect(() => {
+  //   if (isError) {
+  //     const customError = error as { status: number }
+  //     if (customError.status == 403) {
+  //       dispatch(logout())
+  //       history.push(_AuthLogin)
+  //     }
+  //     setIsfeedbacksError(true)
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [isLoading]);
 
 
   useEffect(() => {
@@ -125,7 +126,7 @@ const SettingsPage: React.FC = () => {
                 display: "flex", gap: "8px"
               }}>
 
-                <Button data-test-id='write-review-not-saved-modal' size='large' onClick={() => { setIsfeedbackError(false); setIsOpenFeedbackFrom(true) }}
+                <Button size='large' onClick={() => { setIsfeedbackError(false); setIsOpenFeedbackFrom(true) }}
                   style={{ maxWidth: "369px", width: "100%", fontSize: "14px" }} type="primary" >
                   Написать отзыв
                 </Button>
@@ -165,7 +166,7 @@ const SettingsPage: React.FC = () => {
               display: "flex",
               justifyContent: (screens?.xs) ? "center" : 'end'
             }}>
-              <Button htmlType='submit' data-test-id='new-review-submit-button'
+              <Button htmlType='submit'
                 disabled={!rating}
                 size='large' onClick={() => { form.submit(); }}
                 style={{ maxWidth: "369px", width: (screens?.xs) ? "100%" : "" }} type="primary" >

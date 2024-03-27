@@ -4,17 +4,18 @@ import { _Error, _ErrorUserExist, _Success } from "@config/constants";
 import { useRegistrationMutation } from "@redux/api/auth/auth";
 import { ILocationState, history } from "@redux/configure-store";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { Input, Button, Form, Grid, Avatar, Image, Alert, Upload, DatePicker } from "antd"
+import { Input, Button, Form, Grid, Avatar, Image, Alert, Upload, DatePicker, Modal } from "antd"
 import React, { useEffect, useState } from "react";
-import { selectToken } from "@redux/userSlice";
+import { selectToken, selectUser } from "@redux/userSlice";
 import { useAppSelector } from "@hooks/typed-react-redux-hooks";
 import dayjs from "dayjs";
-import { CalendarFilled } from "@ant-design/icons";
+import { CalendarFilled, CloseCircleOutlined, CloseOutlined } from "@ant-design/icons";
 import CalenderSVG from "@assets/icons/calendat-disabled.svg"
+import { useUpdateUserMutation } from "@redux/api/user/user";
 type FieldType = {
   firstName: string,
   lastName: string,
-  birthday: string,
+  birthday?: string,
   imgSrc: string,
   email: string;
   password: string;
@@ -25,23 +26,42 @@ type CustomError = FetchBaseQueryError & {
   status: number;
 };
 
+interface FieldData {
+  name: string | number | (string | number)[];
+  value?: any;
+  touched?: boolean;
+  validating?: boolean;
+  errors?: string[];
+}
 
-export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | undefined, openFeedback: React.Dispatch<React.SetStateAction<boolean>> }) => {
+interface CustomizedFormProps {
+  onChange: (fields: FieldData[]) => void;
+  fields: FieldData[];
+}
+
+
+export const ProfileContent = ({ openFeedback }: { openFeedback: React.Dispatch<React.SetStateAction<boolean>> }) => {
+  const [fields, setFields] = useState<FieldData[]>();
   const token = useAppSelector(selectToken);
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
   const [isValid, setIsValid] = useState(true)
+  const [isSuccessSaved, setIsSuccessSaved] = useState(false)
+  const [isErrorSaved, setIsErrorSaved] = useState(false)
   const [isLoadingImage, setIsLoadingImage] = useState(false)
-  const [imgUrl, setImgUrl] = useState()
+  const [isLoadingImageError, setIsLoadingImageError] = useState(false)
+  const [imgUrl, setImgUrl] = useState<string>()
+  const [firstImageUrl, setFirstImageUrl] = useState<string>();
   const [form] = Form.useForm();
   const password = Form.useWatch('password', { form, preserve: true });
+  const user = useAppSelector(selectUser)
   const Icon = React.createElement(Image, {
     src: CalenderSVG,
     preview: false,
     alt: CalenderSVG,
   })
 
-  const [regUser, { isLoading, isSuccess, error, isError }] = useRegistrationMutation();
+  const [updateUser, { isLoading, isSuccess, error, isError }] = useUpdateUserMutation();
   const validateMessages = {
     required: '${label} is required!',
     types: {
@@ -63,50 +83,47 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
   // }
 
   const handleChange = info => {
+    console.log(info)
     if (info.file.status === 'uploading') {
+      setFirstImageUrl(undefined)
       setIsLoadingImage(true);
+      setIsLoadingImageError(false);
       return;
     }
     if (info.file.status === 'done') {
       // Get this url from response in real world.
       getBase64(info.file.originFileObj, (imageUrl) => {
         setIsLoadingImage(false);
-        setImgUrl(imageUrl);
+        setImgUrl(info?.file?.response?.url);
       }
       );
+    }
+    if (info.file.status === 'error') {
+      setIsLoadingImage(false);
+      setIsLoadingImageError(true);
+      setImgUrl(info?.file?.response?.url);
     }
   };
 
   const onFinish = (values: FieldType) => {
+
+
     const payload = {
       email: values.email,
-      password: values.password
+      ...(values?.password ? { password: values.password } : {}),
+      ...(values?.birthday ? { birthday: values.birthday } : {}),
+      firstName: values.firstName,
+      lastName: values.lastName,
+      // birthday: values.birthday, //"2024-03-26T20:59:15.136Z",
+      imgSrc: imgUrl,
+      // readyForJointTraining: true,
+      // sendNotification: true
     }
-    regUser(payload)
+    console.log(payload)
+    updateUser(payload)
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      history.push(_Success, { from: "login" });
-    }
 
-    if (isError) {
-      const customError = error as CustomError;
-      if ((customError?.status) === 409) {
-        history.push(_ErrorUserExist, { from: "login" });
-      } else {
-        history.push(_Error, {
-          from: "reFetchGeg",
-          formState: {
-            "email": form.getFieldValue("email"),
-            "password": form.getFieldValue("password"),
-            "confirm": form.getFieldValue("confirm"),
-          }
-        });
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading]);
 
   function getBase64(img, callback) {
     const reader = new FileReader();
@@ -148,14 +165,55 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
     return isJpgOrPng && isLt5M;
   }
 
+  const resetFields = () => {
+    setFields([
+      { name: ['firstName'], value: user?.firstName ?? '' },
+      { name: ['lastName'], value: user?.lastName ?? '' },
+      { name: ['birthday'], value: dayjs(user?.birthday) ?? null },
+      { name: ['email'], value: user?.email ?? '' },
+
+    ])
+    if (user?.imgSrc) {
+      setFirstImageUrl(`https://training-api.clevertec.ru/${user?.imgSrc}`)
+    }
+  }
+
   useEffect(() => {
-    const locationState = history?.location?.state as ILocationState;
-    if (history?.location.state && locationState?.from && locationState?.formState) {
-      form.setFieldsValue(locationState.formState)
-      regUser(locationState?.formState)
+    if (isSuccess) {
+      setIsSuccessSaved(true)
+      // history.push(_Success, { from: "login" });
+    }
+
+    if (isError) {
+      resetFields()
+      const customError = error as CustomError;
+      if ((customError?.status) === 409) {
+        history.push(_ErrorUserExist, { from: "login" });
+      } else {
+        setIsErrorSaved(true)
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history?.location?.pathname]);
+  }, [isLoading]);
+
+
+
+  useEffect(() => {
+    setImgUrl(user?.imgSrc ? user?.imgSrc : undefined)
+
+    console.log(user?.email)
+    if (!form.getFieldValue("email") && user?.imgSrc) {
+      console.log(user)
+      setFirstImageUrl(`https://training-api.clevertec.ru/${user?.imgSrc}`)
+    }
+    setFields([
+      { name: ['firstName'], value: user?.firstName ?? '' },
+      { name: ['lastName'], value: user?.lastName ?? '' },
+      { name: ['birthday'], value: dayjs(user?.birthday) ?? null },
+      { name: ['email'], value: user?.email ?? '' },
+    ])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   useEffect(() => {
     if (form.isFieldsTouched(["password"])) {
@@ -179,7 +237,47 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
       overflow: 'initial',
       position: "relative",
     }}>
-      <Alert
+      <Modal centered
+        footer={null}
+        closable={false}
+        bodyStyle={{ padding: "16px 24px" }}
+        style={{ maxWidth: "384px", backdropFilter: 'blur(10px)' }}
+        open={isErrorSaved}
+        onCancel={() => { setIsErrorSaved(false) }}>
+        <div style={{ alignItems: "flex-start", display: "flex", width: "100%", gap: "16px" }}>
+          <CloseCircleOutlined
+            style={{
+              color: "red",
+              fontSize: "24px"
+            }} />
+          <div style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+          }}>
+            <div
+              style={{ fontSize: "16px", lineHeight: "21px" }}>При сохранении данных произошла ошибка</div>
+            <div
+              style={{ color: "#8C8C8C", fontSize: "14px", lineHeight: "18px" }}>Придётся попробовать ещё раз</div>
+            <div style={{ display: "flex", width: "100%", justifyContent: "flex-end" }}>
+              <Button
+                style={{
+                  fontSize: "14px",
+                  height: "28px",
+                  lineHeight: "18px"
+                }}
+                onClick={() => {
+                  setIsErrorSaved(false)
+                }} type="primary" key="console">
+                Закрыть
+              </Button>
+            </div>
+          </div>
+        </div>
+
+      </Modal>
+      {isSuccessSaved && <Alert
         style={{
           alignSelf: "center",
           zIndex: 2,
@@ -188,13 +286,18 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
           left: "50%",
           transform: "translate(-50%, -50%)"
         }}
+        onClose={() => setIsSuccessSaved(false)}
         message="Данные профиля успешно обновлены"
         type="success"
         showIcon
         closable
-      />
+      />}
       <Form
         form={form}
+        fields={fields}
+        onFieldsChange={(_, allFields) => {
+          setFields(allFields);
+        }}
         style={{ width: "100%", maxWidth: "480px", paddingTop: "8px" }}
         name="normal_login"
         className="login-form"
@@ -220,39 +323,7 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
               gap: "24px"
             }}
           >
-            {/* <div
-              style={{
 
-                border: "1px dashed #D9D9D9",
-                height: "106px",
-                width: "106px",
-
-              }}
-            > */}
-            {/* <div
-                style={{
-                  height: "104px",
-                  width: "104px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: "8px",
-                  backgroundColor: "#FAFAFA",
-                  color: "#8C8C8C",
-                  textAlign: "center",
-                }}
-              >
-                
-              </div> */}
-            {/* <Image
-                style={{ transition: "width 0.5s ease-in-out, margin-top 0.5s ease-in-out" }}
-                width={86}
-                preview={false}
-                src={''}
-                alt="avatar"
-              /> */}
-            {/* </div> */}
             <Upload
               method="post"
               maxCount={1}
@@ -269,9 +340,14 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
               onChange={handleChange}
               beforeUpload={beforeUpload}
             >
-              {imgUrl ?
+              {firstImageUrl ? (
+                <img src={firstImageUrl} alt="First Image" style={{ width: '100px', height: '100px' }} />
+              ) : (
+                imgUrl || isLoadingImage ? null : uploadButton
+              )}
+              {/* {imgUrl || isLoadingImage ?
                 null :
-                uploadButton}
+                uploadButton} */}
             </Upload>
             <div
               style={{
@@ -285,7 +361,7 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
                 style={{ marginBottom: 0 }}
                 name="firstName"
                 hasFeedback
-                rules={[{ required: true }]}
+              // rules={[{ required: true }]}
               >
                 <Input
                   size="large"
@@ -295,7 +371,7 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
                 style={{ marginBottom: 0 }}
                 name="lastName"
                 hasFeedback
-                rules={[{ required: true }]}
+              // rules={[{ required: true }]}
               >
                 <Input
                   size="large"
@@ -305,17 +381,15 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
                 style={{ marginBottom: 0 }}
                 name="birthday"
                 hasFeedback
-                rules={[{ required: true }]}
+              // rules={[{ required: true }]}
               >
-                <div className="calendar-card">
-                  <DatePicker
-                    suffixIcon={Icon}
-                    allowClear={false}
-                    style={{ width: "100%" }}
-                    size="large"
-                    placeholder={"Дата рождения"}
-                    format={'DD.MM.YYYY'} />
-                </div>
+                <DatePicker
+                  suffixIcon={Icon}
+                  allowClear={false}
+                  style={{ width: "100%" }}
+                  size="large"
+                  placeholder={"Дата рождения"}
+                  format={'DD.MM.YYYY'} />
               </Form.Item>
             </div>
           </div>
@@ -339,23 +413,23 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
             name="email"
             rules={[{ required: true }, { type: 'email' }]}
           >
-            <Input data-test-id='registration-email' size="large" addonBefore={'email:'} />
+            <Input size="large" addonBefore={'email:'} />
           </Form.Item>
           <Form.Item<FieldType>
             extra={isValid && <span style={{ fontSize: "12px" }}>{'Пароль не менее 8 символов, с заглавной буквой и цифрой'}</span>}
             style={{ paddingBottom: 0, marginBottom: 0 }}
             name="password"
             rules={[
-              {
-                required: true,
+              ({ getFieldValue }) => ({
+                required: !!getFieldValue('password'),
                 min: 8,
                 pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/,
                 message: 'Пароль не менее 8 символов, с заглавной буквой и цифрой'
-              },
+              }),
             ]}
             hasFeedback
           >
-            <Input.Password data-test-id='registration-password' size="large" placeholder="Пароль" />
+            <Input.Password size="large" placeholder="Пароль" />
           </Form.Item>
 
           <Form.Item<FieldType>
@@ -365,7 +439,10 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
             dependencies={['password']}
             hasFeedback
             rules={[
-              { required: true, message: '' },
+              ({ getFieldValue }) => ({
+                required: !!getFieldValue('password'),
+                message: ''
+              }),
 
               ({ getFieldValue }) => ({
                 validator(_, value) {
@@ -377,12 +454,12 @@ export const ProfileContent = ({ data, openFeedback }: { data: IFeedback[] | und
               }),
             ]}
           >
-            <Input.Password data-test-id='registration-confirm-password' size="large" autoComplete="new-password" placeholder="Повторите пароль" />
+            <Input.Password size="large" autoComplete="new-password" placeholder="Повторите пароль" />
           </Form.Item>
         </div>
 
         <Form.Item style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-          <Button onClick={() => setIsValid(false)} data-test-id='registration-submit-button' size="large" style={{ width: screens.xs ? "100%" : "" }} type="primary" htmlType="submit" className="login-form-button">
+          <Button disabled={isLoadingImageError} onClick={() => setIsValid(false)} size="large" style={{ width: screens.xs ? "100%" : "" }} type="primary" htmlType="submit" className="login-form-button">
             Сохранить изменения
           </Button>
         </Form.Item>

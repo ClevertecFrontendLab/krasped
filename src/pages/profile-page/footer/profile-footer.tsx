@@ -21,10 +21,10 @@ export const FeedbackFooter = (props: { openFeedback: React.Dispatch<React.SetSt
       justifyContent: screens?.xs ? "center" : ""
     }}>
 
-      <Button data-test-id='write-review' onClick={() => props.openFeedback(true)} type="primary" >
+      <Button onClick={() => props.openFeedback(true)} type="primary" >
         Написать отзыв
       </Button>
-      <Button data-test-id='all-reviews-button' type='link' onClick={() => dispatch(toggleIsShowAllFeedbacks())}>
+      <Button type='link' onClick={() => dispatch(toggleIsShowAllFeedbacks())}>
         {isShowAllFeedbacks ? "Свернуть все отзывы" : "Развернуть все отзывы"}
       </Button>
 

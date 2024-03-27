@@ -9,11 +9,15 @@ import { Input, Button, Form, Grid, Avatar, Image, Alert, Modal, Rate, Result, C
 import { useEffect, useState } from "react";
 import TextArea from "antd/lib/input/TextArea";
 import { useAddFeedbackMutation } from "@redux/api/feedback/feedback";
-import { useAppDispatch } from "@hooks/typed-react-redux-hooks";
-import { logout } from "@redux/userSlice";
+import { useAppDispatch, useAppSelector } from "@hooks/typed-react-redux-hooks";
+import { logout, selectTariffList, selectUser } from "@redux/userSlice";
 import FreePng from "@assets/imgs/freeTarif.png"
 import ProPng from "@assets/imgs/proTarifActive.png"
 import ProPngDisabled from "@assets/imgs/proTarifDisabled.png"
+import { useUpdateTariffMutation, useUpdateUserMutation } from "@redux/api/user/user";
+import dayjs from "dayjs";
+import { ITariffAdd } from "@redux/api/user/user.types";
+import { IPeriod } from "@redux/api/catalog/catalog.types";
 
 
 type CustomError = FetchBaseQueryError & {
@@ -23,17 +27,23 @@ type CustomError = FetchBaseQueryError & {
 
 export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | undefined, openFeedback: React.Dispatch<React.SetStateAction<boolean>> }) => {
   const [addFeedbacks, { isError: addIsError, isSuccess: addSuccess, isLoading: addLoading, error: addError }] = useAddFeedbackMutation();
+  const [updateUserTariff, { isError: tariffIsError, isSuccess: tariffSuccess, isLoading: tariffLoading, error: tariffError }] = useUpdateTariffMutation();
+  const [updateUser, { isLoading, isSuccess, error, isError }] = useUpdateUserMutation();
   const dispatch = useAppDispatch()
   const { useBreakpoint } = Grid;
-
+  const user = useAppSelector(selectUser)
+  const tariffs = useAppSelector(selectTariffList)
   const screens = useBreakpoint();
   const [form] = Form.useForm();
   const rating = Form.useWatch('rating', form);
   const [isOpenFeedbackFrom, setIsOpenFeedbackFrom] = useState(false)
   const [isfeedbackError, setIsfeedbackError] = useState(false)
   const [isfeedbackSuccess, setIsfeedbackSuccess] = useState(false)
-  const [isShowAddingExersice, setIsShowAddingExersice] = useState<boolean>(false)
-  const [value, setValue] = useState(1);
+  const [isActivateSuccess, setIsActivateSuccess] = useState(true)
+  const [isShowActiveTariff, setIsShowActiveTariff] = useState<boolean>(false)
+  const [isSendNotification, setIsSendNotification] = useState<boolean>(false)
+  const [isReady, setIsReady] = useState<boolean>(false)
+  const [value, setValue] = useState<IPeriod>();
 
   const benifits = [
     { name: "Cтатистика за месяц", free: true, pro: true },
@@ -59,6 +69,49 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
     addFeedbacks(values)
   };
 
+  // const updateSwitchers = () => {
+  //   const payload = {
+  //     // ...user,
+  //     readyForJointTraining: isReady,
+  //     sendNotification: isSendNotification
+  //   }
+  //   console.log(payload)
+  //   updateUser(payload)
+  // };
+
+  const onChangeIsReady = (checked: boolean) => {
+    setIsReady(checked);
+    updateUser({ readyForJointTraining: checked })
+  };
+  const onChangeIsSendNotification = (checked: boolean) => {
+    setIsSendNotification(checked);
+    updateUser({ sendNotification: checked })
+  };
+
+  const closeAndLogout = () => {
+    setIsActivateSuccess(false)
+    dispatch(logout())
+    history.push(_AuthLogin)
+  }
+
+  const updateTariff = () => {
+    if (value && tariffs) {
+      const payload: ITariffAdd = {
+        days: value.days,
+        tariffId: tariffs._id
+      }
+      updateUserTariff(payload)
+    }
+  };
+
+
+
+
+  useEffect(() => {
+    setIsSendNotification(user?.sendNotification || false)
+    setIsReady(user?.readyForJointTraining || false)
+  }, [user])
+
   useEffect(() => {
     if (addSuccess) {
       setIsfeedbackSuccess(true)
@@ -77,6 +130,24 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addLoading]);
 
+  useEffect(() => {
+    if (tariffSuccess) {
+      setIsActivateSuccess(true)
+      setIsShowActiveTariff(false)
+    }
+    if (tariffIsError) {
+      const customError = tariffError as { status: number }
+      if (customError.status == 403) {
+        dispatch(logout())
+        history.push(_AuthLogin)
+      }
+      // setIsfeedbackError(true)
+      // setIsOpenFeedbackFrom(false)
+      // closeFeedbackFrom()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tariffLoading]);
+
 
   return (
     <Content style={{
@@ -89,6 +160,58 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
       overflow: 'initial',
       position: "relative",
     }}>
+      <Modal centered
+        footer={null}
+        closeIcon={<CloseOutlined />}
+        bodyStyle={{ padding: "56px 32px" }}
+        style={{ backdropFilter: 'blur(10px)' }}
+        open={isActivateSuccess}
+        onCancel={() => { closeAndLogout() }}>
+        <div style={{
+          alignItems: "center",
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+          // padding: "56px 32px",
+          gap: "29px"
+        }}>
+          <CheckCircleFilled
+            style={{
+              color: "#2F54EB",
+              fontSize: "70px"
+            }} />
+          <div style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "column",
+            gap: "8px",
+          }}>
+            <div
+              style={{ fontSize: "24px", color: "#262626", fontWeight: 500, lineHeight: "21px" }}>
+              Чек для оплаты у вас на почте
+            </div>
+            <div
+              style={{ textAlign: "center", color: "#8C8C8C", fontSize: "14px", lineHeight: "18px", paddingBottom: "16px" }}
+            >
+              Мы отправили инструкцию для оплаты вам на e-mail
+              <span
+                style={{
+                  fontWeight: 700
+                }}
+              >{user?.email}</span>. После подтверждения оплаты войдите
+              в приложение заново.
+            </div>
+            <div
+              style={{ color: "#8C8C8C", fontSize: "14px", lineHeight: "18px" }}
+            >
+              Не пришло письмо? Проверьте папку Спам.
+            </div>
+
+          </div>
+        </div>
+
+      </Modal>
       <Modal centered footer={null} style={{ backdropFilter: 'blur(10px)' }} closable={false} open={isfeedbackError} onCancel={() => setIsfeedbackError(false)}>
         <Result
           style={{
@@ -113,7 +236,7 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
               display: "flex", gap: "8px"
             }}>
 
-              <Button data-test-id='write-review-not-saved-modal' size='large' onClick={() => { setIsfeedbackError(false); setIsOpenFeedbackFrom(true) }}
+              <Button size='large' onClick={() => { setIsfeedbackError(false); setIsOpenFeedbackFrom(true) }}
                 style={{ maxWidth: "369px", width: "100%", fontSize: "14px" }} type="primary" >
                 Написать отзыв
               </Button>
@@ -153,7 +276,7 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
             display: "flex",
             justifyContent: (screens?.xs) ? "center" : 'end'
           }}>
-            <Button htmlType='submit' data-test-id='new-review-submit-button'
+            <Button htmlType='submit'
               disabled={!rating}
               size='large' onClick={() => { form.submit(); }}
               style={{ maxWidth: "369px", width: (screens?.xs) ? "100%" : "" }} type="primary" >
@@ -196,15 +319,14 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
         </Form>
       </Modal>
       <Drawer
-        data-test-id='modal-drawer-right'
         style={{
           zIndex: 1001
         }}
         maskStyle={{ background: "none" }}
         placement={"right"}
         closable={false}
-        onClose={() => setIsShowAddingExersice(false)}
-        open={isShowAddingExersice}
+        onClose={() => setIsShowActiveTariff(false)}
+        open={isShowActiveTariff}
         key={"right"}
         width={screens.xs ? "100%" : 408}
         bodyStyle={{
@@ -223,10 +345,10 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
           >
             Сравнить тарифы
           </div>
-          <CloseOutlined data-test-id='modal-drawer-right-button-close' onClick={() => setIsShowAddingExersice(false)} style={{ cursor: "pointer" }} />
+          <CloseOutlined onClick={() => setIsShowActiveTariff(false)} style={{ cursor: "pointer" }} />
 
         </div>
-        <div
+        {user?.tariff?.expired && <div
           style={{
             width: "100%",
             padding: "14px 0",
@@ -238,7 +360,7 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
             backgroundColor: "#F0F5FF",
             marginBottom: "48px",
           }}
-        >Ваш PRO tarif активен до 02.07</div>
+        >{`Ваш PRO tarif активен до ${dayjs(user?.tariff?.expired).format("DD.MM")}`}</div>}
         <div>
           <div style={{
             display: "flex",
@@ -266,7 +388,7 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
                   color: "#1D39C4",
                   fontSize: "12px"
                 }}
-              >PRO<CheckCircleOutlined style={{ color: "#52C41A" }} /></div>
+              >PRO{user?.tariff?.expired && <CheckCircleOutlined style={{ color: "#52C41A" }} />}</div>
             </div>
           </div>
           <div style={{
@@ -277,7 +399,7 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
             paddingBottom: "86px",
           }}>
             {benifits.map(item => {
-              return (<div style={{
+              return (<div key={item.name} style={{
                 display: "flex",
                 justifyContent: "space-between"
               }}>
@@ -301,7 +423,7 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
             }
           </div>
         </div>
-        <div>
+        {!user?.tariff?.expired && <div>
           <div style={{
             fontSize: "14px",
             fontWeight: 700,
@@ -318,9 +440,12 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
               justifyContent: "space-between",
               height: "115px"
             }}>
-              <div>6 месяцев</div>
+              {tariffs?.periods?.map(item => {
+                return (<div key={item.text}>{item.text}</div>)
+              })}
+              {/* <div>6 месяцев</div>
               <div>9 месяцев</div>
-              <div>12 месяцев</div>
+              <div>12 месяцев</div> */}
             </div>
             <div style={{
               display: "flex",
@@ -334,7 +459,18 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
                   flexDirection: "column",
                   justifyContent: "space-between"
                 }}>
-                <div
+                {tariffs?.periods?.map(item => {
+                  return (
+                    <div
+                      key={item.text}
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: 500,
+                        color: "#262626",
+                      }}>{`${item.cost} $`}</div>
+                  )
+                })}
+                {/* <div
                   style={{
                     fontSize: "16px",
                     fontWeight: 500,
@@ -351,7 +487,7 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
                     fontSize: "16px",
                     fontWeight: 500,
                     color: "#262626",
-                  }}>10 $</div>
+                  }}>10 $</div> */}
               </div>
               <Radio.Group onChange={onChange} value={value}>
                 <Space style={{
@@ -359,15 +495,18 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
                   justifyContent: "space-between",
                   height: "100%"
                 }} direction="vertical">
-                  <Radio value={1}></Radio>
+                  {tariffs?.periods?.map((item) => {
+                    return (<Radio key={item.text} value={item}></Radio>)
+                  })}
+                  {/* <Radio value={1}></Radio>
                   <Radio value={2}></Radio>
-                  <Radio value={3}></Radio>
+                  <Radio value={3}></Radio> */}
                 </Space>
               </Radio.Group>
             </div>
           </div>
-        </div>
-        <div
+        </div>}
+        {!user?.tariff?.expired && <div
           style={{
             width: "100%",
             display: "flex",
@@ -376,10 +515,10 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
             paddingTop: "36px"
           }}
         >
-          <Button data-test-id='write-review' onClick={() => setIsOpenFeedbackFrom(true)} type="primary" >
+          <Button disabled={!value} onClick={() => updateTariff()} type="primary" >
             Активировать
           </Button>
-        </div>
+        </div>}
       </Drawer>
       <div style={{
         display: "flex",
@@ -439,7 +578,7 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
                   fontSize: "14px",
                   padding: "4px 0"
                 }}
-                onClick={() => setIsShowAddingExersice(true)} type="link" >
+                onClick={() => setIsShowActiveTariff(true)} type="link" >
                 Подробнее
               </Button>
             </div>
@@ -496,7 +635,7 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
                   fontSize: "14px",
                   padding: "4px 0"
                 }}
-                onClick={() => setIsShowAddingExersice(true)} type="link" >
+                onClick={() => setIsShowActiveTariff(true)} type="link" >
                 Подробнее
               </Button>
             </div>
@@ -509,9 +648,20 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
                 flex: 1,
               }}
             >
-              <Button data-test-id='write-review' onClick={() => setIsOpenFeedbackFrom(true)} type="primary" >
-                Активировать
-              </Button>
+              {user?.tariff?.expired ? <div style={{
+                textAlign: "center",
+                width: "75px",
+                color: "#030852",
+                fontWeight: 500,
+                fontSize: "16px"
+              }}>
+                {`активен до ${dayjs(user?.tariff?.expired).format("DD.MM")}`}
+              </div>
+                :
+                <Button onClick={() => setIsShowActiveTariff(true)} type="primary" >
+                  Активировать
+                </Button>
+              }
             </div>
           </Card>
 
@@ -546,7 +696,7 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
               }>
                 <InfoCircleOutlined style={{ fontSize: "16px", color: "#8C8C8C" }} />
               </Tooltip>            </div>
-            <Switch />
+            <Switch onChange={onChangeIsReady} checked={isReady} />
           </div>
           <div
             style={{
@@ -570,7 +720,7 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
                 <InfoCircleOutlined style={{ fontSize: "16px", color: "#8C8C8C" }} />
               </Tooltip>
             </div>
-            <Switch />
+            <Switch onChange={onChangeIsSendNotification} checked={isSendNotification} />
           </div>
           <div
             style={{
@@ -594,7 +744,7 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
                 <InfoCircleOutlined style={{ fontSize: "16px", color: "#8C8C8C" }} />
               </Tooltip>
             </div>
-            <Switch />
+            <Switch disabled={!user?.tariff?.tariffId} />
           </div>
 
         </div>
@@ -604,10 +754,10 @@ export const SettingsContent = ({ data, openFeedback }: { data: IFeedback[] | un
           gap: "8px",
           alignItems: "center"
         }}>
-          <Button data-test-id='write-review' onClick={() => setIsOpenFeedbackFrom(true)} type="primary" >
+          <Button onClick={() => setIsOpenFeedbackFrom(true)} type="primary" >
             Написать отзыв
           </Button>
-          <Button data-test-id='see-reviews' type='link' onClick={() => history.push(_Feedbacks)} >
+          <Button type='link' onClick={() => history.push(_Feedbacks)} >
             Смотреть все отзывы
           </Button>
         </div>

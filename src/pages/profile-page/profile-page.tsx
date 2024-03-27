@@ -27,7 +27,7 @@ const ProfilePage: React.FC = () => {
   const [isfeedbackError, setIsfeedbackError] = useState(false)
   const [isfeedbackSuccess, setIsfeedbackSuccess] = useState(false)
   const [isOpenFeedbackFrom, setIsOpenFeedbackFrom] = useState(false)
-  const feedbacks = useAppSelector(selectFeedbacks)
+  // const feedbacks = useAppSelector(selectFeedbacks)
   const dispatch = useAppDispatch()
   const { isError, isLoading, error } = useGetAllFeedbacksQuery(null);
   const [addFeedbacks, { isError: addIsError, isSuccess: addSuccess, isLoading: addLoading, error: addError }] = useAddFeedbackMutation();
@@ -62,7 +62,7 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     if (addSuccess) {
       setIsfeedbackSuccess(true)
-      closeFeedbackFrom()
+      // closeFeedbackFrom()
     }
     if (addIsError) {
       const customError = addError as { status: number }
@@ -125,7 +125,7 @@ const ProfilePage: React.FC = () => {
                 display: "flex", gap: "8px"
               }}>
 
-                <Button data-test-id='write-review-not-saved-modal' size='large' onClick={() => { setIsfeedbackError(false); setIsOpenFeedbackFrom(true) }}
+                <Button size='large' onClick={() => { setIsfeedbackError(false); setIsOpenFeedbackFrom(true) }}
                   style={{ maxWidth: "369px", width: "100%", fontSize: "14px" }} type="primary" >
                   Написать отзыв
                 </Button>
@@ -165,7 +165,7 @@ const ProfilePage: React.FC = () => {
               display: "flex",
               justifyContent: (screens?.xs) ? "center" : 'end'
             }}>
-              <Button htmlType='submit' data-test-id='new-review-submit-button'
+              <Button htmlType='submit'
                 disabled={!rating}
                 size='large' onClick={() => { form.submit(); }}
                 style={{ maxWidth: "369px", width: (screens?.xs) ? "100%" : "" }} type="primary" >
@@ -232,7 +232,7 @@ const ProfilePage: React.FC = () => {
                 padding: screens.xs ? "24px 0 42px" : "24px 24px 42px",
               }}
             >
-              <ProfileContent openFeedback={setIsOpenFeedbackFrom} data={feedbacks} />
+              <ProfileContent openFeedback={setIsOpenFeedbackFrom} />
             </div>
           </div>
         </Layout>
