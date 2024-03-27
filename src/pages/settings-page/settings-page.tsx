@@ -17,6 +17,7 @@ import { StarFilled, StarOutlined } from '@ant-design/icons';
 import { IFeedbackReq } from '@redux/api/feedback/feedback.types';
 import { _AuthLogin, _Main } from '@config/constants';
 import { useGetTariffListQuery } from '@redux/api/catalog/catalog';
+import { useGetMeQuery } from '@redux/api/user/user';
 
 const SettingsPage: React.FC = () => {
   const [form] = Form.useForm();
@@ -31,6 +32,7 @@ const SettingsPage: React.FC = () => {
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
+  useGetMeQuery(null);
 
   const sendFeedback = (values: IFeedbackReq) => {
     addFeedbacks(values)
