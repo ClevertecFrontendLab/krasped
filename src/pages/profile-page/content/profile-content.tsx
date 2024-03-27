@@ -61,19 +61,6 @@ export const ProfileContent = () => {
     },
   };
 
-  // const state = {
-  //   previewVisible: false,
-  //   previewImage: '',
-  //   fileList: [
-  //     {
-  //       uid: '-1',
-  //       name: 'image.png',
-  //       status: 'done',
-  //       url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-  //     },
-  //   ]
-  // }
-
   const handleChange = (info: UploadChangeParam<UploadFile>): void => {
     if (info.file.status === 'uploading') {
       // setIsLoadingImage(true);
@@ -91,7 +78,8 @@ export const ProfileContent = () => {
     if (info.file.status === 'error') {
       // setIsLoadingImage(false);
       setIsLoadingImageError(true);
-      setImgUrl(info?.file?.response?.url);
+      setIsBigImage(true)
+      // setImgUrl(info?.file?.response?.url);
     }
   };
 
@@ -180,7 +168,7 @@ export const ProfileContent = () => {
     setFields([
       { name: ['firstName'], value: user?.firstName ?? '' },
       { name: ['lastName'], value: user?.lastName ?? '' },
-      { name: ['birthday'], value: dayjs(user?.birthday) ?? null },
+      { name: ['birthday'], value: user?.birthday ? dayjs(user?.birthday) : null },
       { name: ['email'], value: user?.email ?? '' },
 
     ])
@@ -207,24 +195,23 @@ export const ProfileContent = () => {
 
 
   useEffect(() => {
-    console.log(user)
     setImgUrl(user?.imgSrc ? user?.imgSrc : undefined)
+    form.resetFields()
     setFields([
       { name: ['firstName'], value: user?.firstName ?? '' },
       { name: ['lastName'], value: user?.lastName ?? '' },
-      { name: ['birthday'], value: dayjs(user?.birthday) ?? null },
+      { name: ['birthday'], value: user?.birthday ? dayjs(user?.birthday) : null },
       { name: ['email'], value: user?.email ?? '' },
     ])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   useEffect(() => {
-    console.log(user)
     setImgUrl(user?.imgSrc ? user?.imgSrc : undefined)
     setFields([
       { name: ['firstName'], value: user?.firstName ?? '' },
       { name: ['lastName'], value: user?.lastName ?? '' },
-      { name: ['birthday'], value: dayjs(user?.birthday) ?? null },
+      { name: ['birthday'], value: user?.birthday ? dayjs(user?.birthday) : null },
       { name: ['email'], value: user?.email ?? '' },
     ])
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -354,8 +341,8 @@ export const ProfileContent = () => {
         closable
       />}
       <Form
-        form={form}
         fields={fields}
+        form={form}
         onFieldsChange={(_, allFields) => {
           setFields(allFields);
         }}
@@ -387,9 +374,11 @@ export const ProfileContent = () => {
           >
           <Form.Item
                 data-test-id='profile-avatar'
+                name="imgSrc"
             >
             {!!user?.email && (screens.xs ?
               <Upload
+                
                 method="post"
                 style={{width: "100%"}}
                 maxCount={1}
@@ -479,12 +468,11 @@ export const ProfileContent = () => {
               <Form.Item<FieldType>
                 style={{ marginBottom: 0 }}
                 name="birthday"
-                 
               >
                 <DatePicker
                   data-test-id='profile-birthday'
                   suffixIcon={Icon}
-                  allowClear={false}
+                  // allowClear={false}
                   style={{ width: "100%" }}
                   size="large"
                   placeholder={"Дата рождения"}

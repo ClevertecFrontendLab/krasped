@@ -3,7 +3,7 @@ import { Content } from "antd/lib/layout/layout"
 import { CheckCircleFilled, CheckCircleOutlined, CheckOutlined, CloseCircleOutlined, CloseOutlined, InfoCircleOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
 import { _AuthLogin, _Error, _ErrorUserExist, _Feedbacks, _Success } from "@config/constants";
 import { history } from "@redux/configure-store";
-import { Button, Form, Grid, Image, Modal, Rate, Result, Card, Switch, Tooltip, Drawer, Space, Radio, RadioChangeEvent } from "antd"
+import { Button, Form, Grid, Image, Modal, Rate, Result, Card, Switch, Tooltip, Drawer, Radio, RadioChangeEvent } from "antd"
 import { useEffect, useState } from "react";
 import TextArea from "antd/lib/input/TextArea";
 import { useAddFeedbackMutation } from "@redux/api/feedback/feedback";
