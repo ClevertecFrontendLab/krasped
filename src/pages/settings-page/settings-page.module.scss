@@ -1,0 +1,22 @@
+.mainContainer{
+  display: flex;
+}
+
+.pageContent{
+  display: flex;
+  flex-direction: row;
+}
+
+.relative{
+  position: relative;
+}
+
+.toggleBtn{
+  position: absolute;
+  z-index: 9999;
+}
+
+.width200{
+  height: 500px;
+  min-width: fit-content;
+}

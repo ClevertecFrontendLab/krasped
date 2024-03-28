@@ -6,36 +6,34 @@ import Main_page_light from "@assets/imgs/Main_page_light.png"
 import { Navbar } from '@components/navbar';
 import { useSelector } from 'react-redux';
 import { RootState, history } from '@redux/configure-store';
-import { FeedbackHeader } from './header/feedback-header';
-import { FeedbackContent } from './content/feedback-content';
-import { FeedbackFooter } from './footer/feedback-footer';
-import { useAppDispatch, useAppSelector } from '@hooks/typed-react-redux-hooks';
-import { useAddFeedbackMutation, useGetAllFeedbacksQuery } from '@redux/api/feedback/feedback';
+import { SettingsHeader } from './header/settings-header';
+import { SettingsContent } from './content/settings-content';
+import { useAppDispatch } from '@hooks/typed-react-redux-hooks';
+import { useAddFeedbackMutation } from '@redux/api/feedback/feedback';
 import { LoaderComponent } from '@components/loader/api-loader';
-import { selectFeedbacks } from '@redux/feedbackSlice';
 import { logout } from '@redux/userSlice';
 import TextArea from 'antd/lib/input/TextArea';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
 import { IFeedbackReq } from '@redux/api/feedback/feedback.types';
 import { _403, _AuthLogin, _Main } from '@config/constants';
+import { useGetTariffListQuery } from '@redux/api/catalog/catalog';
 
-const FeedbackPage: React.FC = () => {
+const SettingsPage: React.FC = () => {
   const [form] = Form.useForm();
   const rating = Form.useWatch('rating', form);
   const [isfeedbacksError, setIsfeedbacksError] = useState(false)
   const [isfeedbackError, setIsfeedbackError] = useState(false)
   const [isfeedbackSuccess, setIsfeedbackSuccess] = useState(false)
   const [isOpenFeedbackFrom, setIsOpenFeedbackFrom] = useState(false)
-  const feedbacks = useAppSelector(selectFeedbacks)
   const dispatch = useAppDispatch()
-  const { isError, isLoading, error } = useGetAllFeedbacksQuery(null);
+  useGetTariffListQuery(null)
   const [addFeedbacks, { isError: addIsError, isSuccess: addSuccess, isLoading: addLoading, error: addError }] = useAddFeedbackMutation();
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
 
   const sendFeedback = (values: IFeedbackReq) => addFeedbacks(values)
-  
+
 
   const closeFeedbackFrom = () => {
     setIsOpenFeedbackFrom(false)
@@ -43,19 +41,6 @@ const FeedbackPage: React.FC = () => {
   }
 
   const layoutPaddingLeft = (screens?.xs) ? '0' : (collapsed ? '64px' : '208px');
-
-  useEffect(() => {
-    if (isError) {
-      const customError = error as { status: number }
-      if (customError.status == _403) {
-        dispatch(logout())
-        history.push(_AuthLogin)
-      }
-      setIsfeedbacksError(true)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading]);
-
 
   useEffect(() => {
     if (addSuccess) {
@@ -70,7 +55,6 @@ const FeedbackPage: React.FC = () => {
       }
       setIsfeedbackError(true)
       setIsOpenFeedbackFrom(false)
-      // closeFeedbackFrom()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addLoading]);
@@ -123,7 +107,7 @@ const FeedbackPage: React.FC = () => {
                 display: "flex", gap: "8px"
               }}>
 
-                <Button data-test-id='write-review-not-saved-modal' size='large' onClick={() => { setIsfeedbackError(false); setIsOpenFeedbackFrom(true) }}
+                <Button size='large' onClick={() => { setIsfeedbackError(false); setIsOpenFeedbackFrom(true) }}
                   style={{ maxWidth: "369px", width: "100%", fontSize: "14px" }} type="primary" >
                   Написать отзыв
                 </Button>
@@ -163,7 +147,7 @@ const FeedbackPage: React.FC = () => {
               display: "flex",
               justifyContent: (screens?.xs) ? "center" : 'end'
             }}>
-              <Button htmlType='submit' data-test-id='new-review-submit-button'
+              <Button htmlType='submit'
                 disabled={!rating}
                 size='large' onClick={() => { form.submit(); }}
                 style={{ maxWidth: "369px", width: (screens?.xs) ? "100%" : "" }} type="primary" >
@@ -171,7 +155,6 @@ const FeedbackPage: React.FC = () => {
               </Button>
             </div>
           }
-          // footer={null}
           style={{ backdropFilter: 'blur(10px)' }}
           bodyStyle={{ padding: "24px 24px 0" }}
           open={isOpenFeedbackFrom}
@@ -216,19 +199,26 @@ const FeedbackPage: React.FC = () => {
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
         }}>
-          <div style={{ height: (screens?.xs) ? "calc(100dvh - 186px)" : "calc(100dvh - 220px)", overflow: "auto", scrollbarWidth: "none" }}>
-            <FeedbackHeader />
-            <FeedbackContent openFeedback={setIsOpenFeedbackFrom} data={feedbacks} />
+          <div style={{
+            height: "100dvh",
+            display: "flex", width: "100%",
+            flexDirection: "column",
+            overflow: "auto", scrollbarWidth: "none"
+          }}>
+            <SettingsHeader />
+            <div
+              style={{
+                width: "100%",
+                flexGrow: 1,
+                padding: screens.xs ? "24px 0 42px" : "24px 24px 42px",
+              }}
+            >
+              <SettingsContent />
+            </div>
           </div>
-          {(!!feedbacks?.length) && <div style={{
-            padding: (screens?.xs) ? "16px 16px 42px" : "20px 24px 48px",
-            height: (screens?.xs) ? "186px" : "220px"
-          }} >
-            <FeedbackFooter openFeedback={setIsOpenFeedbackFrom} />
-          </div>}
         </Layout>
       </Layout >
     </div>
   );
 };
-export default FeedbackPage;
+export default SettingsPage;

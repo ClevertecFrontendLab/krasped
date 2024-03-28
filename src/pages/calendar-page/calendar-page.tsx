@@ -8,17 +8,16 @@ import { useSelector } from 'react-redux';
 import { RootState, history } from '@redux/configure-store';
 import { FeedbackHeader } from './header/calendar-header';
 import { CalendarContent } from './content/calendar-content';
-import { useAppDispatch, useAppSelector } from '@hooks/typed-react-redux-hooks';
+import { useAppDispatch } from '@hooks/typed-react-redux-hooks';
 import { LoaderComponent } from '@components/loader/api-loader';
 import { logout } from '@redux/userSlice';
 import { useGetAllTriningsQuery } from '@redux/api/training/training';
-import { selectTrainings, setIsShowCalendarDate } from '@redux/trainingSlice';
+import { setIsShowCalendarDate } from '@redux/trainingSlice';
 import { useGetTriningListQuery } from '@redux/api/catalog/catalog';
 import { CloseCircleOutlined, CloseOutlined } from '@ant-design/icons';
-import { _AuthLogin, _Main } from '@config/constants';
+import { _403, _AuthLogin, _Main } from '@config/constants';
 
 const CalendarPage: React.FC = () => {
-  const trainings = useAppSelector(selectTrainings)
   const [isTrainingssError, setIsTrainingsError] = useState(false)
   const [isTrainingListError, setIsTrainingListError] = useState(false)
 
@@ -34,7 +33,7 @@ const CalendarPage: React.FC = () => {
   useEffect(() => {
     if (isError) {
       const customError = error as { status: number }
-      if (customError.status == 403) {
+      if (customError.status == _403) {
         dispatch(logout())
         history.push(_AuthLogin)
       }
@@ -46,7 +45,7 @@ const CalendarPage: React.FC = () => {
   useEffect(() => {
     if (isErrorTrainingList) {
       const customError = errorTrainingList as { status: number }
-      if (customError.status == 403) {
+      if (customError.status == _403) {
         dispatch(logout())
         history.push(_AuthLogin)
       }
@@ -79,11 +78,11 @@ const CalendarPage: React.FC = () => {
             status="500"
             subTitle={<span style={{ color: "#8C8C8C" }}>{"Произошла ошибка, попробуйте ещё раз."}</span>}
             extra={
-              <Button 
-              size='large' 
-              onClick={() => { history.push(_Main) }} 
-              type="primary"
-               key="console">
+              <Button
+                size='large'
+                onClick={() => { history.push(_Main) }}
+                type="primary"
+                key="console">
                 Назад
               </Button>
             }

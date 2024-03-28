@@ -1,4 +1,6 @@
 import { SettingOutlined } from "@ant-design/icons"
+import { _Main, _Settings } from "@config/constants";
+import { history } from "@redux/configure-store";
 import { Button, Grid } from "antd"
 import { Header } from "antd/lib/layout/layout"
 
@@ -55,12 +57,14 @@ export const MainHeader: React.FC = () => {
         >
 
           <Button
+            data-test-id='header-settings'
             shape={screens?.xs ? "circle" : "default"}
             icon={screens?.lg || screens?.xs ? <SettingOutlined /> : <></>}
             style={{
               color: "#262626",
             }}
             type={screens?.xs ? "default" : "link"}
+            onClick={() => { history.push(_Settings, { from: _Main }) }}
           >
             {!screens?.xs ? "Настройки" : ''}
           </Button>

@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { IUser } from './user.types'
+import { ITariffAdd, IUser } from './user.types'
 import { setUser } from '@redux/userSlice';
 import { RootState } from '@redux/configure-store';
 
@@ -7,7 +7,7 @@ export const userApi = createApi({
   reducerPath: 'user',
   keepUnusedDataFor: 60,
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://marathon-api.clevertec.ru/user/",
+    baseUrl: "https://marathon-api.clevertec.ru",
     credentials: 'include',
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).userState.token;
@@ -24,12 +24,12 @@ export const userApi = createApi({
     getMe: builder.query<IUser, null>({
       query() {
         return {
-          url: "/me",
+          url: "/user/me",
           credentials: "include"
         }
       },
-      transformResponse: (result: { data: IUser }) =>
-        result.data,
+      providesTags: ["User"],
+
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
@@ -40,10 +40,18 @@ export const userApi = createApi({
 
     updateUser: builder.mutation({
       query: (body: IUser) => ({
-        url: "",
+        url: "/user",
         method: 'put',
         body: body,
-      }),
+      }), invalidatesTags: ['User'],
+    }),
+
+    updateTariff: builder.mutation({
+      query: (body: ITariffAdd) => ({
+        url: "/tariff",
+        method: 'post',
+        body: body,
+      }), invalidatesTags: ['User'],
     }),
 
   })
@@ -52,4 +60,5 @@ export const userApi = createApi({
 export const {
   useGetMeQuery,
   useUpdateUserMutation,
+  useUpdateTariffMutation,
 } = userApi 

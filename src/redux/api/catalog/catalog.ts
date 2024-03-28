@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery, retry } from '@reduxjs/toolkit/query/react'
 import { RootState } from '@redux/configure-store';
-import { ITrainingItem } from './catalog.types';
+import { ITariffItem, ITrainingItem } from './catalog.types';
 import { setTrainingList } from '@redux/trainingSlice';
+import { selectTariffList, setTariffList } from '@redux/userSlice';
 
 export const catalogApi = createApi({
   reducerPath: 'catalog',
@@ -18,7 +19,7 @@ export const catalogApi = createApi({
     },
   }), { maxRetries: 2 }),
 
-  tagTypes: ['TrainingList'],
+  tagTypes: ['TrainingList', 'TariffList'],
   endpoints: (builder) => ({
 
     getTriningList: builder.query<ITrainingItem[], null>({
@@ -36,9 +37,26 @@ export const catalogApi = createApi({
         } catch (error) { /* empty */ }
       },
     }),
+
+    getTariffList: builder.query<ITariffItem, null>({
+      query() {
+        return {
+          url: "/tariff-list",
+          credentials: "include"
+        }
+      },
+      providesTags: ['TariffList'],
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(setTariffList(data));
+        } catch (error) { /* empty */ }
+      },
+    }),
   })
 })
 
 export const {
   useGetTriningListQuery,
+  useGetTariffListQuery,
 } = catalogApi 

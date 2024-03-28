@@ -152,11 +152,13 @@ select {
   border-top: none;
 }
 
-.ant-picker-body{
-  background-color: rgb(240, 245, 255);
+.calendar-desctop{
+  .ant-picker-body{
+    background-color: rgb(240, 245, 255);
+  }
 }
-.calendar-card{
 
+.calendar-card{
   .ant-picker-body{
     background-color: white;
   }
@@ -166,6 +168,13 @@ select {
   background-color: white
 }
 
+
+// .ant-radio-inner::after{
+//   background-color: #2F54EB;
+// }
+// .ant-radio-inner{ 
+//   background-color: white;
+// }
 
 /* Удаляем все анимации и переходы для людей, которые предпочитай их не использовать */
 @media (prefers-reduced-motion: reduce) {

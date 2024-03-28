@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@hooks/typed-react-redux-hooks"
-import { Button, Grid, Calendar, CalendarProps, ConfigProvider, Badge, BadgeProps, Modal, Drawer, Image, Divider, Dropdown, Space, MenuProps, Input, Checkbox, Select } from "antd"
+import { Button, Grid, Calendar, CalendarProps, Badge, Modal, Drawer, Image, Divider, Select } from "antd"
 import { Content } from "antd/lib/layout/layout"
 import { IExercise, ITraining, ITrainingReq } from "@redux/api/training/training.types"
 import dayjs, { Dayjs } from "dayjs"
@@ -14,7 +14,7 @@ import { useAddTrainingMutation, useUpdateTrainingMutation } from "@redux/api/tr
 import { history } from "@redux/configure-store"
 import { logout } from "@redux/userSlice"
 import { Option } from "antd/lib/mentions"
-import { _AuthLogin } from "@config/constants"
+import { _403, _AuthLogin } from "@config/constants"
 
 
 
@@ -23,7 +23,7 @@ export const CalendarContent = () => {
   const [AddTraining, { isLoading: isAddLoading, isSuccess: isAddSuccess, isError: isAddError, error: addError }] = useAddTrainingMutation();
   const [UpdateTraining, { isLoading: isUpdateLoading, isSuccess: isUpdateSuccess, isError: isUpdateError, error: updateError }] = useUpdateTrainingMutation();
   type UserRefObject = {
-    [key: string]: HTMLUListElement | null; 
+    [key: string]: HTMLUListElement | null;
   }
   const width = useWindowWidth()
   const ulRefs: RefObject<UserRefObject> = useRef<UserRefObject>({});
@@ -222,7 +222,7 @@ export const CalendarContent = () => {
       }}
         ref={(ref) => (ulRefs.current !== null ? ulRefs.current[dayjs(value).format()] = ref : '')}
         className="events">
-        {listData.map((item, index) => (
+        {listData.map(item => (
           <li key={item._id}>
             <Badge color={item.isImplementation ? "#BFBFBF" : (colors?.[item.name as keyof typeof colors] || "#EB2F96")}
               text={<span style={{ color: item.isImplementation ? "#BFBFBF" : "inherit" }}>{item.name}</span>} />
@@ -265,7 +265,7 @@ export const CalendarContent = () => {
     if (isAddError) {
       clearStateWithoutColse()
       const customError = addError as { status: number }
-      if (customError.status == 403) {
+      if (customError.status == _403) {
         dispatch(logout())
         history.push(_AuthLogin)
       }
@@ -281,7 +281,7 @@ export const CalendarContent = () => {
     if (isUpdateError) {
       clearStateWithoutColse()
       const customError = updateError as { status: number }
-      if (customError.status == 403) {
+      if (customError.status == _403) {
         dispatch(logout())
         history.push(_AuthLogin)
       }
@@ -300,6 +300,7 @@ export const CalendarContent = () => {
 
   return (
     <Content style={{ backgroundColor: "rgb(240, 245, 255)", padding: "0 24px 93px", display: "flex", width: "100%", overflow: 'initial' }}>
+
       <Modal centered
         footer={null}
         closeIcon={<CloseOutlined data-test-id='modal-error-user-training-button-close' />}
@@ -354,12 +355,13 @@ export const CalendarContent = () => {
             onPanelChange={(value, mode) => onPanelChange(value as Dayjs, mode)} />
         </div>
         :
-
-        <Calendar style={{ padding: 0, backgroundColor: "rgb(240, 245, 255)" }}
-          onSelect={(value) => handleSelectDate(value as Dayjs)}
-          dateCellRender={dateCellRender}
-          onPanelChange={(value, mode) => onPanelChange(value as Dayjs, mode)}
-        />
+        <div className="calendar-desctop">
+          <Calendar style={{ padding: 0, backgroundColor: "rgb(240, 245, 255)" }}
+            onSelect={(value) => handleSelectDate(value as Dayjs)}
+            dateCellRender={dateCellRender}
+            onPanelChange={(value, mode) => onPanelChange(value as Dayjs, mode)}
+          />
+        </div>
       }
       {isOpenFirstModal && <Modal
         closeIcon={<CloseOutlined

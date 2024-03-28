@@ -14,7 +14,7 @@ import { LoaderComponent } from '@components/loader/api-loader';
 import { useGetAllTriningsMutMutation } from '@redux/api/training/training';
 import { useAppDispatch } from '@hooks/typed-react-redux-hooks';
 import { logout } from '@redux/userSlice';
-import { _AuthLogin, _Calendar, _Feedbacks } from '@config/constants';
+import { _403, _AuthLogin, _Calendar, _Feedbacks } from '@config/constants';
 
 const MainPage: React.FC = () => {
     const dispatch = useAppDispatch()
@@ -39,7 +39,7 @@ const MainPage: React.FC = () => {
         }
         if (isError) {
             const customError = error as { status: number }
-            if (customError.status == 403) {
+            if (customError.status == _403) {
                 dispatch(logout())
                 history.push(_AuthLogin)
             }
@@ -47,6 +47,7 @@ const MainPage: React.FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoading]);
+
     return (
         <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
             <Layout style={{ position: "relative" }}>
