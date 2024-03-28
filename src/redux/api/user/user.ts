@@ -29,8 +29,7 @@ export const userApi = createApi({
         }
       },
       providesTags: ["User"],
-      // transformResponse: (result: { data: IUser }) =>
-      //   result.data,
+
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;

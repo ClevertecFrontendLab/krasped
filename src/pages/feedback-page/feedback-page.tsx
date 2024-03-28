@@ -3,7 +3,6 @@ import { Button, Form, Grid, Layout, Modal, Rate, Result } from 'antd';
 
 import Main_page_light from "@assets/imgs/Main_page_light.png"
 
-import s from './feedback-page.module.scss';
 import { Navbar } from '@components/navbar';
 import { useSelector } from 'react-redux';
 import { RootState, history } from '@redux/configure-store';
@@ -18,7 +17,7 @@ import { logout } from '@redux/userSlice';
 import TextArea from 'antd/lib/input/TextArea';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
 import { IFeedbackReq } from '@redux/api/feedback/feedback.types';
-import { _AuthLogin, _Main } from '@config/constants';
+import { _403, _AuthLogin, _Main } from '@config/constants';
 
 const FeedbackPage: React.FC = () => {
   const [form] = Form.useForm();
@@ -35,9 +34,8 @@ const FeedbackPage: React.FC = () => {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
 
-  const sendFeedback = (values: IFeedbackReq) => {
-    addFeedbacks(values)
-  };
+  const sendFeedback = (values: IFeedbackReq) => addFeedbacks(values)
+  
 
   const closeFeedbackFrom = () => {
     setIsOpenFeedbackFrom(false)
@@ -49,7 +47,7 @@ const FeedbackPage: React.FC = () => {
   useEffect(() => {
     if (isError) {
       const customError = error as { status: number }
-      if (customError.status == 403) {
+      if (customError.status == _403) {
         dispatch(logout())
         history.push(_AuthLogin)
       }
@@ -66,7 +64,7 @@ const FeedbackPage: React.FC = () => {
     }
     if (addIsError) {
       const customError = addError as { status: number }
-      if (customError.status == 403) {
+      if (customError.status == _403) {
         dispatch(logout())
         history.push(_AuthLogin)
       }
@@ -178,7 +176,7 @@ const FeedbackPage: React.FC = () => {
           bodyStyle={{ padding: "24px 24px 0" }}
           open={isOpenFeedbackFrom}
           title="Ваш отзыв"
-          onCancel={() => closeFeedbackFrom()}
+          onCancel={closeFeedbackFrom}
         >
           <Form
             name="feedbackFrom"

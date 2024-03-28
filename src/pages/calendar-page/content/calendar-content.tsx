@@ -1,10 +1,10 @@
 import { useAppDispatch, useAppSelector } from "@hooks/typed-react-redux-hooks"
-import { Button, Grid, Calendar, CalendarProps, ConfigProvider, Badge, BadgeProps, Modal, Drawer, Image, Divider, Dropdown, Space, MenuProps, Input, Checkbox, Select, Alert } from "antd"
+import { Button, Grid, Calendar, CalendarProps, Badge, Modal, Drawer, Image, Divider, Select } from "antd"
 import { Content } from "antd/lib/layout/layout"
 import { IExercise, ITraining, ITrainingReq } from "@redux/api/training/training.types"
 import dayjs, { Dayjs } from "dayjs"
 import { selectTrainingList, selectTrainings } from "@redux/trainingSlice"
-import React, { RefObject, useEffect, useRef, useState } from "react"
+import { RefObject, useEffect, useRef, useState } from "react"
 import useWindowWidth from "@hooks/use-window-width"
 import noTrainingsPng from "@assets/imgs/noTrainings.png"
 import { ArrowLeftOutlined, CloseCircleOutlined, CloseOutlined, DownOutlined, EditOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons"
@@ -14,7 +14,7 @@ import { useAddTrainingMutation, useUpdateTrainingMutation } from "@redux/api/tr
 import { history } from "@redux/configure-store"
 import { logout } from "@redux/userSlice"
 import { Option } from "antd/lib/mentions"
-import { _AuthLogin } from "@config/constants"
+import { _403, _AuthLogin } from "@config/constants"
 
 
 
@@ -222,7 +222,7 @@ export const CalendarContent = () => {
       }}
         ref={(ref) => (ulRefs.current !== null ? ulRefs.current[dayjs(value).format()] = ref : '')}
         className="events">
-        {listData.map((item, index) => (
+        {listData.map(item => (
           <li key={item._id}>
             <Badge color={item.isImplementation ? "#BFBFBF" : (colors?.[item.name as keyof typeof colors] || "#EB2F96")}
               text={<span style={{ color: item.isImplementation ? "#BFBFBF" : "inherit" }}>{item.name}</span>} />
@@ -265,7 +265,7 @@ export const CalendarContent = () => {
     if (isAddError) {
       clearStateWithoutColse()
       const customError = addError as { status: number }
-      if (customError.status == 403) {
+      if (customError.status == _403) {
         dispatch(logout())
         history.push(_AuthLogin)
       }
@@ -281,7 +281,7 @@ export const CalendarContent = () => {
     if (isUpdateError) {
       clearStateWithoutColse()
       const customError = updateError as { status: number }
-      if (customError.status == 403) {
+      if (customError.status == _403) {
         dispatch(logout())
         history.push(_AuthLogin)
       }

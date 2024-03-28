@@ -1,5 +1,5 @@
 import { GooglePlusOutlined } from "@ant-design/icons";
-import { _AuthConfirmEmail, _ErrorCheckEmail, _ErrorCheckEmailNoExist, _ErrorLogin, _Root } from "@config/constants";
+import { _404, _AuthConfirmEmail, _ErrorCheckEmail, _ErrorCheckEmailNoExist, _ErrorLogin, _Root } from "@config/constants";
 import { useCheckEmailMutation, useLoginMutation } from "@redux/api/auth/auth";
 import { ILocationState, history } from "@redux/configure-store";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
@@ -22,7 +22,7 @@ type CustomError = FetchBaseQueryError & {
 
 export const LoginForm = () => {
   const [form] = Form.useForm();
-  const [loginUser, { isLoading, isError, error, isSuccess }] = useLoginMutation();
+  const [loginUser, { isLoading, isError, isSuccess }] = useLoginMutation();
   const [postForgotPassword, { isLoading: isLoading1, isError: isError1, error: error1, isSuccess: isSuccess1 }] = useCheckEmailMutation();
   const validateMessages = {
     required: '',
@@ -43,7 +43,7 @@ export const LoginForm = () => {
     form.validateFields(['email']).then((res) => {
       postForgotPassword(res)
     })
-      .catch(errorInfo => {});
+      .catch(() => {});
   }
 
   useEffect(() => {
@@ -70,7 +70,7 @@ export const LoginForm = () => {
     }
     if (isError1) {
       const customError = error1 as CustomError;
-      if (customError?.status === 404 && customError?.data?.message === "Email не найден") {
+      if (customError?.status === _404 && customError?.data?.message === "Email не найден") {
         history.push(_ErrorCheckEmailNoExist, { from: "login" });
       } else {
         history.push(_ErrorCheckEmail, {

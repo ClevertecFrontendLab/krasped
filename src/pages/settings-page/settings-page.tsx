@@ -15,9 +15,8 @@ import { logout } from '@redux/userSlice';
 import TextArea from 'antd/lib/input/TextArea';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
 import { IFeedbackReq } from '@redux/api/feedback/feedback.types';
-import { _AuthLogin, _Main } from '@config/constants';
+import { _403, _AuthLogin, _Main } from '@config/constants';
 import { useGetTariffListQuery } from '@redux/api/catalog/catalog';
-import { useGetMeQuery } from '@redux/api/user/user';
 
 const SettingsPage: React.FC = () => {
   const [form] = Form.useForm();
@@ -32,11 +31,9 @@ const SettingsPage: React.FC = () => {
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
-  // const {refetch} = useGetMeQuery(null);
 
-  const sendFeedback = (values: IFeedbackReq) => {
-    addFeedbacks(values)
-  };
+  const sendFeedback = (values: IFeedbackReq) => addFeedbacks(values)
+
 
   const closeFeedbackFrom = () => {
     setIsOpenFeedbackFrom(false)
@@ -52,7 +49,7 @@ const SettingsPage: React.FC = () => {
     }
     if (addIsError) {
       const customError = addError as { status: number }
-      if (customError.status == 403) {
+      if (customError.status == _403) {
         dispatch(logout())
         history.push(_AuthLogin)
       }
@@ -61,10 +58,6 @@ const SettingsPage: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addLoading]);
-
-  // useEffect(() => {
-  //   refetch()
-  // },[])
 
   return (
     <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
@@ -162,12 +155,11 @@ const SettingsPage: React.FC = () => {
               </Button>
             </div>
           }
-          // footer={null}
           style={{ backdropFilter: 'blur(10px)' }}
           bodyStyle={{ padding: "24px 24px 0" }}
           open={isOpenFeedbackFrom}
           title="Ваш отзыв"
-          onCancel={() => closeFeedbackFrom()}
+          onCancel={closeFeedbackFrom}
         >
           <Form
             name="feedbackFrom"

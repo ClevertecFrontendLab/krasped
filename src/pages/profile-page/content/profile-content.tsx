@@ -1,5 +1,5 @@
 import { Content } from "antd/lib/layout/layout"
-import { _Error, _ErrorUserExist, _Success } from "@config/constants";
+import { _409, _Error, _ErrorUserExist, _Success } from "@config/constants";
 import { history } from "@redux/configure-store";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { Input, Button, Form, Grid, Image, Alert, Upload, DatePicker, Modal } from "antd"
@@ -41,7 +41,6 @@ export const ProfileContent = () => {
   const [isSuccessSaved, setIsSuccessSaved] = useState(false)
   const [isErrorSaved, setIsErrorSaved] = useState(false)
   const [isBigImage, setIsBigImage] = useState(false)
-  // const [isLoadingImage, setIsLoadingImage] = useState(false)
   const [isLoadingImageError, setIsLoadingImageError] = useState(false)
   const [imgUrl, setImgUrl] = useState<string>()
   const [form] = Form.useForm();
@@ -63,23 +62,18 @@ export const ProfileContent = () => {
 
   const handleChange = (info: UploadChangeParam<UploadFile>): void => {
     if (info.file.status === 'uploading') {
-      // setIsLoadingImage(true);
       setIsLoadingImageError(false);
       return;
     }
     if (info.file.status === 'done') {
-      // Get this url from response in real world.
       getBase64(info.file.originFileObj, () => {
-        // setIsLoadingImage(false);
         setImgUrl(info?.file?.response?.url);
       }
       );
     }
     if (info.file.status === 'error') {
-      // setIsLoadingImage(false);
       setIsLoadingImageError(true);
       setIsBigImage(true)
-      // setImgUrl(info?.file?.response?.url);
     }
   };
 
@@ -92,10 +86,7 @@ export const ProfileContent = () => {
       ...(values?.birthday ? { birthday: values.birthday } : {}),
       firstName: values.firstName,
       lastName: values.lastName,
-      // birthday: values.birthday, //"2024-03-26T20:59:15.136Z",
       imgSrc: imgUrl,
-      // readyForJointTraining: true,
-      // sendNotification: true
     }
     updateUser(payload)
   };
@@ -151,11 +142,6 @@ export const ProfileContent = () => {
 
   function beforeUpload(file: { type: string; size: number; }) {
     setIsBigImage(true)
-    // const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    // if (!isJpgOrPng) {
-    //   console.error('You can only upload JPG/PNG file!');
-    //   return
-    // }
     const isLt5M = file.size / 1024 / 1024 < 5;
     if (!isLt5M) {
       setIsLoadingImageError(true);
@@ -177,13 +163,12 @@ export const ProfileContent = () => {
   useEffect(() => {
     if (isSuccess) {
       setIsSuccessSaved(true)
-      // history.push(_Success, { from: "login" });
     }
 
     if (isError) {
       resetFields()
       const customError = error as CustomError;
-      if ((customError?.status) === 409) {
+      if ((customError?.status) === _409) {
         history.push(_ErrorUserExist, { from: "login" });
       } else {
         setIsErrorSaved(true)
@@ -429,11 +414,6 @@ export const ProfileContent = () => {
                 onChange={handleChange}
                 beforeUpload={beforeUpload}
               >
-                {/* {firstImageUrl ? (
-                  <img src={firstImageUrl} alt="First Image" style={{ width: '100px', height: '100px' }} />
-                ) : (
-                  imgUrl || isLoadingImage ? null : uploadButton
-                )} */}
                 {imgUrl ? null : uploadButton}
               </Upload>)}
               </Form.Item>

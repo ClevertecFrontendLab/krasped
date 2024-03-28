@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Grid, Layout, Modal, Rate, Result } from 'antd';
-
 import Main_page_light from "@assets/imgs/Main_page_light.png"
 
 import { Navbar } from '@components/navbar';
@@ -9,35 +8,29 @@ import { RootState, history } from '@redux/configure-store';
 import { ProfileHeader } from './header/profile-header';
 import { ProfileContent } from './content/profile-content';
 import { useAppDispatch } from '@hooks/typed-react-redux-hooks';
-import { useAddFeedbackMutation, useGetAllFeedbacksQuery } from '@redux/api/feedback/feedback';
+import { useAddFeedbackMutation } from '@redux/api/feedback/feedback';
 import { LoaderComponent } from '@components/loader/api-loader';
 import { logout } from '@redux/userSlice';
 import TextArea from 'antd/lib/input/TextArea';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
 import { IFeedbackReq } from '@redux/api/feedback/feedback.types';
-import { _AuthLogin, _Main } from '@config/constants';
-import { useGetMeQuery } from '@redux/api/user/user';
+import { _403, _AuthLogin, _Main } from '@config/constants';
 
 const ProfilePage: React.FC = () => {
   const [form] = Form.useForm();
   const rating = Form.useWatch('rating', form);
-  // const [isfeedbacksError, setIsfeedbacksError] = useState(false)
   const [isfeedbackError, setIsfeedbackError] = useState(false)
   const [isfeedbackSuccess, setIsfeedbackSuccess] = useState(false)
   const [isOpenFeedbackFrom, setIsOpenFeedbackFrom] = useState(false)
-  // const {refetch} = useGetMeQuery(null);
 
-  // const feedbacks = useAppSelector(selectFeedbacks)
   const dispatch = useAppDispatch()
-  // const { isError, isLoading, error } = useGetAllFeedbacksQuery(null);
   const [addFeedbacks, { isError: addIsError, isSuccess: addSuccess, isLoading: addLoading, error: addError }] = useAddFeedbackMutation();
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
 
-  const sendFeedback = (values: IFeedbackReq) => {
-    addFeedbacks(values)
-  };
+  const sendFeedback = (values: IFeedbackReq) => addFeedbacks(values)
+ 
 
   const closeFeedbackFrom = () => {
     setIsOpenFeedbackFrom(false)
@@ -46,65 +39,26 @@ const ProfilePage: React.FC = () => {
 
   const layoutPaddingLeft = (screens?.xs) ? '0' : (collapsed ? '64px' : '208px');
 
-  // useEffect(() => {
-  //   if (isError) {
-  //     const customError = error as { status: number }
-  //     if (customError.status == 403) {
-  //       dispatch(logout())
-  //       history.push(_AuthLogin)
-  //     }
-  //     setIsfeedbacksError(true)
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [isLoading]);
-
-
   useEffect(() => {
     if (addSuccess) {
       setIsfeedbackSuccess(true)
-      // closeFeedbackFrom()
     }
     if (addIsError) {
       const customError = addError as { status: number }
-      if (customError.status == 403) {
+      if (customError.status == _403) {
         dispatch(logout())
         history.push(_AuthLogin)
       }
       setIsfeedbackError(true)
       setIsOpenFeedbackFrom(false)
-      // closeFeedbackFrom()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addLoading]);
-
-  // useEffect(() => {
-  //   refetch()
-  // },[])
 
   return (
     <div style={{ maxWidth: "1440px", margin: "0 auto", position: "relative" }}>
       <Layout style={{ position: "relative" }}>
         <LoaderComponent />
-        {/* <Modal centered footer={null} style={{ backdropFilter: 'blur(10px)' }} closable={false} open={isfeedbacksError} onCancel={() => setIsfeedbacksError(false)}>
-          <Result
-            style={{
-              maxWidth: "539px",
-              width: "calc(100% - 16px)",
-              margin: "16px",
-              padding: screens.xs ? "32px 16px" : "64px 0",
-              zIndex: 1,
-              backgroundColor: "white"
-            }}
-            title={<span style={{ fontWeight: 500 }}>{"Что-то пошло не так"}</span>}
-            status="500"
-            subTitle="Произошла ошибка, попробуйте еще раз."
-            extra={
-              <Button size='large' onClick={() => { history.push(_Main) }} type="primary" key="console">
-                Назад
-              </Button>
-            }
-          />
-        </Modal> */}
         <Modal centered footer={null} style={{ backdropFilter: 'blur(10px)' }} closable={false} open={isfeedbackError} onCancel={() => setIsfeedbackError(false)}>
           <Result
             style={{
@@ -177,12 +131,11 @@ const ProfilePage: React.FC = () => {
               </Button>
             </div>
           }
-          // footer={null}
           style={{ backdropFilter: 'blur(10px)' }}
           bodyStyle={{ padding: "24px 24px 0" }}
           open={isOpenFeedbackFrom}
           title="Ваш отзыв"
-          onCancel={() => closeFeedbackFrom()}
+          onCancel={closeFeedbackFrom}
         >
           <Form
             name="feedbackFrom"

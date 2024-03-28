@@ -1,7 +1,7 @@
 import { IFeedbackReq } from "@redux/api/feedback/feedback.types"
 import { Content } from "antd/lib/layout/layout"
 import { CheckCircleFilled, CheckCircleOutlined, CheckOutlined, CloseCircleOutlined, CloseOutlined, InfoCircleOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
-import { _AuthLogin, _Error, _ErrorUserExist, _Feedbacks, _Success } from "@config/constants";
+import { _403, _AuthLogin, _Error, _ErrorUserExist, _Feedbacks, _Success } from "@config/constants";
 import { history } from "@redux/configure-store";
 import { Button, Form, Grid, Image, Modal, Rate, Result, Card, Switch, Tooltip, Drawer, Radio, RadioChangeEvent } from "antd"
 import { useEffect, useState } from "react";
@@ -56,9 +56,8 @@ export const SettingsContent = () => {
     form.resetFields();
   }
 
-  const sendFeedback = (values: IFeedbackReq) => {
-    addFeedbacks(values)
-  };
+  const sendFeedback = (values: IFeedbackReq) => addFeedbacks(values)
+
 
   const onChangeIsReady = (checked: boolean) => {
     setIsReady(checked);
@@ -98,7 +97,7 @@ export const SettingsContent = () => {
     }
     if (addIsError) {
       const customError = addError as { status: number }
-      if (customError.status == 403) {
+      if (customError.status == _403) {
         dispatch(logout())
         history.push(_AuthLogin)
       }
@@ -115,7 +114,7 @@ export const SettingsContent = () => {
     }
     if (tariffIsError) {
       const customError = tariffError as { status: number }
-      if (customError.status == 403) {
+      if (customError.status == _403) {
         dispatch(logout())
         history.push(_AuthLogin)
       }
@@ -148,7 +147,6 @@ export const SettingsContent = () => {
           display: "flex",
           flexDirection: "column",
           width: "100%",
-          // padding: "56px 32px",
           gap: "29px"
         }}>
           <CheckCircleFilled
@@ -266,7 +264,7 @@ export const SettingsContent = () => {
         bodyStyle={{ padding: "24px 24px 0" }}
         open={isOpenFeedbackFrom}
         title="Ваш отзыв"
-        onCancel={() => closeFeedbackFrom()}
+        onCancel={closeFeedbackFrom}
       >
         <Form
           name="feedbackFrom"
@@ -410,10 +408,6 @@ export const SettingsContent = () => {
               color: "#262626",
               paddingBottom: "24px",
             }}>Cтоимость тарифа</div>
-          {/* <div style={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}> */}
             <Radio.Group style={{width: "100%"}} onChange={onChange} value={value}>
             <div data-test-id='tariff-cost' style={{
               display: "flex",
@@ -453,46 +447,6 @@ export const SettingsContent = () => {
                 </div>)
               })}
             </div></Radio.Group>
-            {/* <div style={{
-              display: "flex",
-              justifyContent: "space-around",
-              gap: "14px",
-              width: "126px",
-            }}>
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between"
-                }}>
-                {tariffs?.periods?.map(item => {
-
-                  return (
-                    <div
-                      key={item.text}
-                      style={{
-                        fontSize: "16px",
-                        fontWeight: 500,
-                        color: "#262626",
-                      }}>{`${item.cost} $`}</div>
-                  )
-                })}
-              </div>
-              <Radio.Group onChange={onChange} value={value}>
-                <Space style={{
-                  gap: 0,
-                  justifyContent: "space-between",
-                  height: "100%"
-                }} direction="vertical">
-                  {tariffs?.periods?.map((item) => {
-
-                    return (<Radio key={item.text} value={item}></Radio>)
-                  })}
-                </Space>
-              </Radio.Group>
-            </div> */}
-          {/* </div> */}
         </div>}
         {!user?.tariff?.expired && <div
           style={{

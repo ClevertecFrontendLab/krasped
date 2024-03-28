@@ -3,7 +3,6 @@ import { _Calendar, _Main, _Settings } from "@config/constants";
 import { history } from "@redux/configure-store";
 import { Button, Grid } from "antd"
 import { Header } from "antd/lib/layout/layout"
-import { Link } from "react-router-dom";
 
 export const FeedbackHeader: React.FC = () => {
   const { useBreakpoint } = Grid;

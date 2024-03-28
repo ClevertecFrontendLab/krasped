@@ -21,3 +21,8 @@ export const _ErrorCheckEmail = "/result/error-check-email";
 export const _Success = "/result/success";
 export const _Error = "/result/error";
 export const _ErrorUserExist = "/result/error-user-exist";
+
+export const _403 = 403;
+export const _409 = 409;
+export const _404 = 404;
+export const _400 = 400;

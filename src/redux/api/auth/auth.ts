@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { IChangePassword, ICheckEmail, IConfirmEmail, IRegistration, Ilogin } from './auth.types'
-import { userApi } from '@redux/api/user/user';
+import { IChangePassword, ICheckEmail, IConfirmEmail, IRegistration } from './auth.types'
 import { setToken } from '@redux/userSlice';
 import { FieldType } from '@components/login-form/login-form';
 

@@ -1,5 +1,5 @@
 import { GooglePlusOutlined } from "@ant-design/icons";
-import { _Error, _ErrorUserExist, _Success } from "@config/constants";
+import { _409, _Error, _ErrorUserExist, _Success } from "@config/constants";
 import { useRegistrationMutation } from "@redux/api/auth/auth";
 import { ILocationState, history } from "@redux/configure-store";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
@@ -48,7 +48,7 @@ export const RegisterForm: React.FC = () => {
 
     if (isError) {
       const customError = error as CustomError;
-      if ((customError?.status) === 409) {
+      if ((customError?.status) === _409) {
         history.push(_ErrorUserExist, { from: "login" });
       } else {
         history.push(_Error, {
@@ -75,10 +75,10 @@ export const RegisterForm: React.FC = () => {
 
   useEffect(() => {
     if (form.isFieldsTouched(["password"])) {
-      form.validateFields(['password']).then((res) => {
+      form.validateFields(['password']).then(() => {
         setIsValid(true)
       })
-        .catch(errorInfo => {
+        .catch(() => {
           setIsValid(false)
         });
     }

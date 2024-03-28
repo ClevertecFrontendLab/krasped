@@ -1,4 +1,4 @@
-import { Button, Grid, Result } from "antd"
+import { Button, Result } from "antd"
 import { Content } from "antd/lib/layout/layout"
 
 import { _AuthLogin } from "@config/constants"
@@ -9,8 +9,6 @@ import { history } from "@redux/configure-store";
 export const CalendarContent = () => {
 
 
-  const { useBreakpoint } = Grid;
-  const screen = useBreakpoint();
 
   return (
     <Content style={{ boxSizing: "border-box", borderRadius: "8px", backgroundColor: "white", display: "flex", justifyContent: "center", alignItems: "center", height: "100%", overflow: 'initial' }}>

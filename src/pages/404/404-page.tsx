@@ -1,20 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Grid, Layout, Modal, Result } from 'antd';
+import React from 'react';
+import { Grid, Layout } from 'antd';
 
 import Main_page_light from "@assets/imgs/Main_page_light.png"
 
 import { Navbar } from '@components/navbar';
 import { useSelector } from 'react-redux';
-import { RootState, history } from '@redux/configure-store';
+import { RootState } from '@redux/configure-store';
 import { CalendarContent } from './content/404-content';
-import { useAppDispatch, useAppSelector } from '@hooks/typed-react-redux-hooks';
 import { LoaderComponent } from '@components/loader/api-loader';
 import { _AuthLogin, _Main } from '@config/constants';
 
 const CalendarPage: React.FC = () => {
 
 
-  const dispatch = useAppDispatch()
   const collapsed = useSelector((state: RootState) => state.app.collapsed);
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
