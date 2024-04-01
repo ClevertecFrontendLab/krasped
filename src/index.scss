@@ -52,7 +52,7 @@ body {
   line-height: 1.5;
 }
 
-/* Удаляем стандартную стилизацию для всех ul и il, у которых есть атрибут class*/
+/* Удаляем стандартную стилизацию для всех ul и il, у которых есть атрибут class */
 ul[class],
 ol[class] {
   list-style: none;
@@ -98,7 +98,7 @@ select {
     }
   }
 }
-//Rate
+
 .ant-rate {
   color: #FAAD14;
 }
@@ -168,15 +168,31 @@ select {
   background-color: white
 }
 
+/* training table */
 
-// .ant-radio-inner::after{
-//   background-color: #2F54EB;
-// }
-// .ant-radio-inner{ 
-//   background-color: white;
-// }
+.configuredTable{
+  .ant-table-pagination-right{
+    justify-content: flex-start;
+  }
 
-/* Удаляем все анимации и переходы для людей, которые предпочитай их не использовать */
+
+  .ant-table-cell{
+    border-bottom: none;
+  }
+  .ant-table-thead > tr > th{
+    background-color: white;
+  }
+
+  th.ant-table-cell::before {
+    display: none !important;
+  }
+  .ant-table-column-sorters{
+    background-color: #F0F0F0;
+    padding-right: 4px;
+  }
+
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;

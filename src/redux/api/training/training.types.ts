@@ -14,7 +14,7 @@ export interface IExerciseWithId extends IExercise {
   _id: string
 }
 
-interface IParameters {
+export interface IParameters {
   "repeat": boolean,
   "period": number,
   "jointTraining": boolean,

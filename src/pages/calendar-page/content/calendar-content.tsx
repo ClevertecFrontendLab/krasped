@@ -14,7 +14,7 @@ import { useAddTrainingMutation, useUpdateTrainingMutation } from "@redux/api/tr
 import { history } from "@redux/configure-store"
 import { logout } from "@redux/userSlice"
 import { Option } from "antd/lib/mentions"
-import { _403, _AuthLogin } from "@config/constants"
+import { _403, _AuthLogin, _Colors } from "@config/constants"
 
 
 
@@ -204,16 +204,6 @@ export const CalendarContent = () => {
     }
   }
 
-
-  enum colors {
-    Ноги = "#FF4D4F",
-    Силовая = "#FADB14",
-    Руки = "#13C2C2",
-    Грудь = "#52C41A",
-    Спина = "#FA8C16",
-    Кардио = "#EB2F96",
-  }
-
   const dateCellRender = (value: any) => {
     const listData = getListData(value);
     return (
@@ -224,7 +214,7 @@ export const CalendarContent = () => {
         className="events">
         {listData.map(item => (
           <li key={item._id}>
-            <Badge color={item.isImplementation ? "#BFBFBF" : (colors?.[item.name as keyof typeof colors] || "#EB2F96")}
+            <Badge color={item.isImplementation ? "#BFBFBF" : (_Colors?.[item.name as keyof typeof _Colors] || "#EB2F96")}
               text={<span style={{ color: item.isImplementation ? "#BFBFBF" : "inherit" }}>{item.name}</span>} />
           </li>
         ))}
@@ -442,7 +432,7 @@ export const CalendarContent = () => {
                       }
                     }}
                   >
-                    <Badge color={item.isImplementation ? "#BFBFBF" : (colors?.[item.name as keyof typeof colors] || "#EB2F96")}
+                    <Badge color={item.isImplementation ? "#BFBFBF" : (_Colors?.[item.name as keyof typeof _Colors] || "#EB2F96")}
 
                       text={item.name} />
                     <EditOutlined style={{
@@ -644,7 +634,7 @@ export const CalendarContent = () => {
           fontSize: "14px", lineHeight: "18.2px"
         }}>
           <div>
-            {selectedTypeOfTraining && <Badge color={colors?.[selectedTypeOfTraining as keyof typeof colors] || "#EB2F96"}
+            {selectedTypeOfTraining && <Badge color={_Colors?.[selectedTypeOfTraining as keyof typeof _Colors] || "#EB2F96"}
               text={selectedTypeOfTraining} />}
           </div>
           {dayjs(selectedDate).format('DD.MM.YYYY')}

@@ -1,12 +1,16 @@
 import { Content } from "antd/lib/layout/layout"
 import { _409, _Error, _ErrorUserExist, _Success } from "@config/constants";
 
-import { Grid } from "antd"
+import { Grid, Tabs } from "antd"
+import { useState } from "react";
+import { MyTrainingsTab } from "./my-trainings-tab/my-trainings-tab";
+import { TogetherTrainingsTab } from "./togetrhe-trainings-tab/together-trainings-tab";
 
 
-export const TrainingContent = () => {
+export const TrainingContent = ({isHideAddTrainingBtn}: {isHideAddTrainingBtn: boolean}) => {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
+  const [tab, setTab] = useState("1")
   
   return (
     <Content style={{
@@ -19,7 +23,29 @@ export const TrainingContent = () => {
       overflow: 'initial',
       position: "relative",
     }}>
-     123
+     <Tabs
+        style={{ width: "100%" }}
+        tabBarGutter={0}
+        activeKey={tab}
+        onChange={(val) => setTab(val)}
+        items={[
+          {
+            label: "Мои тренировки",
+            key: '1',
+            children: <MyTrainingsTab isHideAddTrainingBtn={isHideAddTrainingBtn} />,
+          },
+          {
+            label: "Совместные тренировки",
+            key: '2',
+            children: <TogetherTrainingsTab />,
+          },
+          {
+            label: "Марафоны",
+            key: '3',
+            children: <></>,
+          },
+        ]}
+      />
     </Content >
   )
 }

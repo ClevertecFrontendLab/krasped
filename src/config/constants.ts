@@ -27,3 +27,12 @@ export const _403 = 403;
 export const _409 = 409;
 export const _404 = 404;
 export const _400 = 400;
+
+export enum _Colors {
+  Ноги = "#FF4D4F",
+  Силовая = "#FADB14",
+  Руки = "#13C2C2",
+  Грудь = "#52C41A",
+  Спина = "#FA8C16",
+  Кардио = "#EB2F96",
+}

@@ -47,7 +47,6 @@ export const TrainingHeader: React.FC = () => {
       >
 
         <Button
-          data-test-id='header-settings'
           shape={screens?.xs ? "circle" : "default"}
           icon={screens?.lg || screens?.xs ? <SettingOutlined /> : <></>}
           style={{

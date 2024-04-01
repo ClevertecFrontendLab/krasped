@@ -66,7 +66,6 @@ const TrainingPage: React.FC = () => {
         <LoaderComponent />
         <Navbar />
         <Modal
-          data-test-id='modal-no-review'
           centered footer={null} style={{ backdropFilter: 'blur(10px)' }} closable={false} open={isTrainingssError} onCancel={() => setIsTrainingsError(false)}>
           <Result
             style={{
@@ -93,7 +92,7 @@ const TrainingPage: React.FC = () => {
         </Modal>
         <Modal centered
           footer={null}
-          closeIcon={<CloseOutlined data-test-id='modal-error-user-training-button-close' />}
+          closeIcon={<CloseOutlined />}
           bodyStyle={{ padding: "16px 24px" }}
           style={{ maxWidth: "384px", backdropFilter: 'blur(10px)' }}
           open={isTrainingListError}
@@ -112,14 +111,11 @@ const TrainingPage: React.FC = () => {
               gap: "8px",
             }}>
               <div
-                data-test-id='modal-error-user-training-title'
                 style={{ fontSize: "16px", lineHeight: "21px" }}>При открытии данных <br /> произошла ошибка </div>
               <div
-                data-test-id='modal-error-user-training-subtitle'
                 style={{ color: "#8C8C8C", fontSize: "14px", lineHeight: "18px" }}>Попробуйте ещё раз.</div>
               <div style={{ display: "flex", width: "100%", justifyContent: "flex-end" }}>
                 <Button
-                  data-test-id='modal-error-user-training-button'
                   style={{
                     fontSize: "14px",
                     height: "28px",
@@ -157,7 +153,7 @@ const TrainingPage: React.FC = () => {
                 padding: screens.xs ? "24px 0 42px" : "24px 24px 42px",
               }}
             >
-              <TrainingContent />
+              <TrainingContent isHideAddTrainingBtn={isHideAddTrainingBtn} />
             </div>
           </div>
         </Layout>
