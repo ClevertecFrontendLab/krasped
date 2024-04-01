@@ -3,6 +3,7 @@ export const _Main = "/main";
 export const _Feedbacks = "/feedbacks";
 export const _Calendar = "/calendar";
 export const _Profile = "/profile";
+export const _Training = "/training";
 export const _Settings = "/settings";
 export const _NotFoundPage = "/404";
 

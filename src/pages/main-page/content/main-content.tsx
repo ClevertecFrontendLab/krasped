@@ -1,10 +1,10 @@
 import { HeartFilled, CalendarTwoTone, IdcardTwoTone } from "@ant-design/icons"
-import { _Profile } from "@config/constants"
+import { _Calendar, _Profile, _Training } from "@config/constants"
 import { history } from "@redux/configure-store"
 import { Card, Button } from "antd"
 import { Content } from "antd/lib/layout/layout"
 
-export const MainContent = (props: { getCalendar: () => void }) => {
+export const MainContent = (props: { getTraining: (route: string) => void }) => {
   return (
     <Content style={{ overflow: 'initial' }}>
       <div
@@ -56,7 +56,7 @@ export const MainContent = (props: { getCalendar: () => void }) => {
               headStyle={{ wordWrap: "break-word", display: "flex", alignItems: "center", justifyContent: "center", height: "45px" }}
               bodyStyle={{ textAlign: "center", height: "56px", padding: "12px" }}
               bordered={false} >
-              <Button type='link'>
+              <Button type='link' onClick={() => props.getTraining(_Training)}>
                 <HeartFilled />
                 Тренировки
               </Button>
@@ -70,7 +70,7 @@ export const MainContent = (props: { getCalendar: () => void }) => {
               headStyle={{ wordWrap: "break-word", display: "flex", alignItems: "center", justifyContent: "center", height: "45px" }}
               bodyStyle={{ textAlign: "center", height: "56px", padding: "12px" }}
               bordered={false} >
-              <Button data-test-id='menu-button-calendar' type='link' onClick={() => props.getCalendar()}>
+              <Button data-test-id='menu-button-calendar' type='link' onClick={() => props.getTraining(_Calendar)}>
                 <CalendarTwoTone />
                 Календарь
               </Button>

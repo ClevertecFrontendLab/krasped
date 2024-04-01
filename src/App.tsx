@@ -6,7 +6,7 @@ import { ResultLayout } from '@components/layouts/result-layout/result-layout';
 import { SuspenceLoaderComponent } from '@components/loader/suspence-loader';
 import ProtectedRoute from '@components/protected-routes/protected-route';
 import AnonimRoute from '@components/anonim-route/anonim-route';
-import { _Auth, _AuthChangePassword, _AuthConfirmEmail, _AuthLogin, _AuthRegistration, _Calendar, _Error, _ErrorChangePassword, _ErrorCheckEmail, _ErrorCheckEmailNoExist, _ErrorLogin, _ErrorUserExist, _Feedbacks, _Main, _NotFoundPage, _Profile, _Result, _Settings, _Success, _SuccessChangePassword } from '@config/constants';
+import { _Auth, _AuthChangePassword, _AuthConfirmEmail, _AuthLogin, _AuthRegistration, _Calendar, _Error, _ErrorChangePassword, _ErrorCheckEmail, _ErrorCheckEmailNoExist, _ErrorLogin, _ErrorUserExist, _Feedbacks, _Main, _NotFoundPage, _Profile, _Result, _Settings, _Success, _SuccessChangePassword, _Training } from '@config/constants';
 
 const App: React.FC = () => {
   const AuthPage = React.lazy(() => import('@pages/auth-page/auth-page'));
@@ -23,6 +23,7 @@ const App: React.FC = () => {
   const ErrorChangePassword = React.lazy(() => import('@components/errors/error-change-password/error-change-password'));
   const FeedbackPage = React.lazy(() => import('@pages/feedback-page/feedback-page'));
   const CalendarPage = React.lazy(() => import('@pages/calendar-page/calendar-page'));
+  const TrainingPage = React.lazy(() => import('@pages/training-page/training-page'));
   const ProfilePage = React.lazy(() => import('@pages/profile-page/profile-page'));
   const SettingsPage = React.lazy(() => import('@pages/settings-page/settings-page'));
   const NotFoundPage = React.lazy(() => import('@pages/404/404-page'));
@@ -48,6 +49,13 @@ const App: React.FC = () => {
         <ProtectedRoute>
           <React.Suspense fallback={<SuspenceLoaderComponent />}>
             <CalendarPage />
+          </React.Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path={_Training} element={
+        <ProtectedRoute>
+          <React.Suspense fallback={<SuspenceLoaderComponent />}>
+            <TrainingPage />
           </React.Suspense>
         </ProtectedRoute>
       } />

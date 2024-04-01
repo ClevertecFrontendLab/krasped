@@ -23,19 +23,21 @@ const MainPage: React.FC = () => {
     const collapsed = useSelector((state: RootState) => state.app.collapsed);
     const { useBreakpoint } = Grid;
     const screens = useBreakpoint();
+    const [lastRouteWithGetApi, setLastRouteWithGetApi] = useState<string>('')
 
     const layoutPaddingLeft = (screens?.xs) ? '0' : (collapsed ? '64px' : '208px');
     const getFeedbacks = () => {
         history.push(_Feedbacks)
     }
 
-    const getCalendar = () => {
+    const getTraining = (route: string) => {
         getTrainings(null)
+        setLastRouteWithGetApi(route)
     }
 
     useEffect(() => {
         if (isSuccess) {
-            history.push(_Calendar)
+            history.push(lastRouteWithGetApi)
         }
         if (isError) {
             const customError = error as { status: number }
@@ -75,7 +77,9 @@ const MainPage: React.FC = () => {
                         }
                     />
                 </Modal>
-                <Navbar getCalendar={getCalendar} />
+                <Navbar 
+                    getTraining={getTraining} 
+                />
                 <Layout className={s.layout} style={{
                     position: 'relative',
                     transition: "padding-left 0.146s linear",
@@ -88,7 +92,9 @@ const MainPage: React.FC = () => {
 
                 }}>
                     <MainHeader />
-                    <MainContent getCalendar={getCalendar} />
+                    <MainContent 
+                        getTraining={getTraining} 
+                    />
                     <MainFooter getFeedbacks={getFeedbacks} />
                 </Layout>
             </Layout >

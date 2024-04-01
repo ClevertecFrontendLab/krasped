@@ -13,10 +13,10 @@ import { Link } from "react-router-dom"
 import { logout } from "@redux/userSlice"
 import { useAppDispatch } from "@hooks/typed-react-redux-hooks"
 import { useEffect, useState } from "react"
-import { _AuthLogin, _Calendar } from "@config/constants"
+import { _AuthLogin, _Calendar, _Training } from "@config/constants"
 
 
-export const DesctopNavbar = (props: { getCalendar?: () => void }) => {
+export const DesctopNavbar = (props: { getTraining?: (route: string) => void }) => {
   const width = useWindowWidth()
   const { useBreakpoint } = Grid;
   const [curKey, setCurKey] = useState<string>('')
@@ -99,10 +99,9 @@ export const DesctopNavbar = (props: { getCalendar?: () => void }) => {
               <Link
                 to={item.href}
                 onClick={(e) => {
-
                   e.preventDefault();
-                  console.log(e)
-                  return (typeof props?.getCalendar == "function" && item.href==_Calendar) ? props?.getCalendar() : history.push(item.href)
+                  return (typeof props?.getTraining == "function" && (item.href==_Calendar || item.href==_Training)) 
+                  ? props?.getTraining(item.href) : history.push(item.href)
                 }}>
                 <span style={{
                   color: "#061178",

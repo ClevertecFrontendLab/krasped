@@ -1,11 +1,11 @@
 import { MobileNavbar } from './mobile/mobile';
 import { DesctopNavbar } from './desctop/desctop';
 
-export const Navbar = (props: { getCalendar?: () => void }) => {
+export const Navbar = (props: { getTraining?: (route: string) => void }) => {
   return (
     <>
-      <MobileNavbar getCalendar={props.getCalendar} />
-      <DesctopNavbar getCalendar={props.getCalendar} />
+      <MobileNavbar getTraining={props.getTraining} />
+      <DesctopNavbar getTraining={props.getTraining} />
     </>
   )
 }
