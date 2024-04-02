@@ -15,8 +15,8 @@ body {
 
 /* Указываем box sizing */
 *,
-*::before,
-*::after {
+*:before,
+*:after {
   box-sizing: border-box;
 }
 
@@ -69,7 +69,7 @@ img {
   display: block;
 }
 
-/* Указываем понятную периодичность в потоке данных у article*/
+/* Указываем понятную периодичность в потоке данных у article */
 article>*+* {
   margin-top: 1em;
 }
@@ -183,7 +183,7 @@ select {
     background-color: white;
   }
 
-  th.ant-table-cell::before {
+  th.ant-table-cell:before {
     display: none !important;
   }
   .ant-table-column-sorters{
@@ -191,6 +191,17 @@ select {
     padding-right: 4px;
   }
 
+}
+
+.tabHeight{
+  .ant-tabs-content{
+    min-height: 100%;
+    display: flex;
+  }
+  .ant-tabs-tabpane{
+    flex: 1;
+    min-height: 100%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

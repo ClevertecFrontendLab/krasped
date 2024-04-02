@@ -93,7 +93,6 @@ export const CalendarContent = () => {
     setIsOpenFirstModal(true);
     clearStateWithoutColse()
     const listOfTrainings = getListData(value)
-    if (true) {
       const ulElement = ulRefs?.current?.[dayjs(value).format()] || null;
       if (ulElement) {
         const ulPosition = ulElement.getBoundingClientRect();
@@ -105,11 +104,6 @@ export const CalendarContent = () => {
       }
       setTrainingsSelected(listOfTrainings)
       setSelectedDate(value);
-    } else {
-      clearState()
-      return
-    }
-
   };
 
   const transformDropdownProps = () => {

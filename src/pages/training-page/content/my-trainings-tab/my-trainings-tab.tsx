@@ -1,13 +1,16 @@
 import { Content } from "antd/lib/layout/layout"
 import { _409, _Colors, _Error, _ErrorUserExist, _Success } from "@config/constants";
 
-import { Badge, Button, Grid, Pagination, Select, Table, TableColumnsType, TableProps, Tabs } from "antd"
-import { useState } from "react";
-import { DownOutlined, PlusOutlined } from "@ant-design/icons";
+import { Badge, Button, DatePicker, Drawer, Grid, Image, Pagination, Select, Table, TableColumnsType, TableProps } from "antd"
+import React, { RefObject, useRef, useState } from "react";
+import { CloseOutlined, DownOutlined, EditOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { Option } from "antd/lib/mentions";
 import { useAppSelector } from "@hooks/typed-react-redux-hooks";
-import { selectTrainings } from "@redux/trainingSlice";
-import { IParameters, ITraining } from "@redux/api/training/training.types";
+import { selectTrainingList, selectTrainings } from "@redux/trainingSlice";
+import { IExercise, ITraining } from "@redux/api/training/training.types";
+import dayjs, { Dayjs } from "dayjs";
+import { ExserciseItem } from "./exsercise-item-form";
+import CalenderSVG from "@assets/icons/calendat-disabled.svg"
 
 const periotSorting = [
   { label: "Сортировка по периоду", value: "period" },
@@ -16,18 +19,53 @@ const periotSorting = [
   { label: "Сортировка по всему", value: "all" },
 ]
 
+const defaultExercise = {
+  "name": "",
+  "replays": 1,
+  "weight": 0,
+  "approaches": 1,
+  "isImplementation": false,
+  "isSelectedForDelete": false,
+}
 
 export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn: boolean }) => {
+  type UserRefObject = {
+    [key: string]: HTMLUListElement | null;
+  }
   const { useBreakpoint } = Grid;
+
+  const Icon = React.createElement(Image, {
+    src: CalenderSVG,
+    preview: false,
+    alt: CalenderSVG,
+  })
+
   const trainings = useAppSelector(selectTrainings)
+  const trainingList = useAppSelector(selectTrainingList)
   const screens = useBreakpoint();
   const [selectedSortingType, setSelectedSortingType] = useState<string>("0")
+  const [isShowAddingExersice, setIsShowAddingExersice] = useState<boolean>(false)
+  const [selectedTypeOfTraining, setSelectedTypeOfTraining] = useState<ITraining>();
+  const [newAddedExercise, setNewAddedExercise] = useState<IExercise[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Dayjs>();
+  const [trainingsSelected, setTrainingsSelected] = useState<ITraining[]>([]);
+  const ulRefs: RefObject<UserRefObject> = useRef<UserRefObject>({});
+
+
+
 
   const handleDropdownClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
   };
+
+  const clearState = () => {
+    setSelectedDate(undefined)
+    setIsShowAddingExersice(false);
+    setSelectedTypeOfTraining(undefined);
+    setNewAddedExercise([])
+  }
 
   const onChange: TableProps<ITraining>['onChange'] = (pagination, filters, sorter, extra) => {
     console.log('params', pagination, filters, sorter, extra);
@@ -37,15 +75,100 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
     setSelectedSortingType(name)
   }
 
+  const onChangeDropdownTraining = (name: string) => {
+    const selectedTrain = getListData().find((item: ITraining) => item.name == name)
+    setSelectedTypeOfTraining(selectedTrain)
+    // if (checkIsFutureDay()) {
+      setNewAddedExercise(selectedTrain?.exercises ? [...selectedTrain?.exercises] : [])
+    // } else {
+    //   setNewAddedExercise(selectedTrain?.exercises ? [...selectedTrain?.exercises] : [])
+    // }
+  }
+
+  const editTraining = (item: ITraining) => {
+    console.log(item)
+    setSelectedDate(dayjs(item?.date))
+    setIsShowAddingExersice(true)
+    setSelectedTypeOfTraining(item)
+  }
+
+  const onCloseExercise = () => {
+    setNewAddedExercise(v => v.filter(item => item.name))
+    clearState()
+  }
+
+  const removeSelectedExersices = () => {
+    setNewAddedExercise(v => {
+      return v.filter(item => !item?.isSelectedForDelete)
+    })
+  }
+
+  const getListData = (value = selectedDate) => {
+    if(!value) return []
+    const training = trainings?.filter(item =>
+      dayjs(item.date).isSame(dayjs(value), "day")
+    )
+    return training;
+  };
+
+  const handleSelectDate = (value: Dayjs) => {
+    const listOfTrainings = getListData(value)
+    setTrainingsSelected(listOfTrainings)
+    setSelectedDate(value);
+  };
+
+
+
+  const checkIsFutureDay = (value = selectedDate) => {
+    return dayjs().isBefore(dayjs(value), "day")
+  }
+
+  const transformDropdownProps = () => {
+    if(!selectedDate) return trainingList
+    if (checkIsFutureDay()) {
+      const uniqueTrainingNames = new Set(trainingsSelected.map(item => item.name));
+      return trainingList
+        .filter(item => !uniqueTrainingNames.has(item.name))
+        .map(item => {
+          return { ...item, label: item.name };
+        });
+    } else {
+      const pastTrainings = getListData();
+      const uniqueTrainingNames = new Set(pastTrainings.map(item => item.name))
+      return trainingList
+        .filter(item => uniqueTrainingNames.has(item.name))
+        .map(item => {
+          return { ...item, label: item.name };
+        });
+    }
+  }
+
+  const changeItemObj = (newEx: IExercise) => {
+
+    let isChanged = false
+    setNewAddedExercise(v => {
+      const newExe = v.map(item => {
+        if (newEx?._id && item?._id == newEx?._id) { isChanged = true; return newEx }
+        if (isChanged) return item
+        if (newEx?.unicKyeForDev && item?.unicKyeForDev == newEx?.unicKyeForDev) { isChanged = true; return newEx }
+        return item
+      })
+      return newExe
+    }
+    )
+  }
+
+
   const columns: TableColumnsType<ITraining> = [
     {
       title: <span style={{
         paddingLeft: "11px",
-        display: "flex", 
+        display: "flex",
         alignItems: "center",
-      backgroundColor: "#F0F0F0", 
-      width: "100%", 
-      height: "30px"}}>Тип тренировки</span>,
+        backgroundColor: "#F0F0F0",
+        width: "100%",
+        height: "30px"
+      }}>Тип тренировки</span>,
       dataIndex: 'name',
       render: (item) => <Badge
         style={{
@@ -58,7 +181,7 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
     {
       title: <Select
         bordered={false}
-        style={{backgroundColor: "#F0F0F0", width: "100%", height: "100%"}}
+        style={{ backgroundColor: "#F0F0F0", width: "100%", height: "100%" }}
         defaultValue={"period"}
         dropdownMatchSelectWidth={false}
         onChange={onChangeDropdown}
@@ -83,11 +206,18 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
         width: "100%",
         height: "100%",
         borderBottom: "1px solid #F0F0F0"
-      }}>{item.parameters.period || item.date}</span>,
+      }}>{item.parameters.period || dayjs(item.date).format('DD.MM.YYYY')}</span>,
     },
     {
       title: '',
-      render: (item: IParameters) => <span>{item.period}</span>,
+      dataIndex: '',
+      render: (item: ITraining) => <EditOutlined
+        onClick={() => { editTraining(item) }}
+        style={{
+          cursor: "pointer",
+          fontSize: "25px",
+          color: "#2F54EB"
+        }} />
     },
   ];
 
@@ -105,6 +235,121 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
         height: "100%",
         overflow: 'initial',
       }}>
+      <Drawer
+        data-test-id='modal-drawer-right'
+        style={{
+          zIndex: 1001
+        }}
+        maskStyle={{ background: "none" }}
+        placement={"right"}
+        closable={false}
+        onClose={() => onCloseExercise()}
+        open={isShowAddingExersice}
+        key={"right"}
+        width={screens.xs ? "100%" : 408}
+        bodyStyle={{
+          padding: screens.xs ? "24px 16px 0" : "24px 32px 0",
+        }}
+      >
+        <div style={{
+          display: "flex", justifyContent: "space-between", paddingBottom: "16px"
+        }}>
+          <div
+            style={{
+              fontSize: "20px",
+              fontWeight: 500,
+              lineHeight: "26px",
+            }}
+          > {selectedTypeOfTraining?.isImplementation ?
+            <>{"Просмотр упражнений"}</>
+            : selectedTypeOfTraining ?
+              <><EditOutlined style={{ fontSize: "14px", paddingRight: "10px" }} />{"Редактирование"}</>
+              :
+              <><PlusOutlined style={{ fontSize: "14px", paddingRight: "10px" }} />{"Добавление упражнений"}</>}</div>
+          <CloseOutlined data-test-id='modal-drawer-right-button-close' onClick={() => onCloseExercise()} style={{ cursor: "pointer" }} />
+
+        </div>
+        <div style={{
+          display: "flex", justifyContent: "space-between", paddingBottom: "16px", color: "#8C8C8C",
+          fontSize: "14px", lineHeight: "18.2px"
+        }}>
+          {/* <div>
+            {selectedTypeOfTraining?.name && <Badge color={_Colors?.[selectedTypeOfTraining.name as keyof typeof _Colors] || "#EB2F96"}
+              text={selectedTypeOfTraining.name} />}
+          </div>
+          {dayjs(selectedDate).format('DD.MM.YYYY')} */}
+          <Select
+            bordered={false}
+            style={{ width: "100%" }}
+            dropdownMatchSelectWidth={false}
+            value={selectedTypeOfTraining?.name}
+            onChange={onChangeDropdownTraining}
+            placeholder="Выбор типа тренировки"
+            suffixIcon={<DownOutlined />}
+          >
+            {transformDropdownProps().map(item => (
+              <Option key={item.name} value={item.label}>{item.label}</Option>
+            ))}
+          </Select>
+        </div>
+        <div>
+          <DatePicker
+            onSelect={(value) => handleSelectDate(value as Dayjs)}
+            value={dayjs(selectedDate)}
+            suffixIcon={Icon}
+            allowClear={false}
+            style={{ width: "100%" }}
+            size="large"
+            placeholder={"Дата рождения"}
+            format={'DD.MM.YYYY'} />
+
+        </div>
+        <div style={{
+          padding: screens.xs ? "0 0 24px " : "0 0 24px"
+        }}>
+          {newAddedExercise.map((item, index) => {
+            return <ExserciseItem index={index} isImplementation={!!selectedTypeOfTraining?.isImplementation} isOldTraining={!!selectedTypeOfTraining?._id} key={item?.unicKyeForDev || `${dayjs().valueOf()} - ${index}`} itemObj={item} changeItemObj={changeItemObj} />
+          })
+          }
+          {!selectedTypeOfTraining?.isImplementation && <div style={{
+            display: "flex",
+            justifyContent: "space-around",
+            height: "40px",
+            width: "100%",
+            backgroundColor: "#F0F0F0",
+            borderRadius: "0 0 6px 6px"
+          }}>
+            <Button
+              type="link"
+              style={{
+                color: "#2F54EB",
+                height: "100%",
+                width: "100%",
+                fontSize: "14px",
+                lineHeight: "18px"
+              }}
+              icon={<PlusOutlined />}
+              onClick={() => { setNewAddedExercise(v => { return [...v, { ...defaultExercise, unicKyeForDev: dayjs().valueOf() }] }) }}
+            >
+              Добавить ещё
+            </Button>
+            {selectedTypeOfTraining?._id && <Button
+              disabled={!newAddedExercise.find(item => item?.isSelectedForDelete)}
+              type="link"
+              icon={<MinusOutlined />}
+              style={{
+                height: "100%",
+                width: "100%",
+                fontSize: "14px",
+                lineHeight: "18px"
+              }}
+              onClick={() => { removeSelectedExersices() }}
+            >
+              Удалить
+            </Button>}
+          </div>}
+        </div>
+      </Drawer>
 
       {trainings?.length ? <div>
 
@@ -124,73 +369,53 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
         ) && <Pagination
             defaultPageSize={screens.xs ? 8 : 14}
           />}
+        {!isHideAddTrainingBtn && <div
+          style={{
+            paddingTop: screens.xs ? "20px" : "54px"
+          }}
+        >
+          <Button
+            icon={<PlusOutlined />}
+            onClick={() => { }} size="large" style={{ width: screens.xs ? "100%" : "" }} type="primary" htmlType="submit" className="login-form-button">
+            Новая тренировка
+          </Button>
+        </div>}
       </div>
-
-
         :
-        <div>12314</div>
-      }
-      {/* <div
-        style={{ display: "flex", gap: "12px", maxWidth: "511px", width: "100%", height: "32px" }}
-      >
-        <div
-          style={{
-            fontSize: "12px",
-            backgroundColor: "#F0F0F0",
-            width: screens.xs ? "116px" : screens.lg ? "259px" : "234px"
-          }}
-        >
-          Тип тренировки
-        </div>
-        <div
-          style={{
-            fontSize: "14px",
+        <div style={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          width: "100%",
+          // paddingTop: screens.xs ? "131px" : "200px"
+        }}>
+          <div style={{
+            display: "flex",
+            textAlign: "center",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "24px",
+            lineHeight: "31px",
+            flex: screens.xs ? 1 : "initial",
             fontWeight: 500,
-            backgroundColor: "#F0F0F0",
-            color: "",
-            width: screens.xs ? "188px" : "240px"
-          }}
-        >
-          <Select
-            bordered={false}
-            style={{ width: "100%" }}
-            defaultValue={"1"}
-            dropdownMatchSelectWidth={false}
-            onChange={onChangeDropdown}
-            placeholder="Сортировка"
-            suffixIcon={<DownOutlined style={{color: "#000000"}} />}
+            paddingBottom: screens.xs ? "20px" : "72px"
+          }}>У вас еще нет созданных тренировок</div>
+          {!isHideAddTrainingBtn && <div
+            style={{
+              display: "flex",
+              justifyContent: "center"
+            }}
           >
-            {periotSorting.map(item => (
-              <Option key={item.label} value={item.value}>{item.label}</Option>
-            ))}
-          </Select>
+            <Button
+              icon={<PlusOutlined />}
+              onClick={() => { }} size="large" style={{ width: screens.xs ? "100%" : "" }} type="primary" htmlType="submit" className="login-form-button">
+              Новая тренировка
+            </Button>
+          </div>}
         </div>
-      </div>
-      {sortedData.map(item => (<div
-        style={{
-          fontSize: "14px",
-          paddingTop: screens.xs ? "12px" : "24px"
-        }}
-      >
-        <div
-          style={{
-            width: screens.xs ? "116px" : screens.lg ? "259px" : "234px"
-          }}
-        >1</div>
-        <div>2</div>
-        <div>3</div>
-      </div>))} */}
-      {!isHideAddTrainingBtn && <div
-        style={{
-          paddingTop: screens.xs ? "20px" : "54px"
-        }}
-      >
-        <Button
-          icon={<PlusOutlined />}
-          onClick={() => { }} size="large" style={{ width: screens.xs ? "100%" : "" }} type="primary" htmlType="submit" className="login-form-button">
-          Новая тренировка
-        </Button>
-      </div>}
+      }
+
     </Content >
   )
 }

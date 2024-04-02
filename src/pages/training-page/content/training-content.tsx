@@ -13,19 +13,21 @@ export const TrainingContent = ({isHideAddTrainingBtn}: {isHideAddTrainingBtn: b
   const [tab, setTab] = useState("1")
   
   return (
-    <Content style={{
-      padding: "24px",
+    <Content className="tabHeight" style={{
+      padding: screens.xs ? "16px" : "24px",
       boxSizing: "border-box",
       borderRadius: screens.xs ? 0 : "8px",
       backgroundColor: "white",
       display: "flex",
       height: "100%",
       overflow: 'initial',
+      
       position: "relative",
     }}>
      <Tabs
-        style={{ width: "100%" }}
-        tabBarGutter={0}
+        
+        style={{ width: "100%", minHeight: "100%"}}
+        tabBarGutter={10}
         activeKey={tab}
         onChange={(val) => setTab(val)}
         items={[
