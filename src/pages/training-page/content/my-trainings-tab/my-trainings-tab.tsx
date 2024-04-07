@@ -1,7 +1,7 @@
 import { Content } from "antd/lib/layout/layout"
 import { _409, _Colors, _Error, _ErrorUserExist, _Success } from "@config/constants";
 
-import { Badge, Button, DatePicker, Drawer, Grid, Image, Pagination, Select, Table, TableColumnsType, TableProps } from "antd"
+import { Badge, Button, Checkbox, DatePicker, Drawer, Grid, Image, Pagination, Select, Table, TableColumnsType, TableProps } from "antd"
 import React, { RefObject, useRef, useState } from "react";
 import { CloseOutlined, DownOutlined, EditOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { Option } from "antd/lib/mentions";
@@ -48,6 +48,8 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
   const [selectedTypeOfTraining, setSelectedTypeOfTraining] = useState<ITraining>();
   const [newAddedExercise, setNewAddedExercise] = useState<IExercise[]>([]);
   const [selectedDate, setSelectedDate] = useState<Dayjs>();
+  const [isRepeat, setIsRepeat] = useState<boolean>();
+  const [selectedRepeat, setSelectedRepeat] = useState<string>();
   const [trainingsSelected, setTrainingsSelected] = useState<ITraining[]>([]);
   const ulRefs: RefObject<UserRefObject> = useRef<UserRefObject>({});
 
@@ -79,17 +81,26 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
     const selectedTrain = getListData().find((item: ITraining) => item.name == name)
     setSelectedTypeOfTraining(selectedTrain)
     // if (checkIsFutureDay()) {
-      setNewAddedExercise(selectedTrain?.exercises ? [...selectedTrain?.exercises] : [])
+    setNewAddedExercise(selectedTrain?.exercises ? [...selectedTrain.exercises] : [])
     // } else {
     //   setNewAddedExercise(selectedTrain?.exercises ? [...selectedTrain?.exercises] : [])
     // }
   }
 
   const editTraining = (item: ITraining) => {
+    setNewAddedExercise(v => ([...v, ...item.exercises]));
     console.log(item)
     setSelectedDate(dayjs(item?.date))
     setIsShowAddingExersice(true)
     setSelectedTypeOfTraining(item)
+  }
+
+  const createTraining = () => {
+    setNewAddedExercise(v => ([...v, { ...defaultExercise, unicKyeForDev: dayjs().valueOf() }]));
+    setIsShowAddingExersice(true)
+    setSelectedDate(undefined)
+    setIsShowAddingExersice(true)
+    setSelectedTypeOfTraining(undefined)
   }
 
   const onCloseExercise = () => {
@@ -104,7 +115,7 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
   }
 
   const getListData = (value = selectedDate) => {
-    if(!value) return []
+    if (!value) return []
     const training = trainings?.filter(item =>
       dayjs(item.date).isSame(dayjs(value), "day")
     )
@@ -124,7 +135,7 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
   }
 
   const transformDropdownProps = () => {
-    if(!selectedDate) return trainingList
+    if (!selectedDate) return trainingList
     if (checkIsFutureDay()) {
       const uniqueTrainingNames = new Set(trainingsSelected.map(item => item.name));
       return trainingList
@@ -302,13 +313,53 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
             size="large"
             placeholder={"Дата рождения"}
             format={'DD.MM.YYYY'} />
-
+          <Checkbox checked={isRepeat} onChange={(e) => setIsRepeat(e.target.checked)}>
+            С периодичностью
+          </Checkbox>
+        </div>
+        <div style={{
+          display: "flex",
+        }}>
+          <Select
+            bordered={false}
+            style={{ width: "100%" }}
+            dropdownMatchSelectWidth={false}
+            defaultValue={"1"}
+            value={selectedRepeat}
+            onChange={setSelectedRepeat}
+            placeholder="Выбор типа тренировки"
+            suffixIcon={<DownOutlined />}
+          >
+            <Option key={"1"} value={"1"}>Через 1 день</Option>
+            <Option key={"2"} value={"2"}>Через 2 дня</Option>
+            <Option key={"3"} value={"3"}>Через 3 дня</Option>
+            <Option key={"4"} value={"4"}>День недели</Option>
+          </Select>
+          <Select
+            bordered={false}
+            style={{ width: "100%" }}
+            dropdownMatchSelectWidth={false}
+            defaultValue={"1"}
+            value={selectedRepeat}
+            onChange={setSelectedRepeat}
+            placeholder="Выбор типа тренировки"
+            suffixIcon={<DownOutlined />}
+          >
+            <Option key={"1"} value={"1"}>Через 1 день</Option>
+            <Option key={"2"} value={"2"}>Через 2 дня</Option>
+            <Option key={"3"} value={"3"}>Через 3 дня</Option>
+            <Option key={"4"} value={"4"}>День недели</Option>
+          </Select>
         </div>
         <div style={{
           padding: screens.xs ? "0 0 24px " : "0 0 24px"
         }}>
           {newAddedExercise.map((item, index) => {
-            return <ExserciseItem index={index} isImplementation={!!selectedTypeOfTraining?.isImplementation} isOldTraining={!!selectedTypeOfTraining?._id} key={item?.unicKyeForDev || `${dayjs().valueOf()} - ${index}`} itemObj={item} changeItemObj={changeItemObj} />
+            return <ExserciseItem index={index}
+              isImplementation={!!selectedTypeOfTraining?.isImplementation}
+              isOldTraining={!!selectedTypeOfTraining?._id}
+              key={item?.unicKyeForDev || `${dayjs().valueOf()} - ${index}`}
+              itemObj={item} changeItemObj={changeItemObj} />
           })
           }
           {!selectedTypeOfTraining?.isImplementation && <div style={{
@@ -376,7 +427,7 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
         >
           <Button
             icon={<PlusOutlined />}
-            onClick={() => { }} size="large" style={{ width: screens.xs ? "100%" : "" }} type="primary" htmlType="submit" className="login-form-button">
+            onClick={() => { createTraining() }} size="large" style={{ width: screens.xs ? "100%" : "" }} type="primary" htmlType="submit" className="login-form-button">
             Новая тренировка
           </Button>
         </div>}
@@ -409,7 +460,7 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
           >
             <Button
               icon={<PlusOutlined />}
-              onClick={() => { }} size="large" style={{ width: screens.xs ? "100%" : "" }} type="primary" htmlType="submit" className="login-form-button">
+              onClick={() => { createTraining() }} size="large" style={{ width: screens.xs ? "100%" : "" }} type="primary" htmlType="submit" className="login-form-button">
               Новая тренировка
             </Button>
           </div>}

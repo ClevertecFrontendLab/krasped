@@ -93,17 +93,17 @@ export const CalendarContent = () => {
     setIsOpenFirstModal(true);
     clearStateWithoutColse()
     const listOfTrainings = getListData(value)
-      const ulElement = ulRefs?.current?.[dayjs(value).format()] || null;
-      if (ulElement) {
-        const ulPosition = ulElement.getBoundingClientRect();
-        if (ulPosition.left + 264 > width) ulPosition.left - 264 + ulPosition.width
-        setModalPosition({
-          top: ulPosition.top - 28,
-          left: (ulPosition.left + 264 > width) ? (ulPosition.left - 264 + ulPosition.width + 8) : (ulPosition.left - 8)
-        });
-      }
-      setTrainingsSelected(listOfTrainings)
-      setSelectedDate(value);
+    const ulElement = ulRefs?.current?.[dayjs(value).format()] || null;
+    if (ulElement) {
+      const ulPosition = ulElement.getBoundingClientRect();
+      if (ulPosition.left + 264 > width) ulPosition.left - 264 + ulPosition.width
+      setModalPosition({
+        top: ulPosition.top - 28,
+        left: (ulPosition.left + 264 > width) ? (ulPosition.left - 264 + ulPosition.width + 8) : (ulPosition.left - 8)
+      });
+    }
+    setTrainingsSelected(listOfTrainings)
+    setSelectedDate(value);
   };
 
   const transformDropdownProps = () => {
@@ -638,7 +638,11 @@ export const CalendarContent = () => {
           padding: screens.xs ? "0 0 24px " : "0 0 24px"
         }}>
           {newAddedExercise.map((item, index) => {
-            return <ExserciseItem index={index} isImplementation={!!getListData()?.find(item => item.name == selectedTypeOfTraining)?.isImplementation} isOldTraining={isOldTraining} key={item?.unicKyeForDev || `${dayjs().valueOf()} - ${index}`} itemObj={item} changeItemObj={changeItemObj} />
+            return <ExserciseItem index={index}
+              isImplementation={!!getListData()?.find(item => item.name == selectedTypeOfTraining)?.isImplementation}
+              isOldTraining={isOldTraining}
+              key={item?.unicKyeForDev || `${dayjs().valueOf()} - ${index}`}
+              itemObj={item} changeItemObj={changeItemObj} />
           })
           }
           {!getListData()?.find(item => item.name == selectedTypeOfTraining)?.isImplementation && <div style={{
