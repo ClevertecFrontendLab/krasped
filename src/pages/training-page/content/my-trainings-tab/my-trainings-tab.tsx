@@ -1,7 +1,7 @@
 import { Content } from "antd/lib/layout/layout"
 import { _409, _Colors, _Error, _ErrorUserExist, _Success } from "@config/constants";
 
-import { Badge, Button, Checkbox, DatePicker, Drawer, Grid, Image, Pagination, Select, Table, TableColumnsType, TableProps } from "antd"
+import { Badge, Button, Checkbox, DatePicker, Divider, Drawer, Grid, Image, Pagination, Select, Table, TableColumnsType, TableProps } from "antd"
 import React, { RefObject, useRef, useState } from "react";
 import { CloseOutlined, DownOutlined, EditOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { Option } from "antd/lib/mentions";
@@ -50,6 +50,7 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
   const [selectedDate, setSelectedDate] = useState<Dayjs>();
   const [isRepeat, setIsRepeat] = useState<boolean>();
   const [selectedRepeat, setSelectedRepeat] = useState<string>();
+  const [dayOfRepeat, setDayOfRepeat] = useState<string>("1");
   const [trainingsSelected, setTrainingsSelected] = useState<ITraining[]>([]);
   const ulRefs: RefObject<UserRefObject> = useRef<UserRefObject>({});
 
@@ -101,6 +102,28 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
     setSelectedDate(undefined)
     setIsShowAddingExersice(true)
     setSelectedTypeOfTraining(undefined)
+  }
+
+  const saveCurrentTraining = () => {
+    if (!selectedTypeOfTraining) return
+    const old = trainingsSelected.find(item => item.name == selectedTypeOfTraining)
+    const training: ITrainingReq = {
+      ...old,
+      isImplementation: checkIsFutureDay() ? false : true,
+      name: selectedTypeOfTraining,
+      date: dayjs(selectedDate).add(dayjs().utcOffset() / 60, 'hour').toISOString(),
+      exercises: newAddedExercise
+    }
+    setIsOpenFirstModal(true)
+    setTabFirstModal(1)
+    if (old) {
+      const { _id, ...rest } = training as ITraining
+      UpdateTraining({ rest, _id })
+    } else {
+      setIsOpenFirstModal(true)
+      setTabFirstModal(1)
+      AddTraining(training)
+    }
   }
 
   const onCloseExercise = () => {
@@ -290,7 +313,6 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
           </div>
           {dayjs(selectedDate).format('DD.MM.YYYY')} */}
           <Select
-            bordered={false}
             style={{ width: "100%" }}
             dropdownMatchSelectWidth={false}
             value={selectedTypeOfTraining?.name}
@@ -321,7 +343,6 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
           display: "flex",
         }}>
           <Select
-            bordered={false}
             style={{ width: "100%" }}
             dropdownMatchSelectWidth={false}
             defaultValue={"1"}
@@ -335,21 +356,23 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
             <Option key={"3"} value={"3"}>Через 3 дня</Option>
             <Option key={"4"} value={"4"}>День недели</Option>
           </Select>
-          <Select
-            bordered={false}
+          {selectedRepeat == "4" && <Select
             style={{ width: "100%" }}
             dropdownMatchSelectWidth={false}
             defaultValue={"1"}
-            value={selectedRepeat}
-            onChange={setSelectedRepeat}
-            placeholder="Выбор типа тренировки"
+            value={dayOfRepeat}
+            onChange={setDayOfRepeat}
+            placeholder="День недели"
             suffixIcon={<DownOutlined />}
           >
-            <Option key={"1"} value={"1"}>Через 1 день</Option>
-            <Option key={"2"} value={"2"}>Через 2 дня</Option>
-            <Option key={"3"} value={"3"}>Через 3 дня</Option>
-            <Option key={"4"} value={"4"}>День недели</Option>
-          </Select>
+            <Option key={"1"} value={"1"}>Понедельник</Option>
+            <Option key={"2"} value={"2"}>Вторник</Option>
+            <Option key={"3"} value={"3"}>Срелда</Option>
+            <Option key={"4"} value={"4"}>Четверг</Option>
+            <Option key={"5"} value={"5"}>Пятница</Option>
+            <Option key={"6"} value={"6"}>Суббока</Option>
+            <Option key={"7"} value={"7"}>Воскресенье</Option>
+          </Select>}
         </div>
         <div style={{
           padding: screens.xs ? "0 0 24px " : "0 0 24px"
@@ -399,6 +422,20 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
               Удалить
             </Button>}
           </div>}
+        </div>
+        <div>
+          <Divider style={{ margin: "17.5px 0 0" }} />
+          <Button
+            type="primary"
+            style={{
+              width: "100%",
+              fontSize: "14px",
+              lineHeight: "18px"
+            }}
+            onClick={() => { saveCurrentTraining() }}
+          >
+            Сохранить
+          </Button>
         </div>
       </Drawer>
 

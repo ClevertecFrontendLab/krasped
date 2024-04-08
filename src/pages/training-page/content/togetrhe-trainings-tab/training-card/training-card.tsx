@@ -1,11 +1,70 @@
 import { CheckCircleFilled, ExclamationCircleOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Button, Card, Grid } from "antd"
+import React from "react";
 export interface IItem {
   imageSrc: string;
   fullName: string;
 }
 
-export const TrainingCard = ({ item }: { item: IItem }) => {
+function splitStringBySpace(inputString: string) {
+  if (inputString.includes(' ')) {
+    const array = inputString.split(' ')
+    const newArray = [];
+    for (let i = 0; i < array.length; i++) {
+      newArray.push(array[i]);
+      if (i < array.length - 1) {
+        newArray.push(" ");
+      }
+    }
+    return newArray
+  } else {
+    return [inputString];
+  }
+}
+
+const HighlightName = ({ fullName = "Пользователь", searchValue = "" }) => {
+  if (searchValue && fullName.toLowerCase().includes(searchValue.toLowerCase())) {
+    const index = fullName.toLowerCase().indexOf(searchValue.toLowerCase());
+    const beforeMatch = splitStringBySpace(fullName.substring(0, index));
+    const match = splitStringBySpace(fullName.substring(index, index + searchValue.length));
+    const afterMatch = splitStringBySpace(fullName.substring(index + searchValue.length));
+    return (
+      <div>
+        {beforeMatch.map((part) => (part == ' ' ? <br /> : <span>{part}</span>))}
+        {match.map((part) => (part == ' ' ? <br /> : <span style={{ color: "red" }}>{part}</span>))}
+        {afterMatch.map((part) => (part == ' ' ? <br /> : <span>{part}</span>))}
+      </div>
+    );
+
+  } else {
+    const parts = fullName.split(' ');
+    return (
+      <div>
+        {parts.map((part, index) => (
+          <div key={index}>
+            {part}
+          </div>
+        ))}
+      </div>
+    );
+  }
+  // return (
+  //   <div>
+
+  //     {parts.map((part, index) => (
+  //       <span key={index}>
+  //         {part === '' ? <br /> : (
+  //           <span style={part.toLowerCase() === searchValue.toLowerCase() ? { color: 'red' } : null}>
+  //             {part}
+  //           </span>
+  //         )}
+  //       </span>
+  //     ))}
+  //   </div>
+  // );
+};
+
+export const TrainingCard = ({ item, searchValue }: { item: IItem, searchValue: string }) => {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
   return (
@@ -27,7 +86,8 @@ export const TrainingCard = ({ item }: { item: IItem }) => {
           marginRight: "12px"
         }}>
         <Avatar size="large" src={item.imageSrc} icon={<UserOutlined />} />
-        <div style={{
+        <HighlightName fullName={item.fullName} searchValue={searchValue} />
+        {/* <div style={{
           wordSpacing: screens?.xs ? "" : "174px",
           fontSize: "16px",
           lineHeight: "20.8px",
@@ -37,7 +97,7 @@ export const TrainingCard = ({ item }: { item: IItem }) => {
               item.fullName.split(' ').map((item) => <>{item}<br /></>)
               :
               "Пользователь"
-          }</div>
+          }</div> */}
       </div>
       <div style={{
         display: "flex",
