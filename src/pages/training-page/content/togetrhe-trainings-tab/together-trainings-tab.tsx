@@ -21,6 +21,54 @@ const filtredItems: IItem[] = [
   {
     fullName: "Ardtem krawtsow",
     imageSrc: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg"
+  },
+  {
+    fullName: "Artem kradsfwtsow",
+    imageSrc: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg"
+  },
+  {
+    fullName: "Artem krassswtsow",
+    imageSrc: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg"
+  },
+  {
+    fullName: "Artem krawtsow",
+    imageSrc: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg"
+  },
+  {
+    fullName: "Ardtem krawtsow",
+    imageSrc: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg"
+  },
+  {
+    fullName: "Artem kradsfwtsow",
+    imageSrc: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg"
+  },
+  {
+    fullName: "Artem krassswtsow",
+    imageSrc: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg"
+  },
+  {
+    fullName: "Artem krawtsow",
+    imageSrc: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg"
+  },
+  {
+    fullName: "Ardtem krawtsow",
+    imageSrc: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg"
+  },
+  {
+    fullName: "Artem kradsfwtsow",
+    imageSrc: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg"
+  },
+  {
+    fullName: "Artem krassswtsow",
+    imageSrc: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg"
+  },
+  {
+    fullName: "Artem krawtsow",
+    imageSrc: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg"
+  },
+  {
+    fullName: "Ardtem krawtsow",
+    imageSrc: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg"
   }
 ]
 
@@ -30,10 +78,14 @@ export const TogetherTrainingsTab = () => {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
   const [searchValue, setSearchValue] = useState('');
+  const [page, setPage] = useState<number>(1)
+  const indexOfLastContent = page * (screens.xs ? 8 : 12);
+  const indexOfFirstContent = indexOfLastContent - (screens.xs ? 8 : 12);
+  const currentContents = filtredItems.slice(indexOfFirstContent, indexOfLastContent);
 
 
   const handleChangePage = (page: number) => {
-    console.log(page)
+    setPage(page)
   }
 
   const handleSearch = (value: string) => {
@@ -42,11 +94,11 @@ export const TogetherTrainingsTab = () => {
 
   return (
     <Content style={{
-      padding: "24px",
       boxSizing: "border-box",
       borderRadius: screens.xs ? 0 : "8px",
       backgroundColor: "white",
-
+      display: "flex",
+      flexDirection: "column",
       height: "100%",
       overflow: 'initial',
       position: "relative",
@@ -58,10 +110,11 @@ export const TogetherTrainingsTab = () => {
       <div style={{
         width: "100%",
         display: "flex",
+        flex: 1,
         flexWrap: "wrap",
         gap: "16px",
       }}>
-        {filtredItems.map(item => {
+        {currentContents.map(item => {
           return (
             <TrainingCard item={item} searchValue={searchValue} />
           )
@@ -76,11 +129,12 @@ export const TogetherTrainingsTab = () => {
         <TrainingCard item={item} />
         <TrainingCard item={item} /> */}
       </div>
-      <div><Pagination
+      <div>{((screens.xs && filtredItems.length > 8) || (filtredItems.length > 12)) && <Pagination
         onChange={handleChangePage}
-        total={50}
+        current={page}
+        total={filtredItems.length}
         pageSize={screens.xs ? 8 : 12}
-        size="small" /></div>
+        size="small" />}</div>
     </Content >
   )
 }

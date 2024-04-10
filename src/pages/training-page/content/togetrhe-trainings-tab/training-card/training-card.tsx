@@ -71,6 +71,7 @@ export const TrainingCard = ({ item, searchValue }: { item: IItem, searchValue: 
     <Card
       bodyStyle={{ padding: "8px 15px" }}
       style={{
+        overflow: "auto",
         height: "194px",
         display: 'flex',
         flexDirection: "column",
