@@ -311,7 +311,6 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
             }}>{name}
           </span>} />< DownOutlined />
       </div>
-      ,
     },
     {
       title: <Select
@@ -618,20 +617,14 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
 
 
         <Table
+          pagination={{ defaultPageSize: screens.xs ? 8 : 14, position: ["bottomLeft"] }}
           bordered={false}
-          pagination={false}
           showSorterTooltip={false}
           size="small"
           style={{
             maxWidth: "511px"
           }}
           columns={columns} dataSource={trainings} onChange={onChange} />
-        {(
-          (screens.xs && trainings?.length > 8) ||
-          (!screens.xs && trainings?.length > 14)
-        ) && <Pagination
-            defaultPageSize={screens.xs ? 8 : 14}
-          />}
         {!isHideAddTrainingBtn && <div
           style={{
             paddingTop: screens.xs ? "20px" : "54px"
