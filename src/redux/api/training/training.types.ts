@@ -16,9 +16,9 @@ export interface IExerciseWithId extends IExercise {
 
 export interface IParameters {
   "repeat": boolean,
-  "period": number,
-  "jointTraining": boolean,
-  "participants": string[]
+  "period": number ,
+  "jointTraining"?: boolean,
+  "participants"?: string[]
 }
 
 export interface ITraining {
@@ -34,7 +34,7 @@ export interface ITraining {
 export interface ITrainingReq {
   "_id"?: string,
   "name": string,
-  "date": string,
+  "date"?: string,
   "isImplementation"?: boolean,
   "userId"?: "string",
   "parameters"?: IParameters,

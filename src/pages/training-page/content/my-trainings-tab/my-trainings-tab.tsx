@@ -1,16 +1,21 @@
 import { Content } from "antd/lib/layout/layout"
-import { _409, _Colors, _Error, _ErrorUserExist, _Success } from "@config/constants";
+import { _403, _409, _AuthLogin, _Colors, _Error, _ErrorUserExist, _Success } from "@config/constants";
 
-import { Badge, Button, Checkbox, DatePicker, Divider, Drawer, Grid, Image, Pagination, Select, Table, TableColumnsType, TableProps } from "antd"
-import React, { RefObject, useRef, useState } from "react";
-import { CloseOutlined, DownOutlined, EditOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { Badge, Button, Checkbox, DatePicker, Divider, Drawer, Grid, Image, Modal, Pagination, Select, Table, TableColumnsType, TableProps } from "antd"
+import React, { RefObject, useEffect, useRef, useState } from "react";
+import { CloseCircleOutlined, CloseOutlined, DownOutlined, EditOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { Option } from "antd/lib/mentions";
-import { useAppSelector } from "@hooks/typed-react-redux-hooks";
+import { useAppDispatch, useAppSelector } from "@hooks/typed-react-redux-hooks";
 import { selectTrainingList, selectTrainings } from "@redux/trainingSlice";
-import { IExercise, ITraining } from "@redux/api/training/training.types";
+import { IExercise, ITraining, ITrainingReq } from "@redux/api/training/training.types";
 import dayjs, { Dayjs } from "dayjs";
 import { ExserciseItem } from "./exsercise-item-form";
 import CalenderSVG from "@assets/icons/calendat-disabled.svg"
+import { logout } from "@redux/userSlice";
+import { history } from "@redux/configure-store";
+import { useAddTrainingMutation, useUpdateTrainingMutation } from "@redux/api/training/training";
+import { TrainingModal } from "./training-modal";
+import useWindowWidth from "@hooks/use-window-width";
 
 const periotSorting = [
   { label: "Сортировка по периоду", value: "period" },
@@ -28,9 +33,22 @@ const defaultExercise = {
   "isSelectedForDelete": false,
 }
 
+const _Periods = [
+  { key: "1", name: "Через 1 день" },
+  { key: "2", name: "Через 2 дня" },
+  { key: "3", name: "Через 3 дня" },
+  { key: "4", name: "Через 4 дня" },
+  { key: "5", name: "Через 5 дней" },
+  { key: "6", name: "Через 6 дней" },
+  { key: "7", name: "1 раз в неделю" },
+]
+
 export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn: boolean }) => {
+  const [AddTraining, { isLoading: isAddLoading, isSuccess: isAddSuccess, isError: isAddError, error: addError }] = useAddTrainingMutation();
+  const [UpdateTraining, { isLoading: isUpdateLoading, isSuccess: isUpdateSuccess, isError: isUpdateError, error: updateError }] = useUpdateTrainingMutation();
+  const dispatch = useAppDispatch()
   type UserRefObject = {
-    [key: string]: HTMLUListElement | null;
+    [key: string]: HTMLDivElement | null;
   }
   const { useBreakpoint } = Grid;
 
@@ -40,21 +58,38 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
     alt: CalenderSVG,
   })
 
+  const width = useWindowWidth()
+  const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
+  const [isOpenModal, setIsOpenModal] = useState<ITraining | undefined>();
   const trainings = useAppSelector(selectTrainings)
   const trainingList = useAppSelector(selectTrainingList)
   const screens = useBreakpoint();
-  const [selectedSortingType, setSelectedSortingType] = useState<string>("0")
   const [isShowAddingExersice, setIsShowAddingExersice] = useState<boolean>(false)
-  const [selectedTypeOfTraining, setSelectedTypeOfTraining] = useState<ITraining>();
+  const [selectedSortingType, setSelectedSortingType] = useState<string>("0")
+  const [selectedTypeOfTraining, setSelectedTypeOfTraining] = useState<ITrainingReq>();
   const [newAddedExercise, setNewAddedExercise] = useState<IExercise[]>([]);
   const [selectedDate, setSelectedDate] = useState<Dayjs>();
   const [isRepeat, setIsRepeat] = useState<boolean>();
-  const [selectedRepeat, setSelectedRepeat] = useState<string>();
-  const [dayOfRepeat, setDayOfRepeat] = useState<string>("1");
+  const [selectedRepeat, setSelectedRepeat] = useState<string>("1");
   const [trainingsSelected, setTrainingsSelected] = useState<ITraining[]>([]);
+  // const [dayOfRepeat, setDayOfRepeat] = useState<string>("1");
+  const [isAddTrainingError, setIsAddTrainingError] = useState<boolean>(false)
+  const [isPutError, setIsPutError] = useState<boolean>(false)
   const ulRefs: RefObject<UserRefObject> = useRef<UserRefObject>({});
 
-
+  const handleSelectTraining = (item: ITraining) => {
+    setNewAddedExercise(item?.exercises ? [...item.exercises] : [])
+    const ulElement = ulRefs?.current?.[dayjs(item.date).format()] || null;
+    if (ulElement) {
+      const ulPosition = ulElement.getBoundingClientRect();
+      if (ulPosition.left + 264 > width) ulPosition.left - 264 + ulPosition.width
+      setModalPosition({
+        top: ulPosition.top - 28,
+        left: (ulPosition.left + 264 > width) ? (ulPosition.left - 264 + ulPosition.width + 8) : (ulPosition.left - 8)
+      });
+    }
+    setIsOpenModal(item)
+  };
 
 
   const handleDropdownClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -63,11 +98,33 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
 
   };
 
+  const handleSelectDate = (value: Dayjs | undefined) => {
+    if (!value) return
+    const listOfTrainings = getListData(value)
+    setTrainingsSelected(listOfTrainings)
+    setSelectedDate(value);
+  };
+
   const clearState = () => {
+    setSelectedSortingType("0")
+    setIsRepeat(false)
+    setSelectedRepeat("1")
     setSelectedDate(undefined)
     setIsShowAddingExersice(false);
     setSelectedTypeOfTraining(undefined);
-    setNewAddedExercise([])
+    // setNewAddedExercise([])
+    setTrainingsSelected([])
+  }
+
+  const fillStateByTraining = (training: ITrainingReq | undefined) => {
+
+    setSelectedTypeOfTraining(training)
+    setIsShowAddingExersice(true)
+    
+    handleSelectDate(training?.date ? dayjs(training?.date) : undefined)
+    setIsRepeat(training?.parameters?.repeat || false)
+    setSelectedRepeat(training?.parameters?.period?.toString() || "1")
+    setNewAddedExercise(training?.exercises ? [...training.exercises] : [])
   }
 
   const onChange: TableProps<ITraining>['onChange'] = (pagination, filters, sorter, extra) => {
@@ -80,54 +137,57 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
 
   const onChangeDropdownTraining = (name: string) => {
     const selectedTrain = getListData().find((item: ITraining) => item.name == name)
-    setSelectedTypeOfTraining(selectedTrain)
-    // if (checkIsFutureDay()) {
-    setNewAddedExercise(selectedTrain?.exercises ? [...selectedTrain.exercises] : [])
-    // } else {
-    //   setNewAddedExercise(selectedTrain?.exercises ? [...selectedTrain?.exercises] : [])
-    // }
+    console.log(selectedTrain)
+    const defaultTraining: ITrainingReq = {
+      name: name,
+      "exercises": [{ unicKyeForDev: dayjs().valueOf(), ...defaultExercise }]
+    }
+    fillStateByTraining(selectedTrain?.name ? selectedTrain : defaultTraining)
+
   }
 
   const editTraining = (item: ITraining) => {
-    setNewAddedExercise(v => ([...v, ...item.exercises]));
-    console.log(item)
-    setSelectedDate(dayjs(item?.date))
-    setIsShowAddingExersice(true)
-    setSelectedTypeOfTraining(item)
+    // setNewAddedExercise(v => ([...v, ...item.exercises]));
+    if(item?.isImplementation) return
+    fillStateByTraining(item)
   }
 
   const createTraining = () => {
+    setIsRepeat(false)
+    setSelectedRepeat("1")
     setNewAddedExercise(v => ([...v, { ...defaultExercise, unicKyeForDev: dayjs().valueOf() }]));
-    setIsShowAddingExersice(true)
     setSelectedDate(undefined)
     setIsShowAddingExersice(true)
     setSelectedTypeOfTraining(undefined)
+    setTrainingsSelected([])
   }
 
   const saveCurrentTraining = () => {
     if (!selectedTypeOfTraining) return
-    const old = trainingsSelected.find(item => item.name == selectedTypeOfTraining)
+    const old = trainingsSelected.find(item => item.name == selectedTypeOfTraining.name)
     const training: ITrainingReq = {
       ...old,
       isImplementation: checkIsFutureDay() ? false : true,
-      name: selectedTypeOfTraining,
+      name: selectedTypeOfTraining.name,
       date: dayjs(selectedDate).add(dayjs().utcOffset() / 60, 'hour').toISOString(),
-      exercises: newAddedExercise
+      exercises: newAddedExercise,
+      parameters: {
+        repeat: !!isRepeat,
+        period: selectedRepeat ? +selectedRepeat : 0,
+        // jointTraining: ,
+        // participants: [],
+      }
     }
-    setIsOpenFirstModal(true)
-    setTabFirstModal(1)
     if (old) {
       const { _id, ...rest } = training as ITraining
       UpdateTraining({ rest, _id })
     } else {
-      setIsOpenFirstModal(true)
-      setTabFirstModal(1)
       AddTraining(training)
     }
   }
 
   const onCloseExercise = () => {
-    setNewAddedExercise(v => v.filter(item => item.name))
+    // setNewAddedExercise(v => v.filter(item => item.name))
     clearState()
   }
 
@@ -145,15 +205,13 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
     return training;
   };
 
-  const handleSelectDate = (value: Dayjs) => {
-    const listOfTrainings = getListData(value)
-    setTrainingsSelected(listOfTrainings)
-    setSelectedDate(value);
-  };
+
 
 
 
   const checkIsFutureDay = (value = selectedDate) => {
+    console.log(dayjs(), value)
+    console.log(dayjs().isBefore(dayjs(value), "day"))
     return dayjs().isBefore(dayjs(value), "day")
   }
 
@@ -192,6 +250,39 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
     )
   }
 
+  useEffect(() => {
+
+    if (isAddSuccess) { clearState() }
+    if (isAddError) {
+      clearState()
+      const customError = addError as { status: number }
+      if (customError.status == _403) {
+        dispatch(logout())
+        history.push(_AuthLogin)
+      }
+      setSelectedDate(undefined)
+      setIsAddTrainingError(true)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAddLoading]);
+
+  useEffect(() => {
+
+    if (isUpdateSuccess) { clearState() }
+    if (isUpdateError) {
+      clearState()
+      const customError = updateError as { status: number }
+      if (customError.status == _403) {
+        dispatch(logout())
+        history.push(_AuthLogin)
+      }
+      setSelectedDate(undefined)
+      setIsPutError(true)
+      // closeFeedbackFrom()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isUpdateLoading]);
+
 
   const columns: TableColumnsType<ITraining> = [
     {
@@ -203,14 +294,24 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
         width: "100%",
         height: "30px"
       }}>Тип тренировки</span>,
-      dataIndex: 'name',
-      render: (item) => <Badge
-        style={{
-          width: "100%",
-          borderBottom: "1px solid #F0F0F0"
-        }}
-        color={item?.isImplementation ? "#BFBFBF" : (_Colors?.[item as keyof typeof _Colors] || "#EB2F96")}
-        text={<span style={{ color: item?.isImplementation ? "#BFBFBF" : "inherit" }}>{item}</span>} />,
+      dataIndex: '',
+      render: ({ name }, item) => <div 
+        ref={(ref) => (ulRefs.current !== null ? ulRefs.current[dayjs(item.date).format()] = ref : '')}
+        style={{display: "flex", justifyContent: "space-between" ,cursor: "pointer"}} 
+        onClick={() => handleSelectTraining(item)}>
+        <Badge
+          style={{
+            width: "100%",
+            borderBottom: "1px solid #F0F0F0"
+          }}
+          color={name?.isImplementation ? "#BFBFBF" : (_Colors?.[name as keyof typeof _Colors] || "#EB2F96")}
+          text={<span
+            style={{
+              color: name?.isImplementation ? "#BFBFBF" : "inherit"
+            }}>{name}
+          </span>} />< DownOutlined />
+      </div>
+      ,
     },
     {
       title: <Select
@@ -240,17 +341,17 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
         width: "100%",
         height: "100%",
         borderBottom: "1px solid #F0F0F0"
-      }}>{item.parameters.period || dayjs(item.date).format('DD.MM.YYYY')}</span>,
+      }}>{item?.parameters?.period ? _Periods[item.parameters.period - 1].name : dayjs(item.date).format('DD.MM.YYYY')}</span>,
     },
     {
       title: '',
       dataIndex: '',
       render: (item: ITraining) => <EditOutlined
-        onClick={() => { editTraining(item) }}
+        onClick={() => { editTraining(item); setIsOpenModal(undefined) }}
         style={{
           cursor: "pointer",
           fontSize: "25px",
-          color: "#2F54EB"
+          color: item?.isImplementation ? "#BFBFBF" : "#2F54EB"
         }} />
     },
   ];
@@ -269,6 +370,65 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
         height: "100%",
         overflow: 'initial',
       }}>
+      {isOpenModal && <Modal
+        closeIcon={<CloseOutlined
+        />}
+        centered={screens.xs ? true : false}
+        closable={false}
+        width={screens.xs ? "calc(100% - 44px)" : 241}
+        mask={false}
+        footer={null}
+        bodyStyle={{ padding: "16px 0 12px", height: "240px" }}
+        style={screens.xs ? { margin: 0 } : { margin: 0, top: modalPosition.top, left: modalPosition.left }}
+        open={!!isOpenModal}
+        onCancel={() => { setIsOpenModal(undefined) }}
+      >
+        <TrainingModal newAddedExercise={newAddedExercise} item={isOpenModal} onBack={() => setIsOpenModal(undefined)} onOpenExersices={() => { editTraining(isOpenModal) }} />
+      </Modal>}
+      <Modal centered
+        footer={null}
+        closeIcon={<CloseOutlined data-test-id='modal-error-user-training-button-close' />}
+        bodyStyle={{ padding: "16px 24px" }}
+        style={{ maxWidth: "384px", backdropFilter: 'blur(10px)' }}
+        open={isPutError || isAddTrainingError}
+        onCancel={() => { setIsPutError(false); setIsAddTrainingError(false) }}>
+        <div style={{ alignItems: "flex-start", display: "flex", width: "100%", gap: "16px" }}>
+          <CloseCircleOutlined
+            style={{
+
+              color: "#2F54EB",
+              fontSize: "24px"
+            }} />
+          <div style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+          }}>
+            <div
+              data-test-id='modal-error-user-training-title'
+              style={{ fontSize: "16px", lineHeight: "21px" }}>При сохранении данных произошла ошибка</div>
+            <div
+              data-test-id='modal-error-user-training-subtitle'
+              style={{ color: "#8C8C8C", fontSize: "14px", lineHeight: "18px" }}>Придётся попробовать ещё раз</div>
+            <div style={{ display: "flex", width: "100%", justifyContent: "flex-end" }}>
+              <Button
+                data-test-id='modal-error-user-training-button'
+                style={{
+                  fontSize: "14px",
+                  height: "28px",
+                  lineHeight: "18px"
+                }}
+                onClick={() => {
+                  setIsPutError(false); setIsAddTrainingError(false); clearState()
+                }} type="primary" key="console">
+                Закрыть
+              </Button>
+            </div>
+          </div>
+        </div>
+
+      </Modal>
       <Drawer
         data-test-id='modal-drawer-right'
         style={{
@@ -282,6 +442,8 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
         key={"right"}
         width={screens.xs ? "100%" : 408}
         bodyStyle={{
+          display: "flex",
+          flexDirection: "column",
           padding: screens.xs ? "24px 16px 0" : "24px 32px 0",
         }}
       >
@@ -313,6 +475,7 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
           </div>
           {dayjs(selectedDate).format('DD.MM.YYYY')} */}
           <Select
+            size="small"
             style={{ width: "100%" }}
             dropdownMatchSelectWidth={false}
             value={selectedTypeOfTraining?.name}
@@ -325,38 +488,43 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
             ))}
           </Select>
         </div>
-        <div>
+        <div style={{
+          display: "flex",
+          justifyContent: "space-between",
+          paddingBottom: "8px",
+        }}>
           <DatePicker
             onSelect={(value) => handleSelectDate(value as Dayjs)}
             value={dayjs(selectedDate)}
             suffixIcon={Icon}
             allowClear={false}
-            style={{ width: "100%" }}
-            size="large"
+            style={{ width: "100%", maxWidth: "156px" }}
+            size="small"
             placeholder={"Дата рождения"}
             format={'DD.MM.YYYY'} />
           <Checkbox checked={isRepeat} onChange={(e) => setIsRepeat(e.target.checked)}>
             С периодичностью
           </Checkbox>
         </div>
-        <div style={{
+        {isRepeat && <div style={{
           display: "flex",
         }}>
           <Select
-            style={{ width: "100%" }}
+            size="small"
+            style={{ width: "100%", maxWidth: "156px" }}
             dropdownMatchSelectWidth={false}
             defaultValue={"1"}
             value={selectedRepeat}
             onChange={setSelectedRepeat}
             placeholder="Выбор типа тренировки"
             suffixIcon={<DownOutlined />}
-          >
-            <Option key={"1"} value={"1"}>Через 1 день</Option>
-            <Option key={"2"} value={"2"}>Через 2 дня</Option>
-            <Option key={"3"} value={"3"}>Через 3 дня</Option>
-            <Option key={"4"} value={"4"}>День недели</Option>
+          >{
+              _Periods.map(item => (
+                <Option key={item.key} value={item.key}>{item.name}</Option>
+              ))
+            }
           </Select>
-          {selectedRepeat == "4" && <Select
+          {/* {selectedRepeat == "4" && <Select
             style={{ width: "100%" }}
             dropdownMatchSelectWidth={false}
             defaultValue={"1"}
@@ -372,10 +540,14 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
             <Option key={"5"} value={"5"}>Пятница</Option>
             <Option key={"6"} value={"6"}>Суббока</Option>
             <Option key={"7"} value={"7"}>Воскресенье</Option>
-          </Select>}
-        </div>
+          </Select>} */}
+        </div>}
         <div style={{
-          padding: screens.xs ? "0 0 24px " : "0 0 24px"
+          display: "flex",
+          flexDirection: "column",
+          overflow: "auto",
+          height: "calc(100dvh - 205px)",
+          padding: screens.xs ? "24px 0 24px " : "24px 0 24px"
         }}>
           {newAddedExercise.map((item, index) => {
             return <ExserciseItem index={index}
@@ -423,8 +595,11 @@ export const MyTrainingsTab = ({ isHideAddTrainingBtn }: { isHideAddTrainingBtn:
             </Button>}
           </div>}
         </div>
-        <div>
-          <Divider style={{ margin: "17.5px 0 0" }} />
+        <div style={{
+          borderTop: "1px solid #F0F0F0",
+          padding: "12px 32px",
+          margin: screens.xs ? "0 -16px 0" : "0 -32px 0"
+        }}>
           <Button
             type="primary"
             style={{
