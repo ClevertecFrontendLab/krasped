@@ -3,7 +3,12 @@ import { Avatar, Button, Card, Grid } from "antd"
 import React from "react";
 export interface IItem {
   imageSrc: string;
-  fullName: string;
+  id: string;
+  name: string;
+  trainingType: string;
+  avgWeightInWeek: number;
+  status: string;
+  inviteId: string
 }
 
 function splitStringBySpace(inputString: string) {
@@ -64,7 +69,7 @@ const HighlightName = ({ fullName = "Пользователь", searchValue = ""
   // );
 };
 
-export const TrainingCard = ({ item, searchValue }: { item: IItem, searchValue: string }) => {
+export const TrainingCard = ({ item, searchValue, onCancelTraining, onCreateTraining }: { item: IItem, searchValue: string, onCancelTraining: (item: IItem) => void, onCreateTraining: (item: IItem) => void }) => {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
   return (
@@ -87,7 +92,7 @@ export const TrainingCard = ({ item, searchValue }: { item: IItem, searchValue: 
           marginRight: "12px"
         }}>
         <Avatar size="large" src={item.imageSrc} icon={<UserOutlined />} />
-        <HighlightName fullName={item.fullName} searchValue={searchValue} />
+        <HighlightName fullName={item.name} searchValue={searchValue} />
         {/* <div style={{
           wordSpacing: screens?.xs ? "" : "174px",
           fontSize: "16px",
@@ -123,7 +128,7 @@ export const TrainingCard = ({ item, searchValue }: { item: IItem, searchValue: 
               fontWeight: 500,
               lineHeight: "18px"
             }}
-          >Силовая</span>
+          >{item.trainingType}</span>
         </div>
         <div style={{
           display: "flex",
@@ -141,23 +146,26 @@ export const TrainingCard = ({ item, searchValue }: { item: IItem, searchValue: 
               fontWeight: 500,
               lineHeight: "18px"
             }}
-          >154 кг/нед</span>
+          >{item.avgWeightInWeek} кг/нед</span>
         </div>
       </div>
       <div style={{
         paddingBottom: "12px",
       }}>
-        <Button style={{
-          color: "#262626",
-          display: "flex",
-          alignItems: "center",
-          height: "28px",
-          textAlign: "center",
+        <Button
+          onClick={() => onCancelTraining(item)}
+          style={{
+            color: "#262626",
+            display: "flex",
+            alignItems: "center",
+            height: "28px",
+            textAlign: "center",
 
-        }}>
+          }}>
           Отменить тренировку
         </Button>
         <Button
+          onClick={() => onCreateTraining(item)}
           disabled
           type="primary"
           style={{

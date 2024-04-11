@@ -40,3 +40,16 @@ export interface ITrainingReq {
   "parameters"?: IParameters,
   "exercises": IExercise[]
 }
+
+export interface IInvite {
+    _id: string,
+    from: {
+      _id: string,
+      firstName: string,
+      lastName: string,
+      imageSrc: string
+    },
+    training: ITraining[],
+    status: string,
+    createdAt: string,
+}
